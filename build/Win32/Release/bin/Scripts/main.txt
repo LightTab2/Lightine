@@ -1,0 +1,38 @@
+﻿RWLRWLRWLRWL!
+#IntStat(Weałth,130,210,0,0,0)
+Murloc.
+	Gress[B]BUZ[/B][B]xpsd[/B]
+		Green.
+			Water.
+		Green.
+	Green.
+//no comment
+gdsssssssssssssssssssssssssss gsdfdfguiii jkdzsfkkkkkkkkkk izxivizx      llllllllllllsgsdj dzfzjjjjjjjjjjjjjj warasd fffffffffffghgs sadasdas xzczxcvzxc gdsssssssssssssssssssssssssss gdsssssssssssssssssssssssssss gdsssssssssssssssssssssssssss
+gdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssss
+#choice
+heh
+
+hehe
+
+hieh
+#if(Weałth<140)
+#hidden yes
+{
+	
+}
+#choice
+WHRUASHVZPaul
+#if(Weałth>=120)
+#hidden yes
+{
+	
+}
+#choice
+gosh
+rosh
+#if(Weałth>120)
+#hidden no
+
+#next
+
+#end
