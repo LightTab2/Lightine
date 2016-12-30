@@ -74,7 +74,6 @@ class Cmain
 		int	she = 0;																//Like the but for gamestate -1
 		int	antialias = 0;															//Antialiasing setting
 		int	framelimit = 0;															//Maximum fps
-		float cview = 0;															//Go back to previous position
 		int	smax = 0;																//The number of movement that can be done by slider
 		int smaxup = 0;																//Minimum slider's position (up)
 		int	smaxdown = 0;															//Maximum slider's position (down)

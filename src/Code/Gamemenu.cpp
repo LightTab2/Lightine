@@ -13,10 +13,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 inline void Cmain::ssb()
 {
-	if (Contains(shwstats))
+	if (Contains(shwstats))////
 	{
 		if (scenario.additional.empty() || scenario.sempty || scenario.pempty) return;
-		visible = false; gamestate = -1; button_3_text.setString("Back"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width + 60.f * w / 800.f), h - static_cast<int>(h / 600.f * 90.f)))); button_2_text.setString("No"); cview = round(window.getView().getCenter().y - h / 2.f * smax / static_cast<float>(scenario.the - h) + smaxup);
+		visible = false; gamestate = -1; button_3_text.setString("Back"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width + 60.f * w / 800.f), h - static_cast<int>(h / 600.f * 90.f)))); button_2_text.setString("No");
 	}
 }
 void Cmain::MainEvent()
@@ -54,7 +54,7 @@ void Cmain::MainEvent()
 						disrandomnameLOL = true;
 					}
 					else {
-						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(h / 600.f * 35.f)))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(h / 600.f * 40.f)))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f)))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); sviewchange(cview);
+						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(h / 600.f * 35.f)))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(h / 600.f * 40.f)))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f)))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); sviewchange(lsetPos);
 					}
 				}
 				disbutton = false;
@@ -173,12 +173,12 @@ void Cmain::MainEvent()
 				if (scenario.slideratv)
 				{
 					if (gamestate == 1) {
-						lsetPos -= round(mainevent.mouseWheelScroll.delta * smax / scenario.st); //delta (1 or -1) is the move of slider
+						lsetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st); //delta (1 or -1) is the move of slider
 						sviewchange(lsetPos);
 					}
 					else if (gamestate == -1)
 					{
-						ssetPos -= round(mainevent.mouseWheelScroll.delta * smax / scenario.st);
+						ssetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st);
 						sviewchange(ssetPos);
 					}
 				}
@@ -279,7 +279,7 @@ void Cmain::onRelease()
 				button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f))));
 				disbutton = false;
 				disrandomnameLOL = true;
-				sviewchange(cview);
+				sviewchange(lsetPos);
 			}
 		}
 		else if (Contains(button_3)) {
@@ -287,7 +287,7 @@ void Cmain::onRelease()
 			gamestate = 1;
 			button_3_text.setString("Save Options"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width / 2.f), h - static_cast<int>(h / 600.f * 90.f))));
 			button_2_text.setString("Options"); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width / 2.f), h / 2 - static_cast<int>(h / 600.f * 40.f))));
-			sviewchange(cview);
+			sviewchange(lsetPos);
 		}
 		break;
 	case 0:

@@ -1,0 +1,17 @@
+﻿  Gamemenu.cpp
+d:\git\lightine\src\code\gamemenu.cpp(142): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(147): warning C4018: '<': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(156): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(161): warning C4018: '<': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(187): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+d:\git\lightine\src\code\gamemenu.cpp(192): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(199): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+d:\git\lightine\src\code\gamemenu.cpp(204): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(412): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\git\lightine\src\code\gamemenu.cpp(424): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+d:\git\lightine\src\code\gamemenu.cpp(479): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(481): warning C4018: '<': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(515): warning C4018: '>=': signed/unsigned mismatch
+d:\git\lightine\src\code\gamemenu.cpp(517): warning C4018: '<': signed/unsigned mismatch
+  Lightine.vcxproj -> D:\git\Lightine\src\..\build\Win32\Debug\Lightine.exe
+  Lightine.vcxproj -> ..\build\Win32\Debug\Lightine.pdb (Full PDB)

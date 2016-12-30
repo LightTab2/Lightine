@@ -1,0 +1,78 @@
+﻿  Cmain.cpp
+Code\Cmain.cpp(119): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(120): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(121): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(208): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+Code\Cmain.cpp(215): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(234): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(235): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(265): warning C4244: 'argument': conversion from 'float' to 'unsigned int', possible loss of data
+Code\Cmain.cpp(269): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+Code\Cmain.cpp(287): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+Code\Cmain.cpp(293): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+Code\Cmain.cpp(361): warning C4018: '>=': signed/unsigned mismatch
+Code\Cmain.cpp(371): warning C4018: '>=': signed/unsigned mismatch
+Code\Cmain.cpp(377): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+Code\Cmain.cpp(531): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\Cmain.cpp(549): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(550): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Cmain.cpp(554): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\Cmain.cpp(558): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+  Fades.cpp
+  GameLoop.cpp
+Code\GameLoop.cpp(374): warning C4018: '>=': signed/unsigned mismatch
+Code\GameLoop.cpp(375): warning C4018: '>=': signed/unsigned mismatch
+Code\GameLoop.cpp(406): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\GameLoop.cpp(474): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\GameLoop.cpp(475): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\GameLoop.cpp(476): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\GameLoop.cpp(477): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\GameLoop.cpp(398): warning C4390: ';': empty controlled statement found; is this the intent?
+Code\GameLoop.cpp(405): warning C4390: ';': empty controlled statement found; is this the intent?
+Code\GameLoop.cpp(503): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+Code\GameLoop.cpp(588): warning C4244: 'initializing': conversion from 'float' to 'int', possible loss of data
+Code\GameLoop.cpp(591): warning C4018: '<': signed/unsigned mismatch
+Code\GameLoop.cpp(593): warning C4018: '<': signed/unsigned mismatch
+Code\GameLoop.cpp(599): warning C4018: '<': signed/unsigned mismatch
+Code\GameLoop.cpp(601): warning C4018: '<': signed/unsigned mismatch
+  Gamemenu.cpp
+Code\Gamemenu.cpp(142): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(147): warning C4018: '<': signed/unsigned mismatch
+Code\Gamemenu.cpp(156): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(161): warning C4018: '<': signed/unsigned mismatch
+Code\Gamemenu.cpp(187): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+Code\Gamemenu.cpp(192): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(199): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+Code\Gamemenu.cpp(204): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(412): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+Code\Gamemenu.cpp(424): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+Code\Gamemenu.cpp(479): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(481): warning C4018: '<': signed/unsigned mismatch
+Code\Gamemenu.cpp(515): warning C4018: '>=': signed/unsigned mismatch
+Code\Gamemenu.cpp(517): warning C4018: '<': signed/unsigned mismatch
+  Gamestate.cpp
+Code\Gamestate.cpp(24): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\Gamestate.cpp(32): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
+Code\Gamestate.cpp(33): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+Code\Gamestate.cpp(34): warning C4244: '=': conversion from 'float' to 'int', possible loss of data
+Code\Gamestate.cpp(36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  txtReader.cpp
+Code\txtReader.cpp(241): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+Code\txtReader.cpp(251): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+Code\txtReader.cpp(266): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+Code\txtReader.cpp(375): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\txtReader.cpp(376): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\txtReader.cpp(377): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\txtReader.cpp(378): warning C4800: 'int': forcing value to bool 'true' or 'false' (performance warning)
+Code\txtReader.cpp(390): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\txtReader.cpp(409): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+Code\txtReader.cpp(438): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+  WinMain.cpp
+     Creating library ..\build\Win32\Release\Lightine.lib and object ..\build\Win32\Release\Lightine.exp
+  Generating code
+  2 of 1489 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    1 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
+  Lightine.vcxproj -> D:\git\Lightine\src\..\build\Win32\Release\Lightine.exe
+  Lightine.vcxproj -> ..\build\Win32\Release\Lightine.pdb (Full PDB)
