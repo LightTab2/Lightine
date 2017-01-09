@@ -24,8 +24,17 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
 *.tlog
-/Lightine.VC.db
+# Another
+*.VC.VC.opendb
+*.suo
+*.sln
+*.VC.db
+*.pdb
+*.ipdb
+*.iobj
+*.exp
+*.vcxproj.user
+

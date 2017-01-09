@@ -35,8 +35,8 @@ void Cmain::sviewchange(float setPos)
 	window.setView(sf::View(sf::Vector2f(window.getDefaultView().getCenter().x, round(h / 2.f + numbss)), sf::Vector2f(static_cast<float>(w), static_cast<float>(h))));
 	sliders.setPosition(window.mapPixelToCoords(sf::Vector2i(static_cast<int>(sliders.getPosition().x), setPos)));
 	bars.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(bars.getGlobalBounds().width), 0)));
-	for (unsigned int x = 0, size = v_pos.size(); x < size; ++x) v_pos[x].setPosition(window.mapPixelToCoords(sf::Vector2i(w / 12, v_posi[x])));
-	for (unsigned int x = 0, size = s_pos.size(); x < size; ++x) s_pos[x].setPosition(window.mapPixelToCoords(sf::Vector2i(s_posv[x])));
+	for (unsigned int x = 0, size = v_pos.size(); x < size; ++x) v_pos[x].setPosition(window.mapPixelToCoords(v_posi[x]));
+	for (unsigned int x = 0, size = s_pos.size(); x < size; ++x) s_pos[x].setPosition(window.mapPixelToCoords(s_posv[x]));
 	button_1_text.setPosition(window.mapPixelToCoords(pos[0]));
 	button_2_text.setPosition(window.mapPixelToCoords(pos[1]));
 	button_3_text.setPosition(window.mapPixelToCoords(pos[2]));

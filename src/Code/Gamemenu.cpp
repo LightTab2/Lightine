@@ -13,9 +13,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 inline void Cmain::ssb()
 {
-	if (Contains(shwstats))////
+	if (Contains(shwstats))
 	{
-		if (scenario.additional.empty() || scenario.sempty || scenario.pempty) return;
+		//if (scenario.additional.empty() || scenario.sempty || scenario.pempty) return;
 		visible = false; gamestate = -1; button_3_text.setString("Back"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width + 60.f * w / 800.f), h - static_cast<int>(h / 600.f * 90.f)))); button_2_text.setString("No");
 	}
 }
@@ -304,6 +304,15 @@ void Cmain::onRelease()
 			stigger = false;
 			slidersb = sliders.getGlobalBounds();
 		}
+		else if (Contains(scenario.next.getGlobalBounds()))
+		{
+			if (scenario.choiceneed == true && scenario.choicesel == -1) break;
+			sviewchange(0);
+			scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
+			scenario.choiceneed = scenario.loadtextonly = false;
+			if (scenario.choicesel != -1) scenario.dgoto = scenario.choice[scenario.choicesel].dgto;
+			scenario.Parse();
+		}
 		break;
 	case 2:
 		if (Contains(button_1)) {
@@ -424,29 +433,17 @@ void Cmain::onClick()
 			smouseposy = mousepos.y - static_cast<int>(slidersb.top);
 			stigger = true;
 		}
-		{
-			int x = 0;
-			for (Choice &a : scenario.choice) {
-				if (a.avaible) {
-					if (Contains(a.c.getGlobalBounds()))
-					{
-						for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
-						a.cs.setFillColor(textchoicefillcolor);
-						scenario.choicesel = x;
-						break;
-					}
-					else if (Contains(a.cs.getGlobalBounds()))
-					{
-						for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
-						a.cs.setFillColor(textchoicefillcolor);
-						scenario.choicesel = x;
-						break;
-					}
+			ssb();
+			for (unsigned int x = 0; x < scenario.choice.size(); ++x) {
+				if (Contains(scenario.choice[x].c.getGlobalBounds()) || Contains(scenario.choice[x].cs.getGlobalBounds()))
+				{
+					if (!scenario.choice[x].avaible) break;
+					for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
+					scenario.choice[x].cs.setFillColor(textchoicefillcolor);
+					scenario.choicesel = x;
+					break;
 				}
-				x++;
 			}
-		}
-		ssb();
 		break;
 	case 3:
 		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }

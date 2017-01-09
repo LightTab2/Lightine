@@ -191,12 +191,12 @@ class Cmain
 		
 		sf::Clock errclock;															//Manages enternewerror_t lifetime
 
-		std::vector<sf::Vector2f> positions;										//Possible positions in profilesmenu
 		std::vector<sf::Text> s_pos;												//Various stats
 		std::vector<sf::Texture> i_pos;												//Textures for v_pos
 		std::vector<sf::Sprite> v_pos;												//IntStats and IntStatOpposities stats
-		std::vector<sf::Vector2f> s_posv;											//Positions of s_pos
-		std::vector<int> v_posi;													//Positions of v_pos
+		std::vector<sf::Vector2i> s_posv,											//Positions of s_pos
+								positions,											//Possible positions in profilesmenu
+								v_posi;												//Positions of v_pos
 
 																					//Loads save? dunno
 		void LoadSave();

@@ -20,7 +20,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	scenario.choice.clear();
 	scenario.the = h / 12;
 
-	scenario.sgoto = 0;
+	scenario.cgoto = scenario.sgoto = 0;
 	std::wofstream save(L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt", std::ios::trunc);
 	scenario.loadtextonly = false;
 	LoadSave();
@@ -182,7 +182,7 @@ inline void Cmain::Draw1()
 	}
 	window.draw(michaupase³ke³);
 	if (scenario.drawnext) window.draw(scenario.next);
-	if (!scenario.additional.empty() && !scenario.pempty && !scenario.sempty) window.draw(showstats);
+	window.draw(showstats);
 	if (scenario.slideratv) {
 		window.draw(bars);
 		window.draw(sliders);

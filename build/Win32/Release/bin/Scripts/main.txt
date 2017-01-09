@@ -18,21 +18,25 @@ hieh
 #if(Weałth<140)
 #hidden yes
 {
-	
+#next
 }
 #choice
 WHRUASHVZPaul
 #if(Weałth>=120)
 #hidden yes
 {
-	
+ąć ąć żą żą
+sdad
 }
 #choice
 gosh
 rosh
 #if(Weałth>120)
 #hidden no
-
+{
+works?
+//#goto(0)
+}
 #next
-
+Hey Awesome it works.
 #end
