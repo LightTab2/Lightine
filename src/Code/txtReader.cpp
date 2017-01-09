@@ -23,12 +23,13 @@ ScenarioParser::ScenarioParser()
 	insr.reserve(2000);
 }
 
-void ScenarioParser::GotoLine(std::wfstream& file, int &num)
+void ScenarioParser::GotoLine(int num)
 {
-	file.seekg(std::ios::beg);
+	in.seekg(std::ios::beg);
 	for (unsigned int i = 0U; num != 0U && i < num - 1U; ++i){
-		file.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+		in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	}
+	cgoto = sgoto = num;
 }
 
 void ScenarioParser::Parse()
@@ -39,7 +40,6 @@ void ScenarioParser::Parse()
 	additional.clear();
 	choice.clear();
 	the = sh / 12;
-	choicesel = -1;
 	slideratv = false;
 	st = 0;
 	if (pempty)
@@ -73,37 +73,33 @@ void ScenarioParser::Parse()
 		return;
 	}
 	in.open(path);
-	if (!in)
-	{
-		//mfile << '[' << sgoto << ']' << "Error: Story file couldn't be opened" << std::endl;
-		return;
-	}
+	if (!in) throw std::runtime_error("File that contains story couldn't be open");
 	//else //mfile << '[' << sgoto << ']' << "Story file could be opened" << std::endl;
 	in.imbue(utf8_locale);
-
-	GotoLine(in, cgoto);	
+	GotoLine(cgoto);
 
 	tekst.setFillColor(*textcolor);
-	//tekst.setFillColor(sf::Color(0,0,0,255));
 	std::wstring preinsr;
 	preinsr.reserve(400);
 	for (;;)
 	{
+		if (dgoto != 0 && sgoto >= dgoto) { SplitText(false, insr); break; }
 		std::getline(in, preinsr);
+		++sgoto;
 		if (preinsr[0] == '#')
 		{
 			//mfile << '[' << sgoto << ']' << "Executed a command" << std::endl;
-			SplitText(false);
+			SplitText(false, insr);
 			if (preinsr == L"#end")
 			{
 				//mfile << '[' << sgoto << ']' << "Command executed: #end" << std::endl;
-				SplitText(false);
+				SplitText(false, insr);
 				break;
 			}
 			else if (preinsr == L"#next")
 			{
 				//mfile << '[' << sgoto << ']' << "Command executed: #next" << std::endl;
-				SplitText(false);
+				SplitText(false, insr);
 				next.setPosition(floor(sw / 2 - next.getGlobalBounds().width / 2.f), floor(the + next.getGlobalBounds().height / 2.f));
 				the += static_cast<int>(next.getGlobalBounds().height * 1.6f); //ignore warn
 				drawnext = true;
@@ -116,34 +112,30 @@ void ScenarioParser::Parse()
 		if (CommentCheck(preinsr))
 		{
 			if (preinsr.empty())
-			{
-				++sgoto;
 				continue;
-			}
 		};
-		++sgoto;
 		if (preinsr.empty() || preinsr == empty || preinsr == L"\n")
 		{
-			SplitText(false);
+			SplitText(false, insr);
 			the += th;
 		}
 		else if (preinsr[0] == L'\t'){
-			SplitText(false);
+			insr += '\n';
 			insr += preinsr;
 		}
 		else if (preinsr == split) formattype = !formattype;
 		else {
 			insr += preinsr;
-			if (formattype) SplitText(false);
+			if (formattype) SplitText(false, insr);
 			else insr += L" ";
 		}
 	}
 	loadtextonly = true;
-	the += th;
 	st = static_cast<int>(round((the - sh) / (sh/450.f *tekst.getCharacterSize())));
 	in.close();
 	Save();
 	if (the > sh) slideratv = true;
+	choicesel = -1;
 }
 void ScenarioParser::Save()
 {
@@ -153,7 +145,7 @@ void ScenarioParser::Save()
 	if (save)
 	{
 		save << cgoto << std::endl;
-		save << '}' << std::endl;
+		save << dgoto << std::endl;
 		save << static_cast<int>(loadtextonly) << std::endl;
 		save << '}' << std::endl;
 
@@ -203,71 +195,76 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt, int &sw, int &sh)
 		//mfile << '[' << sgoto << ']' << "Command executed: #Int" << std::endl;
 		Thingy(3, insrtttt);
 	}
-
-	/*else if (insrtttt.substr(0, 6) == L"#goto(")
+	else if (insrtttt.substr(0, 6) == L"#goto(")
 	{
 		//mfile << "Command executed: #goto" << std::endl;
-		size_t pos = insrtttt.find(",");
-		std::wstring parameter = insrtttt.substr(6, insrtttt.size() - 1);
-	}*/
-	
+		int line;
+		if (stoicheck(insrtttt.substr(6, insrtttt.size() - 1), line)) GotoLine(line);
+		else throw std::runtime_error("Goto command failure! Check if you didn't use a letter or if you put too many non-digit characters");
+	}
 	else if (insrtttt == L"#showstats") 	
 	{
 
 	}
 }
 
-void ScenarioParser::SplitText(bool w)
+void ScenarioParser::SplitText(bool w, std::wstring &insrt)
 {
-	if (insr.empty()) return;
+	if (insrt.empty()) return;
+	size_t d;
+	while ((d = insrt.find('\n')) != std::wstring::npos)
+	{
+		SplitText(w, insrt.substr(0, d));
+		insrt.erase(0, d+1);
+	}
 	std::vector<sf::Vector2i> b;
 	for (;;)
 	{
 		b.push_back(sf::Vector2i());
-		if ((b.back().x = insr.find(L"[B]")) != std::wstring::npos)
-			insr.erase(b.back().x, 3U);
+		if ((b.back().x = insrt.find(L"[B]")) != std::wstring::npos)
+			insrt.erase(b.back().x, 3U);
 		else {
 			b.pop_back(); break;
 		}
-		if ((b.back().y = insr.find(L"[/B]")) != std::wstring::npos)
-			insr.erase(b.back().y, 4U);
+		if ((b.back().y = insrt.find(L"[/B]")) != std::wstring::npos)
+			insrt.erase(b.back().y, 4U);
 		else throw std::runtime_error("Error: couldn't find \"[/B]\" - did you close every \"[B]\" before exectuing a command?");
 	}
 	float &wu = w ? w2 : w1;
-		tekst.setString(insr);
+		tekst.setString(insrt);
 		tekst.setPosition(wu, static_cast<float>(the));
 		//----------------------------------//
 		std::vector<sf::Text> &v = w ? choice.back().text : additional;
-		if (tekst.getGlobalBounds().left + tekst.getGlobalBounds().width < owd || insr.find(L' ') == std::wstring::npos) { formaT(v, wu, b); }
+		if (tekst.getGlobalBounds().left + tekst.getGlobalBounds().width < owd || insrt.find(L' ') == std::wstring::npos) { formaT(v, wu, b); }
 		else
 		{
 			std::wstring str;
 			for (size_t pos = 0;;) {
-				if ((pos = insr.find(L' ', pos + 1)) == std::wstring::npos)
+				if ((pos = insrt.find(L' ', pos + 1)) == std::wstring::npos)
 				{
-					tekst.setString(insr);
-					if (tekst.getGlobalBounds().left + tekst.getGlobalBounds().width > owd && insr.find(L' ') != std::wstring::npos) goto skip;
+					tekst.setString(insrt);
+					if (tekst.getGlobalBounds().left + tekst.getGlobalBounds().width > owd && insrt.find(L' ') != std::wstring::npos) goto skip;
 					tekst.setPosition(wu, static_cast<float>(the));
 					formaT(v, wu, b);
 					break;
 				}
 
-				tekst.setString(insr.substr(0, pos));
+				tekst.setString(insrt.substr(0, pos));
 				str = tekst.getString().toWideString();
 				if (tekst.getGlobalBounds().left + tekst.getGlobalBounds().width > owd)
 				{
-					if (insr.rfind(L' ', pos - 1) != std::wstring::npos)
+					if (insrt.rfind(L' ', pos - 1) != std::wstring::npos)
 					{
-						pos = insr.rfind(L' ', pos - 1);
+						pos = insrt.rfind(L' ', pos - 1);
 					}
-				skip:tekst.setString(insr.substr(0, pos));
-					insr.erase(0, pos + 1);
+				skip:tekst.setString(insrt.substr(0, pos));
+					insrt.erase(0, pos + 1);
 					tekst.setPosition(wu, static_cast<float>(the));
 					formaT(v, wu, b);
 				}
 			}
 		}
-	insr.clear();
+	insrt.clear();
 }	
 
 int ScenarioParser::stoicheck(std::string &checked, int def)
@@ -531,21 +528,17 @@ void ScenarioParser::CreateChoice(std::wstring &insrtttt)
 	for (;;) 
 	{
 		std::getline(in, insrtttt);
-		CommentCheck(insrtttt);
 		++sgoto;
-		if (insrtttt.empty()) continue;
+		CommentCheck(insrtttt);
+		if (insrtttt.empty()) insr += '\n';
 		//mfile << '[' << sgoto << ']' << "[Choice]Found an empty line" << std::endl;
-		else if (insrtttt[0] == '\t')
-		{
-			//mfile << '[' << sgoto << ']' << "[Choice]Found a tab" << std::endl;
-			SplitText(true);
+		else if (insrtttt[0] == L'\t') {
+			insr += '\n';
 			insr += insrtttt;
 		}
 		else if (insrtttt[0] == L'#') break;
 		else { insr += insrtttt; insr += L' '; }; //http://stackoverflow.com/questions/41353227/does-stdstring-char-expression-create-another-stdstring
 	}
-	SplitText(true);
-	RoundRect();
 	std::wstring value;
 	for (;;)
 	{
@@ -553,68 +546,67 @@ void ScenarioParser::CreateChoice(std::wstring &insrtttt)
 		{
 			//mfile << '[' << sgoto << ']' << "[Choice]First character of the line is \"#\". Checking if choice is available..." << std::endl;
 			sf::Uint8 to3;
-			int bt;
-			if ((bt = insrtttt.rfind(L"==")) != std::wstring::npos) { to3 = 2; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L"<=")) != std::wstring::npos) { to3 = 3; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L">=")) != std::wstring::npos) { to3 = 4; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L"!=")) != std::wstring::npos) { to3 = 5; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L'>')) != std::wstring::npos) { to3 = 0; value = insrtttt.substr(bt + 1, insrtttt.size() - bt - 3); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L'<')) != std::wstring::npos) { to3 = 1; value = insrtttt.substr(bt + 1, insrtttt.size() - bt - 3); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
-			else if ((bt = insrtttt.rfind(L"hidden ")) != std::wstring::npos) {
-				choice.back().hidden = (insrtttt[bt + 1] == 'y');
-				std::getline(in, insrtttt);
-				++sgoto;
-				CommentCheck(insrtttt);
-				continue;
-			}
-			else return; //{ mfile << '[' << sgoto << ']' << L"[Choice] Error: Found \"#\", but couldn't find proper command for \"if\""; return; };
-			int val;
-			if (choice.back().avaible && stoicheck(value, val) && statfind(insrtttt, bt))
-			{
-				switch (to3)
+			int bt, val;
+			if ((bt = insrtttt.rfind(L"hidden ")) != std::wstring::npos)
+				choice.back().hidden = (insrtttt[8] == 'y');
+			else {
+				if ((bt = insrtttt.rfind(L"==")) != std::wstring::npos) { to3 = 2; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else if ((bt = insrtttt.rfind(L"<=")) != std::wstring::npos) { to3 = 3; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else if ((bt = insrtttt.rfind(L">=")) != std::wstring::npos) { to3 = 4; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else if ((bt = insrtttt.rfind(L"!=")) != std::wstring::npos) { to3 = 5; value = insrtttt.substr(bt + 2, insrtttt.size() - bt - 4); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else if ((bt = insrtttt.rfind(L'>')) != std::wstring::npos) { to3 = 0; value = insrtttt.substr(bt + 1, insrtttt.size() - bt - 3); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else if ((bt = insrtttt.rfind(L'<')) != std::wstring::npos) { to3 = 1; value = insrtttt.substr(bt + 1, insrtttt.size() - bt - 3); insrtttt.resize(bt); insrtttt.erase(0U, 4U); }
+				else throw std::runtime_error("Improper choice command"); //{ mfile << '[' << sgoto << ']' << L"[Choice] Error: Found \"#\", but couldn't find proper command for \"if\""; return; };
+				if (choice.back().avaible && stoicheck(value, val) && statfind(insrtttt, bt))
 				{
-				case 0:
-					choice.back().avaible = (bt > val);
-					break;
-				case 1:
-					choice.back().avaible = (bt < val);
-					break;
-				case 2:
-					choice.back().avaible = (bt == val);
-					break;
-				case 3:
-					choice.back().avaible = (bt <= val);
-					break;
-				case 4:
-					choice.back().avaible = (bt >= val);
-					break;
-				case 5:
-					choice.back().avaible = (bt != val);
-					break;
-				}
-				if (!choice.back().avaible) {
-					for (auto &e : choice.back().text) e.setFillColor(tekst.getFillColor()); choice.back().c.setOutlineColor(*textchoiceunavaiblecolor); choice.back().cs.setOutlineColor(*textchoiceunavaiblecolor);
+					switch (to3)
+					{
+					case 0:
+						choice.back().avaible = (bt > val);
+						break;
+					case 1:
+						choice.back().avaible = (bt < val);
+						break;
+					case 2:
+						choice.back().avaible = (bt == val);
+						break;
+					case 3:
+						choice.back().avaible = (bt <= val);
+						break;
+					case 4:
+						choice.back().avaible = (bt >= val);
+						break;
+					case 5:
+						choice.back().avaible = (bt != val);
+						break;
+					}
+					if (!choice.back().avaible) {
+						for (auto &e : choice.back().text) e.setFillColor(tekst.getFillColor()); choice.back().c.setOutlineColor(*textchoiceunavaiblecolor); choice.back().cs.setOutlineColor(*textchoiceunavaiblecolor);
+					}
 				}
 			}
 		}
-		else if (insrtttt.empty())
-		{
+		//else if (insrtttt.empty())
+		//{
 			//mfile << '[' << sgoto << ']' << "[Choice]Wrong input: Found an empty line" << std::endl;
-			return;
-		}
+		//	return;
+		//}
 		else if (insrtttt[0] == L'{')
 		{
 			choice.back().gto = sgoto + 1;
 			//mfile << '[' << sgoto << ']' << "[Choice]Searching for \"}\". If infinite loop occurs (program is stuck and yields no repsonse) you probably forgot to write \"}\" at the end of choice" << std::endl;
-			for (; insrtttt != L"}"; sgoto++) std::getline(in, insrtttt);
+			for (; insrtttt != L"}"; sgoto++) std::getline(in, insrtttt); //seekg \n
+			choice.back().dgto = sgoto;
+			if (!choice.back().avaible && choice.back().hidden) { insr.clear(); return; }
+			choiceneed = true;
+			SplitText(true, insr);
+			RoundRect();
 			return;
 		}
-		else return; //{ mfile << '[' << sgoto << ']' << "[Choice]Wrong input: First character of the line is not \"#\". It is not valid \"if\"" << std::endl; return; }
+		else throw std::runtime_error("Improper choice command"); //{ mfile << '[' << sgoto << ']' << "[Choice]Wrong input: First character of the line is not \"#\". It is not valid \"if\"" << std::endl; return; }
 		std::getline(in, insrtttt);
 		++sgoto;
-		CommentCheck(insrtttt);
 	}
-	the += static_cast<int>(choice.back().c.getGlobalBounds().height);
 }
 
 bool ScenarioParser::chName(std::wstring name)

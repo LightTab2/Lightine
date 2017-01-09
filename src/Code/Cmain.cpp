@@ -377,17 +377,17 @@ void Cmain::getSaveData()
 	int th = insert_text.getGlobalBounds().height * 1.15f;
 	for (menucapacity = 0U; (profilesmenu.getPosition().y + profilesmenu.getGlobalBounds().height) > (insert_text.getPosition().y + floor(10.f * h / 600.f) + 2 * th); menucapacity += 1U)
 	{
-		positions.push_back(sf::Vector2f(profilesmenu.getPosition().x + floor(8.f * w/800.f), profilesmenu.getPosition().y + floor(5.f * h / 600.f) + th * menucapacity));
-		insert_text.setPosition(positions.back());
+		positions.push_back(sf::Vector2i(profilesmenu.getPosition().x + floor(8.f * w/800.f), profilesmenu.getPosition().y + floor(5.f * h / 600.f) + th * menucapacity));
+		insert_text.setPosition(static_cast<sf::Vector2f>(positions.back()));
 	}
 	arroweds_margin = stories.size() - menucapacity;
 	arrowedp_margin = profiles.size() - menucapacity;
 	if (arroweds_margin < 0) arroweds_margin = 0;
 	if (arrowedp_margin < 0) arrowedp_margin = 0;
-	arrowedp = selectionp - static_cast<int>(menucapacity/2U); //the cast is done automatically
-	if (arrowedp < 0) arrowedp = 0;
+	arrowedp = selectionp - static_cast<int>(menucapacity/2U);
+	if (arrowedp < 0) arrowedp = 0;	
 	else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
-	arroweds = selections - static_cast<int>(menucapacity/2U); //the cast is done automatically
+	arroweds = selections - static_cast<int>(menucapacity/2U);
 	if (arroweds < 0) arroweds = 0;
 	else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 

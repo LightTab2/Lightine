@@ -38,7 +38,7 @@ void Cmain::GameMenu()
 				button_2_text.setFillColor(sound ? menuoncolor : menucolor);
 				button_3_text.setFillColor(menucolor);
 			}
-			else {
+			else if (gamestate != -1){
 				button_1_text.setFillColor(menuselectcolor);
 				if (gamestate == 3) button_2_text.setFillColor(fullscreen ? menuoncolor : menucolor);
 				else button_2_text.setFillColor(menucolor);
@@ -127,7 +127,7 @@ void Cmain::GameMenu()
 				button_2_text.setFillColor(sound ? menuoncolor : menucolor);
 				button_3_text.setFillColor(menucolor);
 			}
-			else {
+			else if (gamestate != -1){
 				button_1_text.setFillColor(menuclickcolor);
 				if (gamestate == 3) button_2_text.setFillColor(fullscreen ? menuoncolor : menucolor);
 				else button_2_text.setFillColor(menucolor);
@@ -287,7 +287,7 @@ void Cmain::Show_stats()
 				else if (!s.vhidden) astat.setString(astat.getString() + s.value);
 				astat.setPosition(round(w / 12.f), static_cast<float>(she));
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				she += scenario.th;
 				s.address = s_pos.size() - 1U;
 				s.read = true;
@@ -300,16 +300,16 @@ void Cmain::Show_stats()
 				astat.setString(i.name);
 				astat.setPosition(round(w / 12.f), static_cast<float>(she));
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				astat.setString(std::to_wstring(i.value));
 				astat.setPosition(round(w / 2.f), static_cast<float>(she));
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				astat.setString(i.opposite);
 				astat.setPosition(round(w - w / 12 - astat.getGlobalBounds().width), static_cast<float>(she));
 				she += scenario.th;
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				i.read = true;
 			}
 		}
@@ -322,16 +322,16 @@ void Cmain::Show_stats()
 				astat.setFillColor(statcolor);
 				astat.setStyle(sf::Text::Bold);
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				astat.setFillColor(sf::Color(textcolor.r, textcolor.g, textcolor.b, static_cast<sf::Uint8>(0)));
 				astat.setStyle(sf::Text::Regular);
 
 				i_pos.push_back(sf::Texture());
 				i_pos.back().loadFromImage(IntSpecial(static_cast<int>(w / 2.5f), static_cast<int>(s_pos.back().getGlobalBounds().height * 1.6f), i.value, i.min, i.max));
 				v_pos.push_back(sf::Sprite(i_pos.back()));
-				v_pos.back().setPosition(round(w / 12.f), s_pos.back().getGlobalBounds().top - round(s_pos.back().getGlobalBounds().height * 0.3f));
+				v_pos.back().setPosition(round(w / 12.f), round(s_pos.back().getGlobalBounds().top - s_pos.back().getGlobalBounds().height * 0.3f));
 				v_pos.back().setColor(sf::Color(v_pos.back().getColor().r, v_pos.back().getColor().g, v_pos.back().getColor().b, static_cast<sf::Uint8>(0)));
-				v_posi.push_back(static_cast<int>(v_pos.back().getPosition().y));
+				v_posi.push_back(sf::Vector2i(static_cast<int>(round(w / 12.f)), static_cast<int>(v_pos.back().getPosition().y)));
 				she += static_cast<int>(v_pos.back().getGlobalBounds().height *1.1f);
 				i.address = i_pos.size() - 1U;
 				i.read = true;
@@ -342,14 +342,14 @@ void Cmain::Show_stats()
 			if (!i.read && i.prior == prior && !i.hidden)
 			{
 				astat.setString(i.name);
-				astat.setPosition(static_cast<float>(w / 12), static_cast<float>(she));
+				astat.setPosition(round(w / 12.f), static_cast<float>(she));
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				astat.setString(std::to_wstring(i.value));
-				astat.setPosition(static_cast<float>(w / 2), static_cast<float>(she));
+				astat.setPosition(round(w / 2.f), static_cast<float>(she));
 				she += scenario.th;
 				s_pos.push_back(astat);
-				s_posv.push_back(sf::Vector2f(s_pos.back().getGlobalBounds().left, s_pos.back().getPosition().y));
+				s_posv.push_back(static_cast<sf::Vector2i>(s_pos.back().getPosition()));
 				i.read = true;
 			}
 		}
@@ -382,7 +382,7 @@ void Cmain::LoadSave()
 		const std::locale utf8_locales = std::locale(empty_locales, converters);
 		save.imbue(utf8_locales);
 		int state = 0;
-		while (state < 6) //reading... 
+		while (state < 5) //reading... 
 		{
 			std::getline(save, insert);
 			//if (insert.empty()){ scenario.mfile << '[' << scenario.sgoto << ']' << L"Error: the save contains an empty line or is empty" << std::endl; break; }
@@ -395,30 +395,38 @@ void Cmain::LoadSave()
 			int arglistx;
 			if (state == 0)
 			{
-				if (!scenario.stoicheck(insert, scenario.sgoto));// throw std::runtime_error("FATAL stoicheck failure(save loading, \"goto\" variable)");
-				scenario.cgoto = scenario.sgoto;
+				static sf::Uint8 t = 0;
+				switch (t)
+				{
+				case 0:
+					scenario.stoicheck(insert, scenario.sgoto);// throw std::runtime_error("FATAL stoicheck failure(save loading, \"goto\" variable)");
+					scenario.cgoto = scenario.sgoto;
+					break;
+				case 1:
+					scenario.stoicheck(insert, scenario.dgoto);
+					break;
+				case 2:
+					int variable = 0;
+					if (!scenario.stoicheck(insert, variable));// throw std::runtime_error("FATAL stoicheck failure(save loading, \"loadtextonly\" variable)");
+					scenario.loadtextonly = variable;
+					break;
+				}
+				++t;
 				continue;
 			}
-			else if (state == 1)
-			{
-				int variable = 0;
-				if (!scenario.stoicheck(insert, variable));// throw std::runtime_error("FATAL stoicheck failure(save loading, \"loadtextonly\" variable)");
-				scenario.loadtextonly = variable;
-				continue;
-			}
-			else if (state == 2){
+			else if (state == 1){
 				name = L"IntStatOpposite";
 				arglistx = 7;
 			}
-			else if (state == 3){
+			else if (state == 2){
 				name = L"IntStat";
 				arglistx = 5;
 			}
-			else if (state == 4){
+			else if (state == 3){
 				name = L"StringStat";
 				arglistx = 4;
 			}
-			else if (state == 5)
+			else if (state == 4)
 			{
 				name = L"Int";
 				arglistx = 3;
@@ -445,7 +453,7 @@ void Cmain::LoadSave()
 					++namelist;
 					break;
 				case 1:
-					if (state == 2) {
+					if (state == 1) {
 						names[1] = insert.substr(0, s_position);
 						++namelist;
 					}
@@ -462,7 +470,7 @@ void Cmain::LoadSave()
 				//if (insert.empty()) scenario.mfile << '[' << scenario.sgoto << ']' << L"Error: an/a \"" + name + L"\" with name \"" + names[0] + L"\" couldn't be loaded (last argument empty)" << std::endl/*L*/;
 				if (!insert.empty())
 				{
-					if (state == 2) names[namelist] = insert.substr(0, insert.size());
+					if (state == 1) names[namelist] = insert.substr(0, insert.size());
 					else//{
 						//if (!scenario.stoicheck(insert.substr(0, insert.size()), arguments[arglist - namelist])) scenario.mfile << L"[Stat]Error: An/a " + name + L" with name " + names[0] + L" failed its stoicheck on argument " << arglist - namelist;
 						scenario.stoicheck(insert.substr(0, insert.size()), arguments[arglist - namelist]);
@@ -471,10 +479,10 @@ void Cmain::LoadSave()
 					//if ((state == 1 || state == 2) && arguments[1] == arguments[2]) scenario.mfile << '[' << scenario.sgoto << ']' << L"Error: an/a \"" + name + L"\" with name \"" + names[0] + L"\" has same minimum value as maximum value - it hasn't any purpose(to hold values use Int)" << std::endl/*L*/;
 					//else if ((state == 1 || state == 2) && arguments[1] < arguments[2]) scenario.mfile << '[' << scenario.sgoto << ']' << L"Error: an/a \"" + name + L"\" with name \"" + names[0] + L"\" has higher minimum value than maximum value" << std::endl/*L*/;
 					//if () {
-						if (state == 2) scenario.io_stats.push_back(IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], names[1]));
-						else if (state == 3) scenario.i_stats.push_back(IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]));
-						else if (state == 4) scenario.s_stats.push_back(StringStat(names[0], names[1], arguments[0], arguments[1], arguments[2]));
-						else if (state == 5) scenario.Ints.push_back(Int(names[0], arguments[0], arguments[1], arguments[2]));
+						if (state == 1) scenario.io_stats.push_back(IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], names[1]));
+						else if (state == 2) scenario.i_stats.push_back(IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]));
+						else if (state == 3) scenario.s_stats.push_back(StringStat(names[0], names[1], arguments[0], arguments[1], arguments[2]));
+						else if (state == 4) scenario.Ints.push_back(Int(names[0], arguments[0], arguments[1], arguments[2]));
 						//scenario.mfile << '[' << scenario.sgoto << ']' << L"Could load an/a \"" + name + L"\" with name \"" + names[0] << '\"' << std::endl/*L*/;
 					//}
 				}

@@ -16,6 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <codecvt>
 #include <fstream>
 #include "Windows.h"
+
 class ScenarioParser													//Parses scenario file, inserting data into program
 {
 public:
@@ -23,7 +24,7 @@ public:
 	ScenarioParser();
 																		//Read from goto to end(next or end command)
 	void Parse();
-																		//Prevents crash and does std::stoi; if failure: return def
+																		//Prevents crash and does std::stoi; if failure: return def maybe just catch exception?
 	int stoicheck(std::string &checked, int def = 0);
 																		//Tells if std::stoi on &number was successfull
 	bool stoicheck(std::wstring &checked, int &number, int def = 0);
@@ -42,11 +43,13 @@ public:
 	int sw;																//Copy of w in Cmain, thought about pointer but it is read only, changes in Cmain::sSaveOptions
 	int sgoto = 0;														//Parse() starts of reading at this line
 	int cgoto = 0;														//Copy of sgoto, used when saving the game
+	int dgoto = 0;
 	int	choicesel = -1;													//Currently selected Choice
 	bool slideratv = false;												//Is slider active(rendered and able to be pushed)
 	bool pempty = false;												//If profiles are empty
 	bool sempty = false;												//If stories are empty
 	bool loadtextonly = false;											//Reload text, but do not execute commands
+	bool choiceneed = false;
 	//std::wofstream //mfile;											//Logging file
 	std::vector <sf::Text> additional;									//Vector of text that are displayed as current story
 	std::vector<Choice> choice;											//List of choice that are avaiable
@@ -66,7 +69,7 @@ private:
 	bool italic = false;												//Tells if next sf::Texts should be in italic font
 	bool formattype = false;
 																		//Sets the position where reading beggins
-	void GotoLine(std::wfstream& file, int &num);
+	void GotoLine(int num);
 																		//Finds a statistic and returns its value
 	bool statfind(std::wstring &name, int &val);
 																		//Makes text bold, soon italic too
@@ -74,7 +77,7 @@ private:
 																		//Executes various commands
 	void ExecuteCommand(std::wstring &insrtttt, int &sh, int &sw);
 																		//Splits text if it's 2 long
-	void SplitText(bool w);
+	void SplitText(bool w, std::wstring &insrt);
 																		//Splits text if it's 2 long(choice)
 	//void ChSplitText();
 																		//Checks if in the line is a comment

@@ -15,8 +15,8 @@ inline void Cmain::ssb()
 {
 	if (Contains(shwstats))
 	{
-		if (scenario.additional.empty() || scenario.sempty || scenario.pempty) return;
-		visible = false; gamestate = -1; button_3_text.setString("Back"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width + 60.f * w / 800.f), h - static_cast<int>(h / 600.f * 90.f)))); button_2_text.setString("No"); cview = round(window.getView().getCenter().y - h / 2.f * smax / static_cast<float>(scenario.the - h) + smaxup);
+		//if (scenario.additional.empty() || scenario.sempty || scenario.pempty) return;
+		visible = false; gamestate = -1; button_3_text.setString("Back"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width + 60.f * w / 800.f), h - static_cast<int>(h / 600.f * 90.f)))); button_2_text.setString("No");
 	}
 }
 void Cmain::MainEvent()
@@ -54,7 +54,7 @@ void Cmain::MainEvent()
 						disrandomnameLOL = true;
 					}
 					else {
-						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(h / 600.f * 35.f)))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(h / 600.f * 40.f)))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f)))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); sviewchange(cview);
+						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(h / 600.f * 35.f)))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(h / 600.f * 40.f)))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f)))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); sviewchange(lsetPos);
 					}
 				}
 				disbutton = false;
@@ -173,12 +173,12 @@ void Cmain::MainEvent()
 				if (scenario.slideratv)
 				{
 					if (gamestate == 1) {
-						lsetPos -= round(mainevent.mouseWheelScroll.delta * smax / scenario.st); //delta (1 or -1) is the move of slider
+						lsetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st); //delta (1 or -1) is the move of slider
 						sviewchange(lsetPos);
 					}
 					else if (gamestate == -1)
 					{
-						ssetPos -= round(mainevent.mouseWheelScroll.delta * smax / scenario.st);
+						ssetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st);
 						sviewchange(ssetPos);
 					}
 				}
@@ -279,7 +279,7 @@ void Cmain::onRelease()
 				button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(h / 600.f * 90.f))));
 				disbutton = false;
 				disrandomnameLOL = true;
-				sviewchange(cview);
+				sviewchange(lsetPos);
 			}
 		}
 		else if (Contains(button_3)) {
@@ -287,7 +287,7 @@ void Cmain::onRelease()
 			gamestate = 1;
 			button_3_text.setString("Save Options"); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width / 2.f), h - static_cast<int>(h / 600.f * 90.f))));
 			button_2_text.setString("Options"); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width / 2.f), h / 2 - static_cast<int>(h / 600.f * 40.f))));
-			sviewchange(cview);
+			sviewchange(lsetPos);
 		}
 		break;
 	case 0:
@@ -303,6 +303,15 @@ void Cmain::onRelease()
 		if (stigger) {
 			stigger = false;
 			slidersb = sliders.getGlobalBounds();
+		}
+		else if (Contains(scenario.next.getGlobalBounds()))
+		{
+			if (scenario.choiceneed == true && scenario.choicesel == -1) break;
+			sviewchange(0);
+			scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
+			scenario.choiceneed = scenario.loadtextonly = false;
+			if (scenario.choicesel != -1) scenario.dgoto = scenario.choice[scenario.choicesel].dgto;
+			scenario.Parse();
 		}
 		break;
 	case 2:
@@ -424,29 +433,17 @@ void Cmain::onClick()
 			smouseposy = mousepos.y - static_cast<int>(slidersb.top);
 			stigger = true;
 		}
-		{
-			int x = 0;
-			for (Choice &a : scenario.choice) {
-				if (a.avaible) {
-					if (Contains(a.c.getGlobalBounds()))
-					{
-						for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
-						a.cs.setFillColor(textchoicefillcolor);
-						scenario.choicesel = x;
-						break;
-					}
-					else if (Contains(a.cs.getGlobalBounds()))
-					{
-						for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
-						a.cs.setFillColor(textchoicefillcolor);
-						scenario.choicesel = x;
-						break;
-					}
+			ssb();
+			for (unsigned int x = 0; x < scenario.choice.size(); ++x) {
+				if (Contains(scenario.choice[x].c.getGlobalBounds()) || Contains(scenario.choice[x].cs.getGlobalBounds()))
+				{
+					if (!scenario.choice[x].avaible) break;
+					for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
+					scenario.choice[x].cs.setFillColor(textchoicefillcolor);
+					scenario.choicesel = x;
+					break;
 				}
-				x++;
 			}
-		}
-		ssb();
 		break;
 	case 3:
 		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }
