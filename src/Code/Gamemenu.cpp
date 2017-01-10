@@ -116,7 +116,7 @@ void Cmain::MainEvent()
 					if (selectionp > 0)
 					{
 						selectionp -= 1;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						pcheck = true;
 					}
 				}
@@ -130,7 +130,7 @@ void Cmain::MainEvent()
 					if (selections > 0)
 					{
 						selections -= 1;
-						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						scheck = true;
 					}
 				}
@@ -147,7 +147,7 @@ void Cmain::MainEvent()
 					if (selectionp < profiles.size() - 1U)
 					{
 						selectionp += 1;
-						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						pcheck = true;
 					}
 				}
@@ -161,7 +161,7 @@ void Cmain::MainEvent()
 					if (selections < stories.size() - 1U)
 					{
 						selections += 1;
-						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty)  scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						scheck = true;
 					}
 				}
@@ -190,7 +190,7 @@ void Cmain::MainEvent()
 				else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
 				if (selectionp < 0) selectionp = 0;
 				else if (selectionp >= profiles.size()) selectionp = profiles.size() - 1; 
-				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				pcheck = true;
 				LoadSave();
 			}
@@ -202,9 +202,9 @@ void Cmain::MainEvent()
 				else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 				if (selections < 0) selections = 0;
 				else if (selections >= stories.size()) selections = stories.size() - 1;
-				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				scheck = true;
-				scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+				scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 				LoadSave();
 			}
 		break;
@@ -486,7 +486,7 @@ void Cmain::onClick()
 					arrowedp -= 1;
 				if (selectionp > 0) {
 					selectionp -= 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				pcheck = true;
 				LoadSave();
@@ -495,7 +495,7 @@ void Cmain::onClick()
 				for (unsigned int repeated = 0U, size = profiles.size(); repeated < menucapacity && repeated < size; ++repeated) {
 					if (Contains(profiles[arrowedp + repeated].getGlobalBounds()) && selectionp != repeated) {
 						selectionp = arrowedp + repeated;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						arrowedp += repeated - menucapacity / 2U;
 						if (arrowedp < 0) arrowedp = 0;
 						else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
@@ -513,10 +513,10 @@ void Cmain::onClick()
 					arroweds += 1;
 				if (selections < stories.size() - 1U) {
 					selections += 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				scheck = true;
-				scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+				scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 				LoadSave();
 			}
 			else if (Contains(arrowup_b)) {
@@ -524,22 +524,22 @@ void Cmain::onClick()
 					arroweds -= 1;
 				if (selections > 0) {
 					selections -= 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				scheck = true;
-				scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+				scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 				LoadSave();
 			}
 			else {
 				for (unsigned int repeated = 0U, size = stories.size(); repeated < menucapacity && repeated < size; ++repeated) {
 					if (Contains(stories[arroweds + repeated].getGlobalBounds()) && selections != repeated) {
 						selections = arroweds + repeated;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						arroweds += repeated - menucapacity / 2U;
 						if (arroweds < 0) arroweds = 0;
 						else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 						scheck = true;
-						scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+						scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 						LoadSave();
 					}
 				}

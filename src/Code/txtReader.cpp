@@ -18,7 +18,7 @@ constexpr wchar_t* const empty = L"`"; //Add an option to change it, for user pr
 
 ScenarioParser::ScenarioParser()
 {
-	//mfile.open("bin/Logs/log.txt", std::ios::trunc);
+	//mfile.open("../../bin/Logs/log.txt", std::ios::trunc);
 	//mfile.imbue(utf8_locale);
 	insr.reserve(2000);
 }
@@ -202,7 +202,15 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt, int &sw, int &sh)
 		if (stoicheck(insrtttt.substr(6, insrtttt.size() - 1), line)) GotoLine(line);
 		else throw std::runtime_error("Goto command failure! Check if you didn't use a letter or if you put too many non-digit characters");
 	}
-	else if (insrtttt == L"#showstats") 	
+	else if (insrtttt.substr(0, 5) == L"#set(")
+	{
+		size_t n;
+		if ((n = std::count(insrtttt.begin(), insrtttt.end(), L',')) == std::wstring::npos) return;
+		int arg[3];
+
+
+	}
+	else if (insrtttt == L"#showstats") //it will be changed so stats will appear
 	{
 
 	}

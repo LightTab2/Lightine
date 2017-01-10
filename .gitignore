@@ -37,4 +37,4 @@
 *.iobj
 *.exp
 *.vcxproj.user
-
+*.log
