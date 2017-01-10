@@ -38,3 +38,5 @@
 *.exp
 *.vcxproj.user
 *.log
+*.idb
+*.ilk

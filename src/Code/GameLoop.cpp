@@ -212,10 +212,10 @@ void Cmain::GameMenu()
 
 void Cmain::DeleteStory()
 {
-	std::ofstream sfile("bin/Stories.txt", std::ios::out | std::ios::trunc);
+	std::ofstream sfile("../../bin/Stories.txt", std::ios::out | std::ios::trunc);
 	for (unsigned int s = 0U, size = profiles.size(); s < size; ++s)
 	{
-		remove(std::string("bin/Saves/" + profiles[s].getString().toAnsiString() + "_" + stories[selections].getString().toAnsiString() + ".txt").c_str());
+		remove(std::string("../../bin/Saves/" + profiles[s].getString().toAnsiString() + "_" + stories[selections].getString().toAnsiString() + ".txt").c_str());
 	}
 	stories.erase(stories.begin() + selections);
 	arroweds -= 1;
@@ -232,18 +232,18 @@ void Cmain::DeleteStory()
 	k_delete = false;
 	if (profiles.empty()) scenario.pempty = true;
 	else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-	if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+	if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 	else scenario.pempty = scenario.sempty = false;
-	scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 	LoadSave();
 }
 
 void Cmain::DeleteProfile()
 {
-	std::ofstream pfile("bin/Profiles.txt", std::ios::out | std::ios::trunc);
+	std::ofstream pfile("../../bin/Profiles.txt", std::ios::out | std::ios::trunc);
 	for (unsigned int s = 0U, size = stories.size(); s < size; ++s)
 	{
-		remove(std::string("bin/Saves/" + profiles[selectionp].getString().toAnsiString() + "_" + stories[s].getString().toAnsiString() + ".txt").c_str());
+		remove(std::string("../../bin/Saves/" + profiles[selectionp].getString().toAnsiString() + "_" + stories[s].getString().toAnsiString() + ".txt").c_str());
 	}
 	profiles.erase(profiles.begin() + selectionp);
 	arrowedp -= 1;
@@ -373,7 +373,7 @@ void Cmain::LoadSave()
 	v_posi.clear();
 	if (selectionp >= profiles.size()) return;
 	else if (selections >= stories.size()) return;
-	begin: std::wfstream save(L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
+	begin: std::wfstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
 	if (save)
 	{
 		std::wstring insert;
@@ -496,7 +496,7 @@ void Cmain::LoadSave()
 	}
 	else //throw std::runtime_error('[' + scenario.sgoto + ']'+ "FATAL Error: Couldn't open save [while loading](unaccessible file or invalid path)");
 	{
-		std::wofstream save(L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
+		std::wofstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
 		goto begin;
 	}
 }
