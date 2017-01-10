@@ -17,27 +17,27 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 unsigned int priorlimit = 5;
 Cmain::Cmain()
 {
-	CreateDirectory(L"bin", NULL);
-	CreateDirectory(L"bin/Fonts", NULL);
-	CreateDirectory(L"bin/Images", NULL);
-	CreateDirectory(L"bin/Logs", NULL);
-	CreateDirectory(L"bin/Saves", NULL);
-	CreateDirectory(L"bin/Scripts", NULL);
+	CreateDirectory(L"../../bin", NULL);
+	CreateDirectory(L"../../bin/Fonts", NULL);
+	CreateDirectory(L"../../bin/Images", NULL);
+	CreateDirectory(L"../../bin/Logs", NULL);
+	CreateDirectory(L"../../bin/Saves", NULL);
+	CreateDirectory(L"../../bin/Scripts", NULL);
 		LoadOptions(); //reading from ini
-		Background_texture.loadFromFile("bin/Images/gradient.png");
-		michaupase³ke³_t.loadFromFile("bin/Images/margin.png");
-		scenario.next_t.loadFromFile("bin/Images/Next.png");
-		font.loadFromFile("bin/Fonts/Fontformenu.ttf");
-		font2.loadFromFile("bin/Fonts/Fontforgametext.ttf");
-		slider.loadFromFile("bin/Images/Slider.png");
-		bar.loadFromFile("bin/Images/Bar.png");
-		arrowup_t.loadFromFile("bin/Images/ArrowUP.png");
-		arrowdn_t.loadFromFile("bin/Images/Arrow.png");
-		reset_t.loadFromFile("bin/Images/Reset.png");
+		Background_texture.loadFromFile("../../bin/Images/gradient.png");
+		michaupase³ke³_t.loadFromFile("../../bin/Images/margin.png");
+		scenario.next_t.loadFromFile("../../bin/Images/Next.png");
+		font.loadFromFile("../../bin/Fonts/Fontformenu.ttf");
+		font2.loadFromFile("../../bin/Fonts/Fontforgametext.ttf");
+		slider.loadFromFile("../../bin/Images/Slider.png");
+		bar.loadFromFile("../../bin/Images/Bar.png");
+		arrowup_t.loadFromFile("../../bin/Images/ArrowUP.png");
+		arrowdn_t.loadFromFile("../../bin/Images/Arrow.png");
+		reset_t.loadFromFile("../../bin/Images/Reset.png");
 		//textures loaded
 		f14_text.setString("Press Alt + F4 to quit");
 		enternewerror_t.setString("Error: There's already an object with the same name");
-		shwstats_t.loadFromFile("bin/Images/Show.png");
+		shwstats_t.loadFromFile("../../bin/Images/Show.png");
 		button_1_text.setString("Lightine");
 		button_2_text.setString("Options");
 		button_3_text.setString("Save Options");
@@ -208,7 +208,7 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	scenario.th = static_cast<int>(scenario.tekst.getGlobalBounds().height) * 1.15f;
 	getSaveData();
 	//else scenario.mfile << "Error: there are no stories accessible (add some in game's menu)" << std::endl;
-	scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 	LoadSave();
 	resbutton1_focus = resbutton2_focus = clicked = resetsb = false;
 	pcheck = scheck = true;
@@ -280,7 +280,7 @@ void Cmain::Intro()
 	general.setPosition(round(w * 0.005f), static_cast<float>(ghe)); //ignore warn
 	cprght.push_back(general);
 	ghe += 4 * gh;
-	sf::Texture sfml; sfml.loadFromFile("bin/Images/sfml-logo-big.png");
+	sf::Texture sfml; sfml.loadFromFile("../../bin/Images/sfml-logo-big.png");
 	sf::Sprite sfml_s; sfml_s.setTexture(sfml); sfml_s.setScale((h+w)/5600.f, (h + w)/5600.f);
 	sfml_s.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 	sfml_s.setColor(sf::Color(sf::Uint8(0), sf::Uint8(0), sf::Uint8(0), sf::Uint8(0)));
@@ -291,7 +291,7 @@ void Cmain::Intro()
 	cprght.push_back(general);
 	ghe += gh;
 	int check2 = w * 0.975f;
-	std::wifstream credits(L"bin/Credits.txt");
+	std::wifstream credits(L"../../bin/Credits.txt");
 	while (std::getline(credits, str))
 	{
 		general.setPosition(round(w * 0.005f), static_cast<float>(ghe));
@@ -341,7 +341,7 @@ void Cmain::Intro()
 void Cmain::getSaveData()
 {
 	std::ifstream file;
-	file.open("bin/Stories.txt");
+	file.open("../../bin/Stories.txt");
 	std::string insert; //Buffer for reading profiles
 	sf::Text insert_text = newname;	
 	insert_text.setFillColor(menustoriescolor);
@@ -361,7 +361,7 @@ void Cmain::getSaveData()
 	if (selections >= stories.size()) selections = stories.size() - 1;
 	insert_text.setFillColor(menuprofilescolor);
 	file.close();
-	file.open("bin/Profiles.txt");
+	file.open("../../bin/Profiles.txt");
 	for (;;)
 	{
 		if (!std::getline(file, insert)) break;
@@ -371,7 +371,7 @@ void Cmain::getSaveData()
 	if (selectionp >= profiles.size()) selectionp = profiles.size() - 1;
 	if (profiles.empty()) scenario.pempty = true;
 	else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-	else scenario.savefile = L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+	else scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 
 	insert_text.setString("1234567890GgpPqQyYWwMmxXzZAaBb");
 	int th = insert_text.getGlobalBounds().height * 1.15f;
@@ -452,7 +452,7 @@ void Cmain::CreateNew()
 	{
 		if (gwhich)
 		{
-			std::ofstream sfile("bin/Stories.txt", std::ios::trunc);
+			std::ofstream sfile("../../bin/Stories.txt", std::ios::trunc);
 			std::string oldname;
 			for (auto &s : stories)
 			{
@@ -471,7 +471,7 @@ void Cmain::CreateNew()
 			newname.setString("");
 			for (auto &s : profiles)
 			{
-				std::ofstream file("bin/Saves/" + s.getString().toAnsiString() + "_" + stories.back().getString().toAnsiString() + ".txt");
+				std::ofstream file("../../bin/Saves/" + s.getString().toAnsiString() + "_" + stories.back().getString().toAnsiString() + ".txt");
 			}
 			if (stories.size() > menucapacity) {
 				arroweds += 1;
@@ -482,7 +482,7 @@ void Cmain::CreateNew()
 		}
 		else
 		{
-			std::ofstream pfile("bin/Profiles.txt", std::ios::trunc);
+			std::ofstream pfile("../../bin/Profiles.txt", std::ios::trunc);
 			std::string oldname;
 			for (auto &p : profiles) //checking if there's already a profile with the same name
 			{
@@ -501,7 +501,7 @@ void Cmain::CreateNew()
 			newname.setString("");
 			for (auto &s : stories)
 			{
-				std::ofstream file("bin/Saves/" + profiles.back().getString().toAnsiString() + "_" + s.getString().toAnsiString() + ".txt");
+				std::ofstream file("../../bin/Saves/" + profiles.back().getString().toAnsiString() + "_" + s.getString().toAnsiString() + ".txt");
 			}
 			if (profiles.size() > menucapacity) {
 				arrowedp += 1;
@@ -515,7 +515,7 @@ void Cmain::CreateNew()
 		else
 		{
 			scenario.pempty = scenario.sempty = false;
-			scenario.path = "bin/Scripts/" + stories[selections].getString() + ".txt";
+			scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 			LoadSave();
 		}
 	}
@@ -523,7 +523,7 @@ void Cmain::CreateNew()
 
 void Cmain::LoadOptions()
 {
-	std::ifstream reader("bin/Options.ini");
+	std::ifstream reader("../../bin/Options.ini");
 	std::string buffer;
 
 	std::getline(reader, buffer);
@@ -887,7 +887,7 @@ void Cmain::LoadOptions()
 
 void Cmain::SaveToFile()
 {
-	std::ofstream myfile("bin/Options.ini", std::ios::trunc);
+	std::ofstream myfile("../../bin/Options.ini", std::ios::trunc);
 	myfile << "fullscreen = " << fullscreen
 		<< "\nwidth = " << fullone
 		<< "\nheight = " << fulltwo

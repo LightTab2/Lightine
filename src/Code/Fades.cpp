@@ -21,7 +21,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	scenario.the = h / 12;
 
 	scenario.cgoto = scenario.sgoto = 0;
-	std::wofstream save(L"bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt", std::ios::trunc);
+	std::wofstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt", std::ios::trunc);
 	scenario.loadtextonly = false;
 	LoadSave();
 	resetsb = false;
