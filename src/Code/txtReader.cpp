@@ -207,8 +207,6 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt, int &sw, int &sh)
 		size_t n;
 		if ((n = std::count(insrtttt.begin(), insrtttt.end(), L',')) == std::wstring::npos) return;
 		int arg[3];
-
-
 	}
 	else if (insrtttt == L"#showstats") //it will be changed so stats will appear
 	{
@@ -460,21 +458,21 @@ void ScenarioParser::RoundRect()
 	{
 		X += add;
 		Y = sqrt(radius * radius - X*X);
-		rrect.setPoint(i, sf::Vector2f(rectWidth + X - radius, radius - Y)); //prawa . || góra v.
+		rrect.setPoint(i, sf::Vector2f(rectWidth + X - radius, radius - Y)); //prawa . || gÃ³ra v.
 	}
 	Y = 0;
 	for (i = 0U; i<15U; i++)
 	{
 		Y += add;
 		X = sqrt(radius * radius - Y*Y);
-		rrect.setPoint(15 + i,	sf::Vector2f(rectWidth + X - radius, rectHeight - radius + Y)); //prawa <-. || dó³ v
+		rrect.setPoint(15 + i,	sf::Vector2f(rectWidth + X - radius, rectHeight - radius + Y)); //prawa <-. || dÃ³Â³ v
 	}
 	X = 0;
 	for (i = 0U; i<15U; i++)
 	{
 		X += add;
 		Y = sqrt(radius * radius - X*X);
-		rrect.setPoint(30 + i, sf::Vector2f(radius - X, rectHeight - radius + Y)); //lewa <- || dó³ ^.
+		rrect.setPoint(30 + i, sf::Vector2f(radius - X, rectHeight - radius + Y)); //lewa <- || dÃ³Â³ ^.
 	}
 	Y = 0;
 	for (i = 0U; i<15U; i++)
