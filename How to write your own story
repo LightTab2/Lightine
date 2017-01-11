@@ -25,7 +25,8 @@ parameters: //here you use one or more of these parameters below[order isn't imp
 #if(name<value) //choice is only avaible when all conditions in "#if" are met
 #if(name>=value) //choice is only avaible when all conditions in "#if" are met
 #if(name<=value) //choice is only avaible when all conditions in "#if" are met
-#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name==value) //choice is only avaible when all conditions in "#if" are met
+#if(name!=value) //choice is only avaible when all conditions in "#if" are met
 //these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
 #hidden no/yes //default:no; if yes - it will hide choice when unavaible
 
