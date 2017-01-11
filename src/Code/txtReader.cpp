@@ -208,7 +208,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt, int &sw, int &sh)
 		if ((n = std::count(insrtttt.begin(), insrtttt.end(), L',')) == std::wstring::npos) return;
 		int arg[3];
 
-
+		ddd
 	}
 	else if (insrtttt == L"#showstats") //it will be changed so stats will appear
 	{
