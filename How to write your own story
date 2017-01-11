@@ -41,6 +41,7 @@ parameters: //here you use one or more of these parameters below[order isn't imp
 Almost done:
 #set(name, value, changemaxvalue[optional], changeminvalue[optional] ) //changes Stat with given name
 #hide(name) //makes hidden Stat visible, visible becomes hidden
+#priorlimit(number) //hardly connected with Stats, info and mechanism reveal soon
 
 Planned commands (I'll add more later):
 #file(filename) //switches to another file, was already done, but rewrite needs to design it again (very simple)
