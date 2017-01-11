@@ -22,11 +22,12 @@ story //if you choose this choice you'll be directed inside this block
 }
 parameters: //here you use one or more of these parameters below[order isn't important]
 #if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name<value) //choice is only avaible when all conditions in "#if" are met
+#if(name>=value) //choice is only avaible when all conditions in "#if" are met
+#if(name<=value) //choice is only avaible when all conditions in "#if" are met
 #if(name>value) //choice is only avaible when all conditions in "#if" are met
-#if(name>value) //choice is only avaible when all conditions in "#if" are met
-#if(name>value) //choice is only avaible when all conditions in "#if" are met
-#if(name>value) //choice is only avaible when all conditions in "#if" are met
-#hidden no/yes //default:no if yes - it will hide choice when unavaible
+//these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
+#hidden no/yes //default:no; if yes - it will hide choice when unavaible
 
 #next //displays next button that allows to choose one of choices(if exist) and continue game
 #end //end the story, statistics will be displayed (not currently developed)
