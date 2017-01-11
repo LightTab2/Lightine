@@ -1,2 +1,45 @@
-Rules might change in future and because of this I won't upload rules that can vary in next days/weeks.
-Once engine sets its playable state I will describe all of the commands available and even planned ones.
+You can use not visible comments by writing "//" (customizable later)
+You can change text splitting format by writing `/` (customizable later) in one line, by default format style is following:
+text is merged until a command or empty line is found(if you want a mergable empty line leave it with "`" [customizable later])
+example:
+This is a story about wolf.
+It began in a long forgotten forest.
+
+The wolf was hungry.
+--------------------
+would look like:
+This is a story about wolf. It began in a long forgotten forest. //this line could be splitted if it doesnt fit on the screen
+
+The wolf was hungry.
+---------------------
+Second formating mode checks only if a line is too long and eventually splits it, that means lines aren't merged (high resolution monitors will have less text to show and it might be annoying for someone)
+
+Current commands:
+#choice
+name //can be on many lines
+{
+story //if you choose this choice you'll be directed inside this block
+}
+parameters: //here you use one or more of these parameters below[order isn't important]
+#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#if(name>value) //choice is only avaible when all conditions in "#if" are met
+#hidden no/yes //default:no if yes - it will hide choice when unavaible
+
+#next //displays next button that allows to choose one of choices(if exist) and continue game
+#end //end the story, statistics will be displayed (not currently developed)
+#goto(line) //moves game to given line in textfile
+#IntStatOpposite //info and params later
+#IntStat //info and params later
+#StringStat //info and params later
+#Int //info and params later
+
+Almost done:
+#set(name, value, changemaxvalue[optional], changeminvalue[optional] ) //changes Stat with given name
+#hide(name) //makes hidden Stat visible, visible becomes hidden
+
+Planned commands (I'll add more later):
+#file(filename) //switches to another file, was already done, but rewrite needs to design it again (very simple)
+#showstats //displays all stats on the screen
