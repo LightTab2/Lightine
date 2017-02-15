@@ -10,30 +10,48 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "Cmain.h"
-sf::Color color1(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(0));
-sf::Color color67(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(0));
-sf::Color colorminus1(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(0));
+sf::Color color1(255, 255, 255, 0);
+sf::Color color67(255, 255, 255, 0);
+sf::Color colorminus1(255, 255, 255, 0);
 
 void Cmain::Reset() //this function is here, because it needs to change colorminus1
 {
-	scenario.additional.clear();
+	scenario.text.setString(L"");
 	scenario.choice.clear();
-	scenario.the = h / 12;
 
-	scenario.cgoto = scenario.sgoto = 0;
+	scenario.scgoto = scenario.cgoto = scenario.sgoto = scenario.dgoto = 0;
 	std::wofstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt", std::ios::trunc);
 	scenario.loadtextonly = false;
 	LoadSave();
 	resetsb = false;
 	scenario.choicesel = -1;
 	colorminus1.a = 0;
-	statcolor.a = colorminus1.a;
 	resets.setColor(colorminus1);
-	for (auto &v : v_pos) v.setColor(statcolor);
-	for (auto &s : s_pos) s.setFillColor(colorminus1);
+	sf::Color c = textcolor;
+	c.a = colorminus1.a;
+	scenario.statcolor.a = colorminus1.a;
+	for (auto &i : scenario.i_stats)
+	{
+		i.t.setFillColor(scenario.statcolor);
+		i.s.setColor(colorminus1);
+	}
+	for (auto &o : scenario.io_stats)
+	{
+		for (auto &t : o.t) t.setFillColor(scenario.statcolor);
+		o.s.setColor(colorminus1);
+	}
+	for (auto &i : scenario.Ints)
+	{
+		i.t.setFillColor(c);
+	}
+	for (auto &s : scenario.s_stats)
+	{
+		s.t.setFillColor(c);
+	}
+	//could've done at manageminus1: if (colorminus1.a != 0) Drawminus1(); But performance...
 }
 
-inline void Cmain::Manage67(bool add) //this code could've been better in aspect of transparency, but performance is the prior here
+inline void Cmain::Manage67(const bool add) //this code could've been better in aspect of transparency, but performance is the prior here
 {
 	if (add)
 	{
@@ -56,7 +74,7 @@ inline void Cmain::Manage67(bool add) //this code could've been better in aspect
 	if (gwhich)
 	{
 		menustoriescolor.a = menustoriesselectcolor.a = color67.a;
-		for (unsigned int index = 0U, size = stories.size(); index < size; ++index) {
+		for (size_t index = 0U ; index != stories.size(); ++index) {
 			if (selections == index) stories[index].setFillColor(menustoriesselectcolor);
 			else stories[index].setFillColor(menustoriescolor);
 		}
@@ -64,18 +82,18 @@ inline void Cmain::Manage67(bool add) //this code could've been better in aspect
 	else
 	{
 		menuprofilescolor.a = menuprofilesselectcolor.a = color67.a;
-		for (unsigned int index = 0U, size = profiles.size(); index < size; ++index) {
+		for (size_t index = 0U; index != profiles.size(); ++index) {
 			if (selectionp == index) profiles[index].setFillColor(menuprofilesselectcolor);
 			else profiles[index].setFillColor(menuprofilescolor);
 		}
 	}
 	profilesmenu.setOutlineColor(menuprofilesmenuoutlinecolor);
 	profilesmenu.setFillColor(menuprofilesmenufillcolor);
-	arrowdn.setColor(sf::Color(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(color67.a * (arrowed_dn ? 0.35 : 1))));
-	arrowup.setColor(sf::Color(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(color67.a * (arrowed_up ? 0.35 : 1))));
+	arrowdn.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(color67.a * (arrowed_dn ? 0.35 : 1))));
+	arrowup.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(color67.a * (arrowed_up ? 0.35 : 1))));
 }
 
-inline void Cmain::Manage1(bool add)
+inline void Cmain::Manage1(const bool add)
 {
 	if (add)
 	{
@@ -97,7 +115,7 @@ inline void Cmain::Manage1(bool add)
 	showstats.setColor(color1);
 	sliders.setColor(color1);
 	bars.setColor(color1);
-	for (unsigned int index = 0U, size = scenario.choice.size(); index < size; ++index)
+	for (size_t index = 0U; index != scenario.choice.size(); ++index)
 	{
 		Choice &c = scenario.choice[index];
 		if (!c.avaible && c.hidden) continue;
@@ -106,26 +124,20 @@ inline void Cmain::Manage1(bool add)
 			if (index == scenario.choicesel) c.cs.setFillColor(textchoicefillcolor);
 			c.cs.setOutlineColor(textchoicecolor);
 			c.c.setOutlineColor(textchoicecolor);
-			for (sf::Text &t : c.text)
-			{
-				t.setFillColor(textchoicecolor);
-			}
+			c.text.setFillColor(textchoicecolor);
 		}
 		else
 		{
 			c.cs.setOutlineColor(textchoiceunavaiblecolor);
 			c.c.setOutlineColor(textchoiceunavaiblecolor);
-			for (sf::Text &t : c.text)
-			{
-				t.setFillColor(textchoiceunavaiblecolor);
-			}
+			c.text.setFillColor(textchoiceunavaiblecolor);
 		}
 	}
 	scenario.next.setColor(color1);
-	for (auto &a : scenario.additional) a.setFillColor(textcolor);
+	scenario.text.setFillColor(textcolor);
 }
 
-inline void Cmain::Manageminus1(bool add)
+inline void Cmain::Manageminus1(const bool add)
 {
 	if (add)
 	{
@@ -145,10 +157,32 @@ inline void Cmain::Manageminus1(bool add)
 		else
 			colorminus1.a -= 2;
 	}
-	statcolor.a = colorminus1.a;
 	resets.setColor(colorminus1);
-	for (auto &v : v_pos) v.setColor(statcolor);
-	for (auto &s : s_pos) s.setFillColor(colorminus1);
+	sf::Color c = textcolor;
+	c.a = colorminus1.a;
+	scenario.statcolor.a = colorminus1.a;
+	for (auto &i : scenario.i_stats)
+	{
+		if (i.hidden) continue;
+		i.t.setFillColor(scenario.statcolor);
+		i.s.setColor(colorminus1);
+	}
+	for (auto &o : scenario.io_stats)
+	{
+		if (o.hidden) continue;
+		for (auto &t : o.t) t.setFillColor(scenario.statcolor);
+		o.s.setColor(colorminus1);
+	}
+	for (auto &i : scenario.Ints)
+	{
+		if (i.hidden) continue;
+		i.t.setFillColor(c);
+	}
+	for (auto &s : scenario.s_stats)
+	{
+		if (s.hidden) continue;
+		s.t.setFillColor(c);
+	}
 }
 
 inline void Cmain::Draw67()
@@ -156,12 +190,12 @@ inline void Cmain::Draw67()
 	if (k_delete || enternew) return;
 	if (gwhich)
 	{
-		for (unsigned int x = 0, size = stories.size(); x < size && x < menucapacity; x++)
+		for (size_t x = 0; x != stories.size() && x != menucapacity; x++)
 			window.draw(stories[arroweds + x]);
 	}
 	else
 	{
-		for (unsigned int x = 0, size = profiles.size(); x < size && x < menucapacity; x++)
+		for (size_t x = 0; x != profiles.size() && x != menucapacity; x++)
 			window.draw(profiles[arrowedp + x]);
 	}
 	window.draw(arrowdn);
@@ -171,12 +205,11 @@ inline void Cmain::Draw67()
 
 inline void Cmain::Draw1()
 {
-	for (auto &s : scenario.additional)
-		window.draw(s);
+	window.draw(scenario.text);
 	for (const auto &c : scenario.choice)
 	{
 		if (!c.avaible && c.hidden) continue;
-		for (auto &t : c.text) window.draw(t);
+		window.draw(c.text);
 		window.draw(c.c);
 		window.draw(c.cs);
 	}
@@ -195,10 +228,31 @@ inline void Cmain::Drawminus1()
 	{
 		window.draw(button_2_text);
 		window.draw(button_3_text);
+		window.draw(ctext);
 		return;
 	}
-	for (auto &v : v_pos) window.draw(v);
-	for (auto &s : s_pos) window.draw(s);
+	for (auto &i : scenario.i_stats)
+	{
+		if (i.hidden) continue;
+		window.draw(i.s);
+		window.draw(i.t);
+	}
+	for (auto &o : scenario.io_stats)
+	{
+		if (o.hidden) continue;
+		window.draw(o.s);
+		for (auto &t : o.t) window.draw(t);
+	}
+	for (auto &i : scenario.Ints)
+	{
+		if (i.hidden) continue;
+		window.draw(i.t);
+	}
+	for (auto &s : scenario.s_stats)
+	{
+		if (s.hidden) continue;
+		window.draw(s.t);
+	}
 	window.draw(resets);
 }
 

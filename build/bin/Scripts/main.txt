@@ -1,42 +1,116 @@
-﻿RWLRWLRWLRWL!
-#IntStat(Weałth,130,210,0,0,0)
-Murloc.
-	Gress[B]BUZ[/B][B]xpsd[/B]
-		Green.
-			Water.
-		Green.
-	Green.
-//no comment
-gdsssssssssssssssssssssssssss gsdfdfguiii jkdzsfkkkkkkkkkk izxivizx      llllllllllllsgsdj dzfzjjjjjjjjjjjjjj warasd fffffffffffghgs sadasdas xzczxcvzxc gdsssssssssssssssssssssssssss gdsssssssssssssssssssssssssss gdsssssssssssssssssssssssssss
-gdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssssgdsssssssssssssssssssssssssss
+﻿#StringStat(Tytuł,"nieznany",0,0,0)
+#Int(Kasa,90,0,0)
+#IntStat(Respekt Ulicy,0,100,-100,0,0)
+#IntStatOpposite(Lewość,10,30,-10,10,0,0,Prawość)
+#Int(1,0,1,0)
+	Budzisz się w lesie, a w głowie Ci wiruje, jakby latało w niej rumuńskie tornado.
+W tym lesie znajduje się stacja kolejowa!
+Myślisz sobie:
+
+-Kto buduje stacje kolejowe w lesie!?
+
+	Okazuję się, że nikt jej nie zbudował.
+//#if(1==0) {Spotykasz tam szamana.}
+Jakiś koleś ubrany jak hipis patrzy się na Ciebie. Obstawiasz, że to szaman.
+//#if(1==1) {Szaman nadal czeka, jakby na zbawienie}//algorytm zostanie polepszony
+`
+			Co robisz?
 #choice
-heh
-
-hehe
-
-hieh
-#if(Weałth<140)
+#if(1==0)
 #hidden yes
+Podejdź do stacji kolejowej
 {
+	W stacji znajduje się parę monet.
+`
+#Set(Kasa,+=10)
++10 Kasa//algorytm wyświetlania statystyk zostanie polepszony
+#next
+#Set(1,1)
+#goto(14)
+}
+
+#choice
+Obraź szamana
+{
+#goto(69)
+}
+
+#choice
+Powitaj szamana
+{
+-Hej, sr...?
+
+-Yo, ty wiesz mam sprawę. Wróżę przyszłość i wiem, że za chwilę przylecą tutaj terroryści, a mi braknie parę monet, by się uratować.
+
+Jeżeli zapłacisz mi 13 monet to wywróżę Twoją przyszłość. Tak w ogóle mam na imię Andrzej. Andrzej nie kłamie, hehe.
+#choice
+Zgódź się
+	{
+	Szaman odpowiada:
+
+-Za chwilę zabraknie Ci parę monet by uratować sobie życie, hehehieh!
+
+#Set(Lewość,+=5)
+#Set(Kasa,-=13)
+I... znika!
+#next
+Zostałeś sam.
+#goto(70)
+	}
+
+#choice
+Odmów
+	{
+#goto(69)
+	}
 #next
 }
+#next
+Szaman się oburzył i sobie poszedł.
 #choice
-WHRUASHVZPaul
-#if(Weałth>=120)
-#hidden yes
-{
-ąć ąć żą żą
-sdad
-}
-#choice
-gosh
-rosh
-#if(Weałth>120)
+#if(1!=2)
 #hidden no
+Przeszukaj okoliczny teren.
 {
-works?
-//#goto(0)
+	Nie masz dostępu do żywności i wody pitnej, na dodatek najbliższe miasto jest ponad 400 km drogi stąd.
+#Set(1,2)
+#goto(70)
+}
+
+#choice
+Zadźwoń po Pomoc
+{
+	Okazuję się, że samolot, który miał Cię ratować (tak, tutaj jest lądowisko w pobliżu) został porwany, a Ty znajdując się na jego pokładzie za chwile zginiesz, rozbijając się zapewne o jakiś wysoki budynek.
+#choice
+Zaproponuj dołączenie do grupy terrorystycznej
+	{
+	Musiałeś trochę poczekać, bo terroryści byli zajęci wyrzucaniem jakiegoś hipisa z samolotu, jednak Twoja propozycja spotkała się z aprobatą!
+`
+	Otrzymujesz krótkie szkolenie i rozbijasz się (o dziwo) o jakiś wieżowiec, ale za to giniesz jako terrorysta!
+#end
+	}
+
+#choice
+#if(Kasa>=100)
+Spróbuj ich przekupić
+	{
+	Terroryści zgodzili się Cię uwolnić, ale jeśli chcesz spadochron to musisz im zapłacić 100 monet.
+
+#Set(Kasa,-=100)
+`
+`
+`
+`
+`
+`
+`
+`
+`
+	Udaje Ci się wylądować, opowiedziałeś swoją historię w "Rozmowach w toku", poczym zostałeś sławnym specem od szamanów.
+`
+Nie no, ale było blisko.
+#end
+	}
+#next
 }
 #next
-Hey Awesome it works.
-#end

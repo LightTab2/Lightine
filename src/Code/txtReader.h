@@ -13,45 +13,42 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "Stat.h"
 #include "CustImg.h"
 #include "Choice.h"
-#include <codecvt>
 #include <fstream>
-#include "Windows.h"
 
 class ScenarioParser													//Parses scenario file, inserting data into program
 {
-public:
-																		//The constructor
-	ScenarioParser();
-																		//Read from goto to end(next or end command)
+public:																	//Read from goto to end(next or end command)
 	void Parse();
-																		//Prevents crash and does std::stoi; if failure: return def maybe just catch exception?
-	int stoicheck(std::string &checked, int def = 0);
-																		//Tells if std::stoi on &number was successfull
-	bool stoicheck(std::wstring &checked, int &number, int def = 0);
+																		//Prevents crash and does std::stoi; if failure: return def
+	const int stoicheck(std::string &checked, const int def = 0);				
+	const bool stoicheck(std::wstring &checked, int &number, const int def = 0);
+	const bool stoicheck(std::wstring &checked, unsigned int &number, const int def = 0);
 
-	bool chName(std::wstring name);										//Checks if there's already an object with the same name
+	bool chName(const std::wstring &name, bool fatal = false);					//Checks if there's already an object with the same name
 
 	bool drawnext = false;												//True - next is rendered
+	bool debug = false;													//Makes it easier to write stories
 
 	int owd = 0;														//The right margin
-	int th = 0;															//Height of one text from additional
+	//int th = 0;														//Height of one text from additional
 	int the = 0;														//Current down margin
-	float w1;															//Made to improve performance - calculates commonly used statement
+	int she = 0;														//Like 'the' but for gamestate '-1'
 	float w2;															//Made to improve performance - calculates commonly used statement
-	int sh;																//Copy of h in Cmain, thought about pointer but it is read only, changes in Cmain::sSaveOptions
+	int h;																//Copy of h in Cmain, thought about pointer but it is read only, changes in Cmain::sSaveOptions
 	int st = 0;															//How many times you need to scroll to get from top to down
-	int sw;																//Copy of w in Cmain, thought about pointer but it is read only, changes in Cmain::sSaveOptions
+	int w;																//Copy of w in Cmain, thought about pointer but it is read only, changes in Cmain::sSaveOptions
 	int sgoto = 0;														//Parse() starts of reading at this line
 	int cgoto = 0;														//Copy of sgoto, used when saving the game
-	int dgoto = 0;
+	int dgoto = 0;														//Stops parsing when sgoto hits dgoto's value
+	int scgoto = 0;
 	int	choicesel = -1;													//Currently selected Choice
 	bool slideratv = false;												//Is slider active(rendered and able to be pushed)
 	bool pempty = false;												//If profiles are empty
 	bool sempty = false;												//If stories are empty
 	bool loadtextonly = false;											//Reload text, but do not execute commands
-	bool choiceneed = false;
-	//std::wofstream //mfile;											//Logging file
-	std::vector <sf::Text> additional;									//Vector of text that are displayed as current story
+	bool choiceneed = false;											//Logging file
+	bool ssreload = true;
+	sf::Text text;														//Vector of text that are displayed as current story
 	std::vector<Choice> choice;											//List of choice that are avaiable
 	std::vector<IntStat> i_stats;										//IntStats' vector
 	std::vector<IntStatOpposite> io_stats;								//IntStatOpposities' vector
@@ -59,41 +56,50 @@ public:
 	std::vector<Int> Ints;												//Ints' vector
 	sf::Texture next_t;													//Texture of next
 	sf::Sprite next;													//"Next" button
-	sf::Text tekst;														//Builds sf::Texts in additional
-	std::unique_ptr<sf::Color> textcolor;								//Color used to create new additionals
-	std::wstring savefile;
-	std::unique_ptr<sf::Color> textchoiceunavaiblecolor;
+	std::wstring savefile;												
+	sf::Color *textchoiceunavaiblecolor;				
 	std::wstring path;													//Path to current file
+	sf::Color statcolor, statgaincolor, statlosscolor, statoppositecolor;
 private:
-	bool bold = false;													//Tells if next sf::Texts should be in bold font
-	bool italic = false;												//Tells if next sf::Texts should be in italic font
-	bool formattype = false;
+	void ParseMainBody();
+	bool formattype = false;											//If true SplitText() occurs every line
 																		//Sets the position where reading beggins
-	void GotoLine(int num);
+	void GotoLine(const int num);
 																		//Finds a statistic and returns its value
-	bool statfind(std::wstring &name, int &val);
-																		//Makes text bold, soon italic too
-	void formaT(std::vector<sf::Text>& vec, int wu, std::vector<sf::Vector2i>& b);
-																		//Executes various commands
-	void ExecuteCommand(std::wstring &insrtttt, int &sh, int &sw);
+	const bool statfind(const std::wstring &name,int &val);
+	const bool statfind(const std::wstring &name, std::wstring &val);
+																		//Executes various commands return;
+	sf::ConvexShape rrect;
+	void ExecuteCommand(std::wstring &insrtttt);
 																		//Splits text if it's 2 long
-	void SplitText(bool w, std::wstring &insrt);
-																		//Splits text if it's 2 long(choice)
-	//void ChSplitText();
+	void SplitText(const bool w, std::wstring &insrt);
+																		//tinsr and text becames one
+	void MergeText();
 																		//Checks if in the line is a comment
-	bool CommentCheck(std::wstring &insr);
+	const bool CommentCheck(std::wstring &insr);
 																		//Very thingy thing that actually does some things - used to create Stats
-	void Thingy(int argz, std::wstring insrtttt);
+	void Thingy(const int argz, std::wstring &insrtttt);
 																		//Rounded rectangle around choice's text
 	void RoundRect();
 																		//A long command for creating choices
-	void CreateChoice(std::wstring &insrtttt);
+	void CreateChoice();
 																		//Saves the game
 	void Save();
+																		//Gets current locale to read widestrings
+	const std::locale utf8_locale = std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>); 
+																		//Shows your all glorious fails and almighty weaknesses of the hero(victories and strenghts are shown too, but who cares?)
+	void Show_stats();
 
-	const std::locale utf8_locale = std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>);	//Gets current locale to read widestrings
-
+																		//Creates the image of IntStatOpposite (I'll allow to customize colors soon here)
+	const sf::Image IOStatspecial(const int w, const int h, int value, int min, int max, int threshold);
+																		//Creates the image of IntStat(here too)
+	const sf::Image IntSpecial(const int w, const int h, int value, int min, int max);
+															
+	inline void IfCheck(std::wstring &insr);
+	inline void getline(std::wstring &preinsr);
+	//inline void TabFind(std::wstring &preinsr);
 	sf::Font sfont;														//Font of the text
-	std::wstring insr;													//Buffer that holds line currently read
+	std::wstring insr;													//Contains text that will be splitted into tinsr
+	std::wstring tinsr;													//Splitted insr that will be displayed
 	std::wfstream in;													//File from which parser gets data
 };

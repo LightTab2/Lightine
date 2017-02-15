@@ -10,17 +10,11 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <memory>
+#include "Exceptions.h"
 
 class CustImg																//Custom image that can be drawn by story writer
 {
-	explicit CustImg (sf::Vector2f setpos, sf::Texture settext, sf::Sprite setsprite)
-	{
-			pos = setpos;
-			text = settext;
-			sprite = setsprite;
-	}
+	CustImg(sf::Vector2f pos, sf::Texture text, sf::Sprite sprite) : pos(pos), text(text), sprite(sprite) {};
 public:
 	sf::Vector2f pos;														//Position of the image
 	sf::Texture text;														//Texture of the image

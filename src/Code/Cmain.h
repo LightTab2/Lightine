@@ -11,7 +11,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 #include "txtReader.h"
-
+#include <ctime>
+#include "shlobj.h"
 //Hello everyone, I wish to say that my English isn't so good and any correction would be very kind =)
 class Cmain
 {
@@ -20,8 +21,6 @@ class Cmain
 
 																					//The constructor
 		Cmain();
-																					//The deconstructor
-		~Cmain();
 																					//"Tick" is every call of this function, essential for program to work
 		void GameLoop();
 																					//"Lightine appears before"
@@ -33,6 +32,7 @@ class Cmain
 		int w = 800;																//Width of the window, in pixels
 		int	h = 600;																//Height of the window, in pixels
 	private:	
+		std::wstring path;															//For static stats, path to %APPDATA%
 		bool fullscreen = true;														//Enables fullscreen?
 		bool cfullscreen = false;													//Like cmusic, used in SaveOptions(). Maybe use pointers here? As far as I know they're 4 bytes, so there's no reason to that.
 		bool sound = false;															//Turns on sounds... or off
@@ -71,7 +71,6 @@ class Cmain
 		int cselectionp = 0;														//Like cmusic, used in SaveOptions()
 		int	gamestate = 1;															//State of the game. -1-statistics menu 0-main menu 1-game 2-options 3-graphics options 4-audio options 5-save settings 6-profile settings 7-story settings
 		unsigned int menucapacity = 0;												//Maximum number of sf::Text(s), that are able to render in profilesmenu
-		int	she = 0;																//Like the but for gamestate -1
 		int	antialias = 0;															//Antialiasing setting
 		int	framelimit = 0;															//Maximum fps
 		int	smax = 0;																//The number of movement that can be done by slider
@@ -101,7 +100,7 @@ class Cmain
 		sf::Font font2;								 								//Font for the game's text(scenario.additional)
 
 		sf::Sprite Background;														//"Super secret image that has inside very hidden data about safety of our country. Trust me." I think it's background image, but not sure lfmao
-		sf::Sprite michaupase³ke³;													//Much Informations Contains Heavy And Universal "Partically Anihilated Squirell" Enquired f£om King £obert (£ stands for joker) Hehe you'll have to figure out what is it, because idk how to explain it. 
+		sf::Sprite michaupase³ke³;													//Much Informations Contains Heavy And Universal "Partically Anihilated Squirell" Enquired f£om King £obert (£ stands for joker) - horizontal bar where show_stats is located, later inventory too
 		sf::Sprite sliders;															//Slider used to move the view
 		sf::Sprite bars;															//Slider moves within it
 		sf::Sprite arrowdn;															//The "down" arrow(with syndrome of... wait no...nvm) sprite
@@ -149,7 +148,7 @@ class Cmain
 		sf::RectangleShape profilesmenu;											//The rectangle where profiles or stories are stored
 		
 		sf::Color
-			color[37],																//Many, very many colors, so you can adjust your game
+			color[35],																//Many, very many colors, so you can adjust your game
 			&textcolor = color[0],
 			&menucolor = color[1],
 			&menuselectcolor = color[2],
@@ -179,25 +178,18 @@ class Cmain
 			&menuprofilesselectcolor = color[26],
 			&menustoriescolor = color[27],
 			&menustoriesselectcolor = color[28],
-			//&menusoutlinecolor = color[27],
 			&menuerrorcolor = color[29],
-			&statcolor = color[30],
-			&statgaincolor = color[31],
-			&statlosscolor = color[32],
-			&textchoicecolor = color[33],
-			&textchoiceunavaiblecolor = color[34],
-			&textchoicefillcolor = color[35],
-			&menuhelpcolor = color[36];
+			&textchoicecolor = color[30],
+			&textchoiceunavaiblecolor = color[31],
+			&textchoicefillcolor = color[32],
+			&menuhelpcolor = color[33];
 		
 		sf::Clock errclock;															//Manages enternewerror_t lifetime
 
-		std::vector<sf::Text> s_pos;												//Various stats
-		std::vector<sf::Texture> i_pos;												//Textures for v_pos
-		std::vector<sf::Sprite> v_pos;												//IntStats and IntStatOpposities stats
-		std::vector<sf::Vector2i> s_posv,											//Positions of s_pos
-								positions,											//Possible positions in profilesmenu
-								v_posi;												//Positions of v_pos
-
+		std::vector<sf::Vector2i> positions;										//Possible positions in profilesmenu
+				
+																					//Probably part of LoadSave()
+		void LoadStatics();
 																					//Loads save? dunno
 		void LoadSave();
 																					//Gets data from bin\Options.ini		
@@ -211,7 +203,7 @@ class Cmain
 																					//Saves game's options
 		void SaveOptions();
 																					//Creates window; used in sSaveOptions() and constructor
-		inline void createWindow();													
+		void createWindow();													
 																					//A method, created to improve readablity in SaveOptions()
 		void SaveToFile();
 																					//Steers the menu look
@@ -236,26 +228,20 @@ class Cmain
 		void PrepareMenu();
 																					//Resets the progress
 		void Reset();
-																					//Shows your all glorious fails and almighty weaknesses of the hero
-		void Show_stats();
 																					//Checks if you clicked on shwstats
-		inline void ssb();
-																					//Creates the image of IntStatOpposite (I'll allow to customize colors soon here)
-		sf::Image IOStatspecial(int w, int h, int value, int min, int max, int threshold);
-																					//Creates the image of IntStat(here too)
-		sf::Image IntSpecial(int w, int h, int value, int min, int max);
+		void ssb();
 																					//Check if mousepos is contained in box	
-		inline bool Contains(sf::FloatRect &box);					
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manage67(bool add);	
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manage1(bool add);
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manageminus1(bool add);
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Draw67();
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Draw1();
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Drawminus1();
+		const bool Contains(const sf::FloatRect &box);					
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manage67(const bool add);	
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manage1(const bool add);
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manageminus1(const bool add);
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Draw67();
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Draw1();
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Drawminus1();
 };

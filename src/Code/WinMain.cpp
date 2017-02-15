@@ -13,10 +13,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 int main()
 {
-	Cmain cmain;
-	cmain.Intro();
-	if (cmain.profiles.empty()) cmain.scenario.pempty = true;
-	else if (cmain.stories.empty()) cmain.scenario.sempty = true;
-	cmain.GameLoop();
+		Cmain cmain;
+	if (cmain.quit) return -1;
+		cmain.Intro();
+		if (cmain.profiles.empty()) cmain.scenario.pempty = true;
+		else if (cmain.stories.empty()) cmain.scenario.sempty = true;
+	try{
+		cmain.GameLoop();
+	}
+	catch (w_err err)
+	{
+		MessageBox(NULL, err.msg.c_str(), NULL, MB_ICONERROR);
+		return -1;
+	}
+	catch (...)
+	{
+		MessageBox(NULL, L"Unknown critical error", NULL, MB_ICONERROR);
+		return -1;
+	}
 	return 0;
 }
