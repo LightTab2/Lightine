@@ -12,7 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 #include "txtReader.h"
 #include <ctime>
-#include "shlobj.h"
 //Hello everyone, I wish to say that my English isn't so good and any correction would be very kind =)
 class Cmain
 {
@@ -32,7 +31,6 @@ class Cmain
 		int w = 800;																//Width of the window, in pixels
 		int	h = 600;																//Height of the window, in pixels
 	private:	
-		std::wstring path;															//For static stats, path to %APPDATA%
 		bool fullscreen = true;														//Enables fullscreen?
 		bool cfullscreen = false;													//Like cmusic, used in SaveOptions(). Maybe use pointers here? As far as I know they're 4 bytes, so there's no reason to that.
 		bool sound = false;															//Turns on sounds... or off
@@ -57,7 +55,6 @@ class Cmain
 		bool resetsb = false;														//Sub-gamestate in gamestate -1
 		bool disrandomnameLOL = true;												//Optimization for instructions based on clicked
 		bool disbutton = false;														//Optimization for instructions based on clicked
-
 		int	fontsize1 = 0;															//Font's size for small resolution
 		int	fontsize2 = 0;															//Font's size for medium resolution
 		int	fontsize3 = 0;	 														//Font's size for big resolution
@@ -130,7 +127,7 @@ class Cmain
 		sf::Text ntext;																//"Enter name:"
 		sf::Text newname;															//Name you entered
 		sf::Text enternewerror_t;													//"Error: There's already an object with the same name"
-
+		sf::Text endmessage;														//Customizable text placed before choices
 		sf::FloatRect button[3],													//Boundaries of a button
 			&button_1 = button[0],
 			&button_2 = button[1],

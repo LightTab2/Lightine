@@ -14,21 +14,21 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "CustImg.h"
 #include "Choice.h"
 #include <fstream>
-
+#include "shlobj.h"
 class ScenarioParser													//Parses scenario file, inserting data into program
 {
 public:																	//Read from goto to end(next or end command)
 	void Parse();
-																		//Prevents crash and does std::stoi; if failure: return def
-	const int stoicheck(std::string &checked, const int def = 0);				
+																		//Prevents crash and does std::stoi; if failure: return def		
 	const bool stoicheck(std::wstring &checked, int &number, const int def = 0);
 	const bool stoicheck(std::wstring &checked, unsigned int &number, const int def = 0);
+	const int stoicheck(std::string &checked, const int def = 0);
 
-	bool chName(const std::wstring &name, bool fatal = false);					//Checks if there's already an object with the same name
+	bool chName(const std::wstring &name, bool fatal = false);			//Checks if there's already an object with the same name
 
 	bool drawnext = false;												//True - next is rendered
 	bool debug = false;													//Makes it easier to write stories
-
+	bool typing = false;
 	int owd = 0;														//The right margin
 	//int th = 0;														//Height of one text from additional
 	int the = 0;														//Current down margin
@@ -54,12 +54,16 @@ public:																	//Read from goto to end(next or end command)
 	std::vector<IntStatOpposite> io_stats;								//IntStatOpposities' vector
 	std::vector<StringStat> s_stats;									//StringStats' vector
 	std::vector<Int> Ints;												//Ints' vector
+	std::vector<StcStringStat> stc_s;									//Stc StringStats' vector
+	std::vector<StcIntStat> stc_i;										//Stc IntStatz' vector
 	sf::Texture next_t;													//Texture of next
 	sf::Sprite next;													//"Next" button
 	std::wstring savefile;												
 	sf::Color *textchoiceunavaiblecolor;				
 	std::wstring path;													//Path to current file
 	sf::Color statcolor, statgaincolor, statlosscolor, statoppositecolor;
+	static std::wstring apath;											//For static stats, path to %APPDATA%
+	std::wstring *type;													//So you can enter some text and make StringStat out of it
 private:
 	void ParseMainBody();
 	bool formattype = false;											//If true SplitText() occurs every line
@@ -85,6 +89,8 @@ private:
 	void CreateChoice();
 																		//Saves the game
 	void Save();
+																		//Part of Save()
+	void SaveStcs();	
 																		//Gets current locale to read widestrings
 	const std::locale utf8_locale = std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>); 
 																		//Shows your all glorious fails and almighty weaknesses of the hero(victories and strenghts are shown too, but who cares?)

@@ -2,7 +2,7 @@
 #Int(Kasa,90,0,0)
 #IntStat(Respekt Ulicy,0,100,-100,0,0)
 #IntStatOpposite(Lewość,10,30,-10,10,0,0,Prawość)
-#Int(1,0,1,0)
+#Stc(1,0)
 	Budzisz się w lesie, a w głowie Ci wiruje, jakby latało w niej rumuńskie tornado.
 W tym lesie znajduje się stacja kolejowa!
 Myślisz sobie:
@@ -22,10 +22,10 @@ Podejdź do stacji kolejowej
 {
 	W stacji znajduje się parę monet.
 `
-#Set(Kasa,+=10)
+#set(Kasa,+=10)
 +10 Kasa//algorytm wyświetlania statystyk zostanie polepszony
 #next
-#Set(1,1)
+#set(1,1)
 #goto(14)
 }
 
@@ -50,8 +50,8 @@ Zgódź się
 
 -Za chwilę zabraknie Ci parę monet by uratować sobie życie, hehehieh!
 
-#Set(Lewość,+=5)
-#Set(Kasa,-=13)
+#set(Lewość,+=5)
+#set(Kasa,-=13)
 I... znika!
 #next
 Zostałeś sam.
@@ -73,7 +73,7 @@ Szaman się oburzył i sobie poszedł.
 Przeszukaj okoliczny teren.
 {
 	Nie masz dostępu do żywności i wody pitnej, na dodatek najbliższe miasto jest ponad 400 km drogi stąd.
-#Set(1,2)
+#set(1,2)
 #goto(70)
 }
 
@@ -96,7 +96,7 @@ Spróbuj ich przekupić
 	{
 	Terroryści zgodzili się Cię uwolnić, ale jeśli chcesz spadochron to musisz im zapłacić 100 monet.
 
-#Set(Kasa,-=100)
+#set(Kasa,-=100)
 `
 `
 `

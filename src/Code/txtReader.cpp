@@ -19,7 +19,7 @@ constexpr wchar_t* const empty = L"`"; //Add an option to change it, for user pr
 //todo: repair set(using show_stats), add type function, add stc command, add achievements, add center text, add gain text, //change the color, change pos to sf::Vector2f, ignore tabs, erase command
 void ScenarioParser::GotoLine(const int num)
 {
-	in.seekg(std::ios::beg);
+	in.seekg(std::wfstream::beg);
 	for (int i = 0U; i < num; ++i){
 		in.ignore(std::numeric_limits<std::streamsize>::max(), L'\n');
 	}
@@ -35,6 +35,7 @@ void ScenarioParser::Parse()
 	slideratv = false;
 	the = h / 12;
 	choicesel = -1;
+	choiceneed = false;
 	if (pempty)
 	{
 		text.setPosition(round(w / 24.f), static_cast<float>(the));
@@ -88,6 +89,22 @@ void ScenarioParser::Save()
 		save << '}' << std::endl;
 	}
 	else throw w_err(L"Error: Couldn't load save [while saving]: missing file or invalid path \"" + savefile + L"\" [" + std::to_wstring(sgoto) + L']');
+	SaveStcs();
+}
+
+void ScenarioParser::SaveStcs()
+{
+	std::wofstream save(ScenarioParser::apath + L"\\Stc.txt");
+	save.imbue(utf8_locale);
+	if (save)
+	{
+		for (auto &x : stc_i) save << x.name << ',' << x.value << std::endl;
+		save << '}' << std::endl;
+
+		for (auto &x : stc_s) save << x.name << ',' << x.value << std::endl;
+		//save << '}' << std::endl;
+	}
+	else throw w_err(L"Static Stats couldn't be load, maybe game is needing administrator privilege \"" + savefile + L"\" [" + std::to_wstring(sgoto) + L']');
 }
 
 void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
@@ -101,7 +118,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	else if (insrtttt == L"#debug")
 	{
 		debug = true;
-		std::wofstream save(savefile, std::wios::trunc);
+		std::wofstream save(savefile);
 		dgoto = cgoto = 0;
 		loadtextonly = false;
 	}
@@ -135,7 +152,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			insrtttt.erase(0U, 5U);
 			Thingy(3, insrtttt);
 		}
-		else if (insrtttt.substr(0U, 5U) == L"#Set(")
+		else if (insrtttt.substr(0U, 5U) == L"#set(")
 		{
 			insrtttt.erase(0U, 5U);
 			size_t n;
@@ -223,6 +240,22 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 					return;
 				}
 			}
+			for (auto &x : stc_i)
+			{
+				if (name == x.name)
+				{
+					if (!stoicheck(value, x.value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) [" + std::to_wstring(sgoto) + L']');
+					return;
+				}
+			}
+			for (auto &x : stc_s)
+			{
+				if (name == x.name)
+				{
+					x.value = value;
+					return;
+				}
+			}
 		}
 		else if (insrtttt.substr(0U, 6U) == L"#hide(")
 		{
@@ -271,15 +304,46 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 				}
 			}
 		}
-		else if (insrtttt.substr(0U, 5U) == L"#stc(")
+		else if (insrtttt.substr(0U, 5U) == L"#Stc(")
 		{
 			insrtttt.erase(0U, 5U);
 			size_t n;
-			if ((n = insrtttt.find(L',')) == std::wstring::npos) return;
-			std::wstring name = insrtttt.substr(0U, n),
-				value = insrtttt.substr(n + 1U, insrtttt.size() - 1U - n);
+			if ((n = insrtttt.find(L',')) == std::wstring::npos) throw w_err(L"\"#stc\" command needs 2 arguments, not one or none");;
+			std::wstring name = insrtttt.substr(0U, n);
 			if (chName(name)) return;
+			std::wstring value = insrtttt.substr(n + 1U, insrtttt.size() - 2U - n);
+			int val;
+			if (stoicheck(value, val)) stc_i.push_back(StcIntStat(name, val));
+			else stc_s.push_back(StcStringStat(name, value));
 		}
+		else if (insrtttt.substr(0U, 5U) == L"#Erase(")
+		{
+		}
+		else if (debug) warn(L"Unknown command: " + insrtttt);
+		else if (insrtttt.substr(0U, 7U) == L"#Enter(")
+		{
+			insrtttt.erase(0U, 7U);
+			std::wstring name = insrtttt.substr(0U, insrtttt.size() - 1U);
+			for (auto x = s_stats.begin(); x != s_stats.end(); ++x)
+			{
+				if (name == x->name)
+				{
+					typing = true;
+					type = &x->value;
+					return;
+				}
+			}
+			for (auto x = stc_s.begin(); x != stc_s.end(); ++x)
+			{
+				if (name == x->name)
+				{
+					typing = true;
+					type = &x->value;
+					return;
+				}
+			}
+		}
+		else if (debug) warn(L"Unknown command: " + insrtttt);
 	}
 }
 
@@ -641,12 +705,24 @@ const bool ScenarioParser::statfind(const std::wstring &name, int &val)
 			return true;
 		}
 	}
+	for (auto &x : stc_i) {
+		if (name == x.name) {
+			val = x.value;
+			return true;
+		}
+	}
 	return false;
 }
 
 const bool ScenarioParser::statfind(const std::wstring &name, std::wstring &val)
 {
 	for (auto &x : s_stats) {
+		if (name == x.name) {
+			val = x.value;
+			return true;
+		}
+	}
+	for (auto &x : stc_s) {
 		if (name == x.name) {
 			val = x.value;
 			return true;
@@ -685,7 +761,7 @@ void ScenarioParser::CreateChoice()
 					if (!statfind(insr, bt))
 					{
 						std::wstring sval;
-						if (!statfind(insr, sval)) throw w_err(L"Improper choice command [" + std::to_wstring(sgoto) + L']');
+						if (!statfind(insr, sval)) throw w_err(L"Couldn't find a Stat with name \"" + insr + L"\" [" + std::to_wstring(sgoto) + L']');
 						else choice.back().avaible = (sval == value);
 						continue;
 					}
@@ -727,9 +803,9 @@ void ScenarioParser::CreateChoice()
 				else first = false;
 				if (CommentCheck(insr)) continue;
 				//IfCheck(insr);
-				if (insr.empty() || insr == L"\n")
+				if (insr == empty || insr == L"\n")
 					SplitText(true, insrt);
-				else if (insr == empty)
+				else if (insr.empty())
 				{
 					insrt += L'\n';
 					SplitText(true, insrt);
@@ -775,7 +851,7 @@ void ScenarioParser::CreateChoice()
 					insrt += insr;
 					if (formattype) SplitText(true, insrt);
 					else insrt += L" ";
-				} http://stackoverflow.com/questions/41353227/does-stdstring-char-expression-create-another-stdstring
+				} //http://stackoverflow.com/questions/41353227/does-stdstring-char-expression-create-another-stdstring
 				insr.clear();
 			}
 		}
@@ -823,6 +899,18 @@ bool ScenarioParser::chName(const std::wstring &name, bool fatal)
 	}
 	for (auto &x : Ints){
 		if (name == x.name){
+			if (fatal) throw w_err(L"Error: there is a name conflict! There cannot be 2 variables with the same name(already exists one of type Int) \"" + name + L"\" [" + std::to_wstring(sgoto) + L']');
+			else return true;
+		}
+	}
+	for (auto &x : stc_i) {
+		if (name == x.name) {
+			if (fatal) throw w_err(L"Error: there is a name conflict! There cannot be 2 variables with the same name(already exists one of type Int) \"" + name + L"\" [" + std::to_wstring(sgoto) + L']');
+			else return true;
+		}
+	}
+	for (auto &x : stc_s) {
+		if (name == x.name) {
 			if (fatal) throw w_err(L"Error: there is a name conflict! There cannot be 2 variables with the same name(already exists one of type Int) \"" + name + L"\" [" + std::to_wstring(sgoto) + L']');
 			else return true;
 		}
@@ -1044,6 +1132,7 @@ void ScenarioParser::IfCheck(std::wstring &insr)
 		}
 		else
 		{
+			unsigned int val;//to repair
 			if (!stoicheck(value, val)) throw w_err(L"[Choice]FATAL stoicheck failure while evaluating \"#if\" result [" + std::to_wstring(sgoto) + L']');;
 			switch (to3)
 			{
@@ -1155,9 +1244,10 @@ void ScenarioParser::ParseMainBody()
 			else ExecuteCommand(preinsr);
 			continue;
 		}
-		if (preinsr.empty() || preinsr == L"\n")
+		if (choiceneed) continue;
+		if (preinsr == empty || preinsr == L"\n")
 			SplitText(false, insr);
-		else if (preinsr == empty)
+		else if (preinsr.empty())
 		{
 			insr += L'\n';
 			SplitText(false, insr);

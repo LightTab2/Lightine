@@ -22,7 +22,6 @@ struct Stat																	//Stats that changes hero over game, you can see not
 	bool read = false;														//When acquiring all object of this type and processing them it might save a lot of time
 	unsigned int prior;														//Prior mechanizm is used to order all Stats
 	//unsigned int address;													//Indicates which index is needed to change this stat in s_pos or v_pos FUCKING MUCH TO DO
-	bool to_erase;															//After next Save() or Show_stats(), this object will not get loaded in next Show_stats()
 protected:
 	Stat(std::wstring &name, const bool hidden, const unsigned int prior)
 		: name(name), hidden(hidden), prior(prior > priorlimit ? priorlimit : prior) {}
@@ -78,24 +77,35 @@ private:
 	sf::Texture tx;
 };
 
-class Int : public Stat
+struct Int : public Stat
 {
-public:
 	Int(std::wstring &name, const int value, const bool hidden, const unsigned int prior)
-		: Stat(name, hidden, prior), value(value){}	
+		: Stat(name, hidden, prior), value(value) {}	
 	int value;	
 	sf::Vector2i pos;
 	sf::Text t;																//This is displayed in show_stats
 };
 
-
-class StringStat : public Stat												//Stat that's value is a string, eg. pseudonim of the hero
+struct StringStat : public Stat												//Stat that's value is a string, eg. pseudonim of the hero
 {
-public:
 	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden, const unsigned int prior)
 		: Stat(name, namehidden, prior), value(value), vhidden(valuehidden) {}
 	std::wstring value;														//Value
 	bool vhidden;															//Might be usefull sometimes... hides value leaving only name
 	sf::Vector2i pos;
 	sf::Text t;
+};
+
+struct StcStringStat
+{
+	StcStringStat(std::wstring &name, std::wstring &value) : name(name), value(value) {}
+	std::wstring name;
+	std::wstring value;
+};
+
+struct StcIntStat
+{
+	StcIntStat(std::wstring &name, const int value) : name(name), value(value) {}
+	std::wstring name;
+	int value;
 };

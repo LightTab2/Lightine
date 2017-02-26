@@ -212,7 +212,7 @@ void Cmain::GameMenu()
 
 void Cmain::DeleteStory()
 {
-	std::ofstream sfile("../../bin/Stories.txt", std::ios::out | std::ios::trunc);
+	std::ofstream sfile("../../bin/Stories.txt");
 	for (size_t s = 0U; s != profiles.size(); ++s)
 	{
 		remove(std::string("../../bin/Saves/" + profiles[s].getString().toAnsiString() + "_" + stories[selections].getString().toAnsiString() + ".txt").c_str());
@@ -240,7 +240,7 @@ void Cmain::DeleteStory()
 
 void Cmain::DeleteProfile()
 {
-	std::ofstream pfile("../../bin/Profiles.txt", std::ios::out | std::ios::trunc);
+	std::ofstream pfile("../../bin/Profiles.txt");
 	for (size_t s = 0U; s != stories.size(); ++s)
 	{
 		remove(std::string("../../bin/Saves/" + profiles[selectionp].getString().toAnsiString() + "_" + stories[s].getString().toAnsiString() + ".txt").c_str());
@@ -405,4 +405,37 @@ void Cmain::LoadSave()
 
 void Cmain::LoadStatics()
 {
+	std::wfstream save(ScenarioParser::apath + L"\\Stc.txt");
+	if (save)
+	{
+		std::wstring insert;
+		std::getline(save, insert);
+		const std::locale empty_locales = std::locale::empty();
+		const std::codecvt_utf8<wchar_t>* converters = new std::codecvt_utf8<wchar_t>;
+		const std::locale utf8_locales = std::locale(empty_locales, converters);
+		save.imbue(utf8_locales);
+		if (insert[0U] == 0xFEFF) //not sure if necessary
+			insert.erase(0U, 1U);
+		else if (insert[0U] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf)
+			insert.erase(0U, 3U);
+		while (insert[0U] != L'}')
+		{
+			if (insert.empty()) break;
+			std::wstring name = insert.substr(0U, insert.find(L','));
+			int value;
+			if (scenario.stoicheck(insert.substr(insert.find(L',') + 1U), value))
+			{
+				scenario.stc_i.push_back(StcIntStat(name, value));
+			}
+			else throw w_err(L"Error loading Stc.txt, this should not happend unless you were editing files. Delete Stc.txt");
+			std::getline(save, insert);
+		}
+		while (std::getline(save, insert))	
+		{
+			std::wstring name = insert.substr(0U, insert.find(L',')), value = insert.substr(insert.find(L',') + 1U);
+			warn(value);
+			scenario.stc_s.push_back(StcStringStat(name, value));
+			if (insert.empty()) break;
+		}
+	}
 }

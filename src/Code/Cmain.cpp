@@ -13,6 +13,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //Personal challenge - multithreading in Fades.cpp
 
 unsigned int priorlimit = 5U;
+std::wstring ScenarioParser::apath;
 Cmain::Cmain()
 {
 	try {
@@ -21,14 +22,12 @@ Cmain::Cmain()
 	CreateDirectory(L"../../bin/Images", NULL);
 	CreateDirectory(L"../../bin/Logs", NULL);
 	CreateDirectory(L"../../bin/Saves", NULL);
+	PWSTR p;
+	if (SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &p) != S_OK) throw w_err(L"Couldn't open Aplication Data! Try running as administator"); //the permission isn't needed, but who knows if this doesn't work?
+	ScenarioParser::apath = std::wstring(p) + L"\\Lightine";
+	CoTaskMemFree(p);
 	CreateDirectory(L"../../bin/Scripts", NULL);
-	{
-		PWSTR p;
-		if (!SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &p)) w_err(L"Couldn't open Aplication Data! Try running as administator"); //the permission isn't needed, but who knows if this doesn't work?
-		path = std::wstring(p) + L"\\Lightine";
-		CreateDirectory(path.c_str(), NULL);
-		CoTaskMemFree(p);
-	}
+	CreateDirectory(ScenarioParser::apath.c_str(), NULL);
 	LoadOptions(); //reading from ini
 		if (!Background_texture.loadFromFile("../../bin/Images/gradient.png")) throw w_err(L"Missing file: \"bin/Images/gradient.png\"");
 		if (!michaupase³ke³_t.loadFromFile("../../bin/Images/margin.png")) throw w_err(L"Missing file from directory \"bin/Images/margin.png\"");
