@@ -21,17 +21,35 @@ struct Stat																	//Stats that changes hero over game, you can see not
 	bool hidden;															//If true - it won't show in gamestate -1
 	bool read = false;														//When acquiring all object of this type and processing them it might save a lot of time
 	unsigned int prior;														//Prior mechanizm is used to order all Stats
-	//unsigned int address;													//Indicates which index is needed to change this stat in s_pos or v_pos FUCKING MUCH TO DO
+	bool operator<(const Stat &cmp){
+		return this->name < cmp.name;
+	};
 protected:
 	Stat(std::wstring &name, const bool hidden, const unsigned int prior)
 		: name(name), hidden(hidden), prior(prior > priorlimit ? priorlimit : prior) {}
 };
 
-class IntStat : public Stat													//Indicates in % how much you've gained something
+struct IStat
+{
+	int value;
+protected:
+	IStat(int value) : value(value) {}
+	IStat() : value(0) {}
+};
+
+struct SStat
+{
+	std::wstring value;
+protected:
+	SStat(std::wstring &value) : value(value) {}
+	SStat() {}
+};
+
+class IntStat : public Stat, public IStat									//Indicates in % how much you've gained something
 {
 public:
 	IntStat(std::wstring &name, const int value, const int max, const int min, const bool hidden, const unsigned int prior)
-		: Stat(name, hidden, prior), value(value), max(max), min(min)
+		: Stat(name, hidden, prior), IStat(value), max(max), min(min)
 	{
 		if (max == min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
 		else if (max < min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value lesser than minimum one.");
@@ -41,7 +59,6 @@ public:
 		tx.loadFromImage(img);
 		s.setTexture(tx);
 	}
-	int value;																//Value
 	int max;																//Maximum value
 	int min;																//Minimum value
 	sf::Vector2i pos[2];
@@ -51,11 +68,11 @@ private:
 	sf::Texture tx;
 };
 
-class IntStatOpposite : public Stat											//Indicates in % how much you've gained something and another thing (while one increases, another decreases)
+class IntStatOpposite : public Stat, public IStat								//Indicates in % how much you've gained something and another thing (while one increases, another decreases)
 {
 public:
 	IntStatOpposite(std::wstring &name, const int value, const int max, const int min, const int threshold, const bool hidden, const unsigned int prior, std::wstring &opposite)
-		: Stat(name, hidden, prior), value(value), max(max), min(min), threshold(threshold), opposite(opposite)
+		: Stat(name, hidden, prior), IStat(value), max(max), min(min), threshold(threshold), opposite(opposite)
 	{
 		if (max == min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
 		else if (max < min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value lesser than minimum one.");
@@ -65,7 +82,6 @@ public:
 		tx.loadFromImage(img);
 		s.setTexture(tx);
 	}
-	int value;																//Value
 	int max;																//Maximum value
 	int min;																//Minimum value
 	int threshold;															//When you become more aligned to "name" or "opposite" (lower - name, higher - opposite)
@@ -77,35 +93,31 @@ private:
 	sf::Texture tx;
 };
 
-struct Int : public Stat
+struct Int : public Stat, public IStat
 {
 	Int(std::wstring &name, const int value, const bool hidden, const unsigned int prior)
-		: Stat(name, hidden, prior), value(value) {}	
-	int value;	
+		: Stat(name, hidden, prior), IStat(value) {}
 	sf::Vector2i pos;
 	sf::Text t;																//This is displayed in show_stats
 };
 
-struct StringStat : public Stat												//Stat that's value is a string, eg. pseudonim of the hero
+struct StringStat : public Stat, public SStat								//Stat that's value is a string, eg. pseudonim of the hero
 {
 	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden, const unsigned int prior)
-		: Stat(name, namehidden, prior), value(value), vhidden(valuehidden) {}
-	std::wstring value;														//Value
+		: Stat(name, namehidden, prior), SStat(value), vhidden(valuehidden) {}
 	bool vhidden;															//Might be usefull sometimes... hides value leaving only name
 	sf::Vector2i pos;
 	sf::Text t;
 };
 
-struct StcStringStat
+struct StcString : public SStat
 {
-	StcStringStat(std::wstring &name, std::wstring &value) : name(name), value(value) {}
+	StcString(std::wstring &name, std::wstring &value) : name(name), SStat(value) {}
 	std::wstring name;
-	std::wstring value;
 };
 
-struct StcIntStat
+struct StcInt : public IStat
 {
-	StcIntStat(std::wstring &name, const int value) : name(name), value(value) {}
+	StcInt(std::wstring &name, const int value) : name(name), IStat(value) {}
 	std::wstring name;
-	int value;
 };

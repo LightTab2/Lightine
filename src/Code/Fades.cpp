@@ -18,8 +18,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 {
 	scenario.text.setString(L"");
 	scenario.choice.clear();
-
-	scenario.scgoto = scenario.cgoto = scenario.sgoto = scenario.dgoto = 0;
+	scenario.cgoto = scenario.sgoto = scenario.dgoto = 0;
 	std::wofstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
 	scenario.loadtextonly = false;
 	LoadSave();
@@ -30,6 +29,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	sf::Color c = textcolor;
 	c.a = colorminus1.a;
 	scenario.statcolor.a = colorminus1.a;
+	lsetPos = static_cast<float>(smaxup);
 	for (auto &i : scenario.i_stats)
 	{
 		i.t.setFillColor(scenario.statcolor);
@@ -110,8 +110,9 @@ inline void Cmain::Manage1(const bool add)
 		if (color1.a < static_cast<sf::Uint8>(3)) color1.a = static_cast<sf::Uint8>(0);
 		else color1.a -= 2;
 	}
-	textcolor.a = textchoicecolor.a = textchoiceunavaiblecolor.a = color1.a;
+	textcolor.a = textchoicecolor.a = textchoiceunavaiblecolor.a = scenario.typeboxcolor.a = scenario.gaintextcolor.a = color1.a;
 	textchoicefillcolor.a = static_cast<sf::Uint8>(choicefactor * color1.a);
+	scenario.typeboxfillcolor.a = static_cast<sf::Uint8>(typeboxfactor * color1.a);
 	showstats.setColor(color1);
 	sliders.setColor(color1);
 	bars.setColor(color1);
@@ -133,8 +134,22 @@ inline void Cmain::Manage1(const bool add)
 			c.text.setFillColor(textchoiceunavaiblecolor);
 		}
 	}
+	for (size_t index = 0U; index != scenario.typeboxes.size(); ++index)
+	{
+		TypeBox &t = scenario.typeboxes[index];
+		if (index == scenario.typesel) t.rt.setFillColor(scenario.typeboxfillcolor);
+		t.t.setFillColor(scenario.typeboxcolor);
+		t.rt.setFillColor(scenario.typeboxcolor);
+	}
 	scenario.next.setColor(color1);
 	scenario.text.setFillColor(textcolor);
+	//gaintext
+	for (auto &g : scenario.gaintext)
+	{
+		sf::Color color = g.getFillColor();
+		color.a = scenario.gaintextcolor.a;
+		g.setFillColor(color);
+	}
 }
 
 inline void Cmain::Manageminus1(const bool add)
@@ -213,6 +228,11 @@ inline void Cmain::Draw1()
 		window.draw(c.c);
 		window.draw(c.cs);
 	}
+	for (const auto &t : scenario.typeboxes)
+	{
+		window.draw(t.rt);
+		window.draw(t.t);
+	}
 	window.draw(michaupase³ke³);
 	if (scenario.drawnext) window.draw(scenario.next);
 	window.draw(showstats);
@@ -220,6 +240,7 @@ inline void Cmain::Draw1()
 		window.draw(bars);
 		window.draw(sliders);
 	}
+	for (const auto &g : scenario.gaintext) window.draw(g);
 }
 
 inline void Cmain::Drawminus1()

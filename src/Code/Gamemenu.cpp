@@ -25,6 +25,10 @@ void Cmain::MainEvent()
 		mousepos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 		switch (mainevent.type)
 		{
+		case sf::Event::Closed:
+			quit = true;
+			SaveOptions();
+			break;
 		case sf::Event::KeyPressed:
 			if (mainevent.key.code == sf::Keyboard::Escape) {
 				if (gamestate == 0 && !prov) { visible = false; prov = true; gamestate = 1; }
@@ -68,6 +72,10 @@ void Cmain::MainEvent()
 				{
 					newname.setString(newname.getString().substring(0U, newname.getString().getSize() - 1U));
 					newname.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(newname.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(ctext.getGlobalBounds().height*0.6f)))));
+				}
+				else if (gamestate == 1 && scenario.typesel != -1)
+				{
+					if (scenario.typeboxes[scenario.typesel].s->length() != 0U) { scenario.typeboxes[scenario.typesel].s->pop_back(); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); }
 				}
 			}
 			else if (mainevent.key.code == sf::Keyboard::Return) {
@@ -225,13 +233,13 @@ void Cmain::MainEvent()
 			{
 				if (mainevent.text.unicode > 47U && mainevent.text.unicode < 58U) {
 					if (resbutton1_focus) {
-						if (fullone.length() < 4) {
+						if (fullone.length() != 4) {
 							fullone += mainevent.text.unicode;
 							resbutton1_text.setString(fullone);
 						}
 					}
 					else if (resbutton2_focus) {
-						if (fulltwo.length() < 4) {
+						if (fulltwo.length() != 4) {
 							fulltwo += mainevent.text.unicode;
 							resbutton2_text.setString(fulltwo);
 						}
@@ -245,6 +253,10 @@ void Cmain::MainEvent()
 					newname.setString(newname.getString() + achar);
 					newname.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(newname.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(ctext.getGlobalBounds().height*0.6f)))));
 				}
+			}
+			else if (gamestate == 1 && scenario.typesel != -1)
+			{
+				if (scenario.typeboxes[scenario.typesel].s->length() != 20) { scenario.typeboxes[scenario.typesel].s->push_back(mainevent.text.unicode); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); }
 			}
 			break;
 		}
@@ -304,19 +316,27 @@ void Cmain::onRelease()
 			stigger = false;
 			slidersb = sliders.getGlobalBounds();
 		}
-		else if (scenario.drawnext && Contains(scenario.next.getGlobalBounds()))
+		else if (scenario.drawnext && Contains(scenario.Bnext))
 		{
-			if (scenario.choiceneed == true && scenario.choicesel == -1) break;
+			if (scenario.choiceneed == true && scenario.choicesel == -1) goto end;
 			sviewchange(0);
 			scenario.choiceneed = scenario.loadtextonly = false;
 			if (scenario.choicesel > -1)
 			{
-				scenario.scgoto = scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
+				scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
 				scenario.dgoto = scenario.choice[scenario.choicesel].dgto;
 			}
-			else { scenario.scgoto = scenario.cgoto = scenario.sgoto; scenario.dgoto = 0; }
+			else { scenario.cgoto = scenario.sgoto; scenario.dgoto = 0; }
 			scenario.Parse();
 		}
+		else
+		{
+			for (int x = 0; x != scenario.typeboxes.size(); ++x)
+			{
+				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds())) { scenario.typesel = x; return; }
+			}
+		}
+		end: scenario.typesel = -1;
 		break;
 	case 2:
 		if (Contains(button_1)) {
@@ -448,6 +468,16 @@ void Cmain::onClick()
 					break;
 				}
 			}
+			for (unsigned int x = 0; x < scenario.typeboxes.size(); ++x) {
+				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds()))
+				{
+					for (TypeBox &d : scenario.typeboxes) d.rt.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
+					scenario.typeboxes[x].rt.setFillColor(scenario.typeboxfillcolor);
+					scenario.typesel = x;
+					return; //flow ends here
+				}
+			}
+			scenario.typesel = -1;
 		break;
 	case 3:
 		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }

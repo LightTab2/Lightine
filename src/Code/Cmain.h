@@ -12,7 +12,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 #include "txtReader.h"
 #include <ctime>
-//Hello everyone, I wish to say that my English isn't so good and any correction would be very kind =)
+#include <map>
+//Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
 {
 	public:
@@ -78,8 +79,9 @@ class Cmain
 		float ssetPos = 0;															//lsetPos for gamestate -1
 		int numbss = 0;																//The real view change done
 
-		float choicefactor = 0;														//Used in Fades to create precise alpha of choicefillcolor
-		float profilesmenufillfactor = 0;
+		float choicefactor = 0;														//Used in Fades to determine precise alpha of choicefillcolor
+		float typeboxfactor = 0;													//Used in Fades to determine precise alpha of scenario.typeboxfillcolor
+		float profilesmenufillfactor = 0;											//Used in Fades to determine precise alpha of menuprofilesmenufillcolor
 
 		std::string	fulltwo;														//String that holds height value
 		std::string	fullone;														//String that holds width value
@@ -97,11 +99,11 @@ class Cmain
 		sf::Font font2;								 								//Font for the game's text(scenario.additional)
 
 		sf::Sprite Background;														//"Super secret image that has inside very hidden data about safety of our country. Trust me." I think it's background image, but not sure lfmao
-		sf::Sprite michaupase³ke³;													//Much Informations Contains Heavy And Universal "Partically Anihilated Squirell" Enquired f£om King £obert (£ stands for joker) - horizontal bar where show_stats is located, later inventory too
+		sf::Sprite michaupase³ke³;													//Horizontal bar where show_stats is located, later inventory too
 		sf::Sprite sliders;															//Slider used to move the view
 		sf::Sprite bars;															//Slider moves within it
-		sf::Sprite arrowdn;															//The "down" arrow(with syndrome of... wait no...nvm) sprite
-		sf::Sprite arrowup;															//The "up" arrow("up" sometimes stands for "high", so maybe it've taken some... wait no...nvm, my logic O_o) sprite
+		sf::Sprite arrowdn;															//The "down" arrow sprite
+		sf::Sprite arrowup;															//The "up" arrow sprite
 		sf::Sprite showstats;														//The "Show Stats" image seen in gamestate 1
 		sf::Sprite resets;															//When you'll click showstats you'll see it in the same position
 
@@ -145,7 +147,7 @@ class Cmain
 		sf::RectangleShape profilesmenu;											//The rectangle where profiles or stories are stored
 		
 		sf::Color
-			color[35],																//Many, very many colors, so you can adjust your game
+			color[34],																//Many, very many colors, so you can adjust your game
 			&textcolor = color[0],
 			&menucolor = color[1],
 			&menuselectcolor = color[2],

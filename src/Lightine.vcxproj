@@ -178,6 +178,7 @@
     <ClInclude Include="Code\CustImg.h" />
     <ClInclude Include="Code\Exceptions.h" />
     <ClInclude Include="Code\Stat.h" />
+    <ClInclude Include="Code\TypeBox.h" />
     <ClInclude Include="Code\txtReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

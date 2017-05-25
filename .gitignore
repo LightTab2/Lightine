@@ -40,3 +40,5 @@
 *.log
 *.idb
 *.ilk
+*.enc
+*.lastcodeanalysissucceeded

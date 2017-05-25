@@ -294,6 +294,7 @@ void Cmain::LoadSave()
 		const std::locale utf8_locales = std::locale(empty_locales, converters);
 		save.imbue(utf8_locales);
 		int state = 0;
+		sf::Uint8 t = 0;
 		while (state < 5) //reading... 
 		{
 			std::getline(save, insert);
@@ -306,20 +307,24 @@ void Cmain::LoadSave()
 			int arglistx;
 			if (state == 0)
 			{
-				static sf::Uint8 t = 0;
 				switch (t)
 				{
 				case 0:
 					if(!scenario.stoicheck(insert, scenario.sgoto)) warn(L"[LoadingSave]FATAL stoicheck failure(\"goto\" variable)");
-					scenario.scgoto = scenario.cgoto = scenario.sgoto;
+					scenario.cgoto = scenario.sgoto;
 					break;
 				case 1:
 					scenario.stoicheck(insert, scenario.dgoto);
 					break;
 				case 2:
+				{
 					int variable = 0;
 					if (!scenario.stoicheck(insert, variable)) warn(L"[LoadingSave]FATAL stoicheck failure(\"loadtextonly\" variable)");
 					scenario.loadtextonly = static_cast<bool>(variable);
+				}
+					break;
+				case 3:
+					scenario.path = insert;
 					break;
 				}
 				++t;
@@ -379,10 +384,10 @@ void Cmain::LoadSave()
 					if (state == 1) names[namelist] = insert.substr(0U, insert.size());
 					else if (!scenario.stoicheck(insert.substr(0U, insert.size()), arguments[arglist - namelist])) warn(L"[Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist - namelist));
 					insert.clear();
-					if (state == 1) scenario.io_stats.push_back(IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], names[1]));
-					else if (state == 2) scenario.i_stats.push_back(IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]));
-					else if (state == 3) scenario.s_stats.push_back(StringStat(names[0], names[1], arguments[0], arguments[1], arguments[2]));
-					else if (state == 4) scenario.Ints.push_back(Int(names[0], arguments[0], arguments[1], arguments[2]));
+					if (state == 1) scenario.io_stats.emplace_back(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], arguments[5], names[1]);
+					else if (state == 2) scenario.i_stats.emplace_back(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4]);
+					else if (state == 3) scenario.s_stats.emplace_back(names[0], names[1], arguments[0], arguments[1], arguments[2]);
+					else if (state == 4) scenario.Ints.emplace_back(names[0], arguments[0], arguments[1], arguments[2]);
 				}
 				else warn(L"[LoadingSave] Error: an/a " + name + L" with name \"" + names[0] + L"\" couldn't be loaded (last argument empty)");
 			}
@@ -390,7 +395,7 @@ void Cmain::LoadSave()
 			else warn(L"Error: could not load(missing arguments or stoicheck failure) an/a " + name + L" with missing name");
 		}
 		scenario.Parse();
-		scenario.choicesel = -1;
+		//scenario.choicesel = -1;
 	}
 	else
 	{
@@ -422,19 +427,19 @@ void Cmain::LoadStatics()
 		{
 			if (insert.empty()) break;
 			std::wstring name = insert.substr(0U, insert.find(L','));
+			if (scenario.chName(name)) { std::getline(save, insert); continue; };
 			int value;
 			if (scenario.stoicheck(insert.substr(insert.find(L',') + 1U), value))
-			{
-				scenario.stc_i.push_back(StcIntStat(name, value));
-			}
+					scenario.stc_i.emplace_back(name, value);
 			else throw w_err(L"Error loading Stc.txt, this should not happend unless you were editing files. Delete Stc.txt");
 			std::getline(save, insert);
 		}
 		while (std::getline(save, insert))	
 		{
 			std::wstring name = insert.substr(0U, insert.find(L',')), value = insert.substr(insert.find(L',') + 1U);
+			if (scenario.chName(name)) continue;
 			warn(value);
-			scenario.stc_s.push_back(StcStringStat(name, value));
+			scenario.stc_s.emplace_back(name, value);
 			if (insert.empty()) break;
 		}
 	}
