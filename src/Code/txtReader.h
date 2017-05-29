@@ -34,9 +34,9 @@ public:																	//Read from goto to end(next or end command)
 	int the = 0;														//Current down margin
 	int she = 0;														//Like 'the' but for gamestate '-1'
 	float w2;															//Made to improve performance - calculates commonly used statement //choice
-	int h;																//Copy of h in Cmain, thought about pointer but it is read only, while it needs to change change in Cmain::sSaveOptions
+	int *h;																//Copy of h in Cmain, it needs to change change in Cmain::sSaveOptions
 	int st = 0;															//How many times you need to scroll to get from top to down
-	int w;																//Copy of w in Cmain, thought about pointer but it is read only, while it needs to change in Cmain::sSaveOptions
+	int *w;																//Copy of w in Cmain, it needs to change in Cmain::sSaveOptions
 	int sgoto = 0;														//Parse() starts of reading at this line
 	int cgoto = 0;														//Copy of sgoto, used when saving the game
 	int dgoto = 0;														//Stops parsing when sgoto hits dgoto's value	
@@ -68,7 +68,7 @@ public:																	//Read from goto to end(next or end command)
 	sf::Color *textchoiceunavaiblecolor;								//Pointer to cmain's choiceunavaiblecolor
 	std::wstring path;													//Path to current story file
 	sf::Color statcolor, statgaincolor, statlosscolor, statoppositecolor,
-		typeboxcolor, typeboxfillcolor,
+		typeboxcolor, typeboxfillcolor, typeboxtextcolor,
 		gaintextcolor;													//Colors needed by ScenarioParser
 	static std::wstring apath;											//For static stats, path to %APPDATA%
 	//std::wstring *type;												//So you can enter some text and make StringStat out of it

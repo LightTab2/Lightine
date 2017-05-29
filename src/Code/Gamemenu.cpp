@@ -75,7 +75,7 @@ void Cmain::MainEvent()
 				}
 				else if (gamestate == 1 && scenario.typesel != -1)
 				{
-					if (scenario.typeboxes[scenario.typesel].s->length() != 0U) { scenario.typeboxes[scenario.typesel].s->pop_back(); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); }
+					if (scenario.typeboxes[scenario.typesel].s->length() != 0U) { scenario.typeboxes[scenario.typesel].s->pop_back(); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); scenario.ssreload = true; }
 				}
 			}
 			else if (mainevent.key.code == sf::Keyboard::Return) {
@@ -256,7 +256,7 @@ void Cmain::MainEvent()
 			}
 			else if (gamestate == 1 && scenario.typesel != -1)
 			{
-				if (scenario.typeboxes[scenario.typesel].s->length() != 20) { scenario.typeboxes[scenario.typesel].s->push_back(mainevent.text.unicode); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); }
+				if (scenario.typeboxes[scenario.typesel].s->length() != 15 && mainevent.text.unicode > 31U && mainevent.text.unicode < 127U) { scenario.typeboxes[scenario.typesel].s->push_back(mainevent.text.unicode); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); scenario.ssreload = true; }
 			}
 			break;
 		}
@@ -318,7 +318,7 @@ void Cmain::onRelease()
 		}
 		else if (scenario.drawnext && Contains(scenario.Bnext))
 		{
-			if (scenario.choiceneed == true && scenario.choicesel == -1) goto end;
+			if (scenario.choiceneed == true && scenario.choicesel == -1) return;
 			sviewchange(0);
 			scenario.choiceneed = scenario.loadtextonly = false;
 			if (scenario.choicesel > -1)
@@ -336,7 +336,6 @@ void Cmain::onRelease()
 				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds())) { scenario.typesel = x; return; }
 			}
 		}
-		end: scenario.typesel = -1;
 		break;
 	case 2:
 		if (Contains(button_1)) {
@@ -465,6 +464,7 @@ void Cmain::onClick()
 					for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
 					scenario.choice[x].cs.setFillColor(textchoicefillcolor);
 					scenario.choicesel = x;
+					resetSel();
 					break;
 				}
 			}
@@ -477,7 +477,7 @@ void Cmain::onClick()
 					return; //flow ends here
 				}
 			}
-			scenario.typesel = -1;
+			resetSel();
 		break;
 	case 3:
 		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }
@@ -580,5 +580,13 @@ void Cmain::onClick()
 			}
 		}
 		break;
+	}
+}
+
+inline void Cmain::resetSel()
+{
+	if (scenario.typesel != -1) {
+		scenario.typeboxes[scenario.typesel].rt.setFillColor(sf::Color::Transparent);
+		scenario.typesel = -1;
 	}
 }

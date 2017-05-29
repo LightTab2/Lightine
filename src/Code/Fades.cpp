@@ -110,7 +110,7 @@ inline void Cmain::Manage1(const bool add)
 		if (color1.a < static_cast<sf::Uint8>(3)) color1.a = static_cast<sf::Uint8>(0);
 		else color1.a -= 2;
 	}
-	textcolor.a = textchoicecolor.a = textchoiceunavaiblecolor.a = scenario.typeboxcolor.a = scenario.gaintextcolor.a = color1.a;
+	textcolor.a = textchoicecolor.a = textchoiceunavaiblecolor.a = scenario.typeboxcolor.a = scenario.typeboxtextcolor.a = scenario.gaintextcolor.a = color1.a;
 	textchoicefillcolor.a = static_cast<sf::Uint8>(choicefactor * color1.a);
 	scenario.typeboxfillcolor.a = static_cast<sf::Uint8>(typeboxfactor * color1.a);
 	showstats.setColor(color1);
@@ -138,8 +138,9 @@ inline void Cmain::Manage1(const bool add)
 	{
 		TypeBox &t = scenario.typeboxes[index];
 		if (index == scenario.typesel) t.rt.setFillColor(scenario.typeboxfillcolor);
-		t.t.setFillColor(scenario.typeboxcolor);
-		t.rt.setFillColor(scenario.typeboxcolor);
+		else t.rt.setFillColor(sf::Color::Transparent);
+		t.t.setFillColor(scenario.typeboxtextcolor);
+		t.rt.setOutlineColor(scenario.typeboxcolor);
 	}
 	scenario.next.setColor(color1);
 	scenario.text.setFillColor(textcolor);

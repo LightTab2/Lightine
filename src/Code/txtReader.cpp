@@ -36,17 +36,17 @@ void ScenarioParser::Parse()
 	tinsr.clear();
 	text.setString(L"");
 	slideratv = false;
-	the = h / 12;
+	the = *h / 12;
 	typesel = choicesel = -1;
 	if (pempty)
 	{
-		text.setPosition(round(w / 24.f), static_cast<float>(the));
+		text.setPosition(round(*w / 24.f), static_cast<float>(the));
 		text.setString("Unable to save the game.\nAdd at least one profile.");
 		return;
 	}
 	else if (sempty)
 	{
-		text.setPosition(round(w / 24.f), static_cast<float>(the));
+		text.setPosition(round(*w / 24.f), static_cast<float>(the));
 		text.setString("Unable to save the game.\nAdd at least one story.");
 		return;
 	}
@@ -57,12 +57,12 @@ void ScenarioParser::Parse()
 	GotoLine(cgoto);
 	ParseMainBody();
 	in.close();
-	st = static_cast<int>(round((the - h) / (100.f *(w + h) / 1400.f)));
+	st = static_cast<int>(round((the - *h) / (100.f *(*w + *h) / 1400.f)));
 	if (!debug) {
 		loadtextonly = true;
 		Save();
 	}
-	if (the > h) slideratv = true;
+	if (the > *h) slideratv = true;
 	if (ssreload) Show_stats();
 }
 
@@ -201,7 +201,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			iocalc:
 				x->t[2].setString(std::to_wstring(x->value));
 				x->t[2].setOrigin(2, round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f));
-				x->setSprite(IOStatspecial(static_cast<int>(round(w / 1.45f)), x->s.getGlobalBounds().height, x->value, x->min, x->max, x->threshold));
+				x->setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), x->s.getGlobalBounds().height, x->value, x->min, x->max, x->threshold));
 				x->t[2].setPosition(static_cast<sf::Vector2f>(x->pos[2]));
 			}
 			else if (auto x = FindIStat(name))
@@ -226,7 +226,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 				}
 				x->t.setString(x->name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%");
 				x->t.setOrigin(0, round(x->t.getLocalBounds().top + x->t.getLocalBounds().height / 2.f));
-				x->setSprite(IntSpecial(static_cast<int>(round(w / 1.45f)), x->s.getGlobalBounds().height, arg[0], arg[1], arg[2]));
+				x->setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), x->s.getGlobalBounds().height, arg[0], arg[1], arg[2]));
 				x->t.setPosition(static_cast<sf::Vector2f>(x->pos[0]));
 			}
 			else if (auto x = FindInt(name))
@@ -621,9 +621,9 @@ void ScenarioParser::RoundRect()
 {
 	if (choice.back().text.getString().isEmpty()) return;
 	sf::ConvexShape rrect;
-	float X = 0, Y = 0, ratio = (w + h) / 1400.f;
+	float X = 0, Y = 0, ratio = (*w + *h) / 1400.f;
 	int radius = static_cast<int>(round(15.f * ratio));
-	int rectHeight = static_cast<int>(round(choice.back().text.getGlobalBounds().height + (w + h) / 350.f));
+	int rectHeight = static_cast<int>(round(choice.back().text.getGlobalBounds().height + (*w + *h) / 350.f));
 	if (rectHeight < radius*2) rectHeight = radius*2;
 	float add = radius / 15.f;
 	int rectWidth = static_cast<int>(choice.back().text.getGlobalBounds().width + 1.5f * radius);
@@ -632,7 +632,7 @@ void ScenarioParser::RoundRect()
 	cs.setOutlineThickness(round(2.f * ratio));
 	cs.setOutlineColor(text.getFillColor());
 	rrect.setPointCount(60);
-	rrect.setOutlineThickness(round(2.f * (h + w) / 1400.f));
+	rrect.setOutlineThickness(round(2.f * (*h + *w) / 1400.f));
 	rrect.setOutlineColor(text.getFillColor());
 	rrect.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0))); //change the color
 	unsigned int i;
@@ -663,7 +663,7 @@ void ScenarioParser::RoundRect()
 		X = sqrt(radius * radius - Y*Y);
 		rrect.setPoint(45 + i, sf::Vector2f(radius - X, radius - Y));
 	}
-	rrect.setPosition(round(choice.back().text.getGlobalBounds().left - choice.back().text.getLocalBounds().left - (w+h)/700.f), static_cast<float>(the));
+	rrect.setPosition(round(choice.back().text.getGlobalBounds().left - choice.back().text.getLocalBounds().left - (*w+*h)/700.f), static_cast<float>(the));
 	choice.back().text.setOrigin(round(choice.back().text.getLocalBounds().left + choice.back().text.getLocalBounds().width/2), round(choice.back().text.getLocalBounds().top + choice.back().text.getLocalBounds().height / 2));
 	choice.back().text.setPosition(round(rrect.getPosition().x + rrect.getGlobalBounds().width/2.f), rrect.getPosition().y + rectHeight / 2);
 	cs.setPosition(rrect.getPosition().x - round(cs.getGlobalBounds().width*1.2f), round(rrect.getGlobalBounds().top + (rectHeight - cs.getGlobalBounds().height)/2.f));
@@ -887,7 +887,7 @@ void ScenarioParser::Show_stats()
 	she = static_cast<int>(1.4f * th);
 	astat.setCharacterSize(th);
 	std::sort(s_stats.begin(), s_stats.end());
-	for (int prior = priorlimit; prior >= 0; --prior)
+	for (int prior = priorlimit; prior >= 0; --prior) //maybe create here a multimap?
 	{
 		for (auto &s : s_stats)
 		{
@@ -897,7 +897,7 @@ void ScenarioParser::Show_stats()
 				s.t.setString(s.name + L": ");
 				if (!s.vhidden) s.t.setString(s.t.getString() + s.value);
 				s.t.setOrigin(0, round(s.t.getLocalBounds().top));
-				s.t.setPosition(round(w / 12.f), static_cast<float>(she));
+				s.t.setPosition(round(*w / 12.f), static_cast<float>(she));
 				s.pos = static_cast<sf::Vector2i>(s.t.getPosition());
 				she += static_cast<int>(round(th * 1.25f));
 				s.read = true;
@@ -922,19 +922,19 @@ void ScenarioParser::Show_stats()
 				astat.setFillColor(c);
 				astat.setStyle(sf::Text::Regular);
 
-				i.setSprite(IOStatspecial(static_cast<int>(round(w / 1.45f)), static_cast<int>(round(th * 1.2f)), i.value, i.min, i.max, i.threshold));
-				i.s.setPosition(round(w / 12.f), static_cast<float>(she));
+				i.setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(round(th * 1.2f)), i.value, i.min, i.max, i.threshold));
+				i.s.setPosition(round(*w / 12.f), static_cast<float>(she));
 				i.s.setColor(sf::Color(255, 255, 255, 0));
-				i.pos[3] = sf::Vector2i(static_cast<int>(round(w / 12.f)), static_cast<int>(i.s.getPosition().y));
+				i.pos[3] = sf::Vector2i(static_cast<int>(round(*w / 12.f)), static_cast<int>(i.s.getPosition().y));
 
 				float y = round(i.s.getPosition().y + i.s.getGlobalBounds().height / 2.f);
 				she += static_cast<int>(round(th * 1.65f));
 				i.read = true;
 
-				i.t[0].setPosition(round(w / 11.f), y);
+				i.t[0].setPosition(round(*w / 11.f), y);
 				i.pos[0] = static_cast<sf::Vector2i>(i.t[0].getPosition());
 				float x = i.t[0].getGlobalBounds().left + i.t[0].getGlobalBounds().width; //i.t[0].getGlobalBounds().left + i.t[0].getGlobalBounds().width double times looks rather bad
-				i.t[1].setPosition(round(i.s.getGlobalBounds().left + i.s.getGlobalBounds().width - (w / 11.f - w / 12.f) - i.t[1].getGlobalBounds().width), y);
+				i.t[1].setPosition(round(i.s.getGlobalBounds().left + i.s.getGlobalBounds().width - (*w / 11.f - *w / 12.f) - i.t[1].getGlobalBounds().width), y);
 				i.pos[1] = static_cast<sf::Vector2i>(i.t[1].getPosition());
 				i.t[2].setPosition(round(x  + (i.t[1].getGlobalBounds().left - x - i.t[2].getGlobalBounds().width) / 2.f), y);
 				i.pos[2] = static_cast<sf::Vector2i>(i.t[2].getPosition());
@@ -956,11 +956,11 @@ void ScenarioParser::Show_stats()
 				i.t = astat;
 				i.t.setString(i.name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%");
 				i.t.setOrigin(0, round(i.t.getLocalBounds().top + i.t.getLocalBounds().height / 2.f));
-				i.setSprite(IntSpecial(static_cast<int>(round(w / 1.45f)), static_cast<int>(round(th * 1.2f)), arg[0], arg[1], arg[2]));
-				i.s.setPosition(round(w / 12.f), static_cast<float>(she));
+				i.setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(round(th * 1.2f)), arg[0], arg[1], arg[2]));
+				i.s.setPosition(round(*w / 12.f), static_cast<float>(she));
 				i.s.setColor(sf::Color(255, 255, 255, 0));
-				i.pos[1] = sf::Vector2i(static_cast<int>(round(w / 12.f)), static_cast<int>(i.s.getPosition().y));
-				i.t.setPosition(round(w / 11.f), round(i.s.getPosition().y + i.s.getGlobalBounds().height / 2.f));
+				i.pos[1] = sf::Vector2i(static_cast<int>(round(*w / 12.f)), static_cast<int>(i.s.getPosition().y));
+				i.t.setPosition(round(*w / 11.f), round(i.s.getPosition().y + i.s.getGlobalBounds().height / 2.f));
 				i.pos[0] = static_cast<sf::Vector2i>(i.t.getPosition());
 
 				astat.setFillColor(c);
@@ -977,7 +977,7 @@ void ScenarioParser::Show_stats()
 				i.t = astat;
 				i.t.setString(i.name + L": " + std::to_wstring(i.value));
 				i.t.setOrigin(0,round(i.t.getLocalBounds().top));
-				i.t.setPosition(round(w / 12.f), static_cast<float>(she));
+				i.t.setPosition(round(*w / 12.f), static_cast<float>(she));
 				i.pos = static_cast<sf::Vector2i>(i.t.getPosition());
 				she += static_cast<int>(round(th * 1.25f));
 				i.read = true;
@@ -1025,7 +1025,7 @@ const sf::Image ScenarioParser::IOStatspecial(const int w, const int h, int valu
 		}
 		++x;
 	}
-	return img; //w razie lagów zastosować skalowanie = in case of lags use setScale()
+	return img; //*w razie lagów zastosować skalowanie = in case of lags use setScale()
 }
 
 const sf::Image ScenarioParser::IntSpecial(const int w, const int h, int value, int min, int max)
@@ -1052,7 +1052,7 @@ const sf::Image ScenarioParser::IntSpecial(const int w, const int h, int value, 
 		}
 		++x;
 	}
-	return img; //w razie lagów zastosować skalowanie // in case of lags use setScale()
+	return img; //*w razie lagów zastosować skalowanie // in case of lags use setScale()
 }
 
 bool ScenarioParser::IfCheck(std::wstring &insr)
@@ -1312,16 +1312,19 @@ void ScenarioParser::CreateTypeBox()
 {
 	TypeBox &tb = typeboxes.back();
 	tb.t.setFont(*text.getFont());
-	tb.t.setFillColor(typeboxcolor);
-	tb.t.setCharacterSize(static_cast<unsigned int>(text.getCharacterSize() * 0.8f));
-	tb.t.setString("00000000000000000000"); //it is fixed size for now
+	tb.t.setFillColor(sf::Color(0, 0, 0, 0));
+	tb.t.setCharacterSize(static_cast<unsigned int>(text.getCharacterSize() * 0.9f));
+	tb.t.setString("yWWWWWWWWWWWWWWW"); //it is fixed size for now
 	const sf::FloatRect &b = tb.t.getLocalBounds();
 
 	tb.rt.setSize(sf::Vector2f(b.width + 8.f, b.height + 8.f));
+	tb.rt.setOutlineThickness(static_cast<unsigned int>(4.f * (*w+*h)/(1400.f)));
 	tb.rt.setOutlineColor(typeboxcolor);
-	tb.t.setPosition(sf::Vector2f(round(w / 24.f) - tb.t.getLocalBounds().left, the - tb.t.getLocalBounds().top));
-	tb.rt.setPosition(sf::Vector2f(round(w / 24.f) - 4.f, the - 4.f));
-	the += typeboxes.back().rt.getSize().y * 1.15f;
+	tb.rt.setFillColor(sf::Color(0, 0, 0, 0));
+	tb.t.setPosition(sf::Vector2f(round(w2 + 4.f + tb.rt.getOutlineThickness() - tb.t.getLocalBounds().left), static_cast<float>(the - tb.t.getLocalBounds().top)));
+	tb.rt.setPosition(sf::Vector2f(round(w2 + tb.rt.getOutlineThickness()), static_cast<float>(the - 4)));
+	the += typeboxes.back().rt.getSize().y * 1.05f;
+	tb.t.setString(*tb.s); //it is fixed size for now
 }
 
 void ScenarioParser::TextProcess(std::wstring &preinsr, std::wstring &insr)
@@ -1339,7 +1342,7 @@ void ScenarioParser::TextProcess(std::wstring &preinsr, std::wstring &insr)
 		{
 			SplitText(false, insr);
 			MergeText();
-			next.setPosition(round(w / 2 - Bnext.width / 2.f), round(the + Bnext.height / 2.f));
+			next.setPosition(round(*w / 2 - Bnext.width / 2.f), round(the + Bnext.height / 2.f));
 			Bnext = next.getGlobalBounds();
 			the += static_cast<int>(round(Bnext.height * 1.6f));
 			drawnext = true;

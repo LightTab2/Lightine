@@ -16,6 +16,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 //Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
 {
+	friend class ScenarioParser;
 	public:
 		bool quit = false;															//True - program closes	
 
@@ -243,4 +244,6 @@ class Cmain
 		void Draw1();
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Drawminus1();
+
+		void resetSel();
 };

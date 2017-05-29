@@ -28,6 +28,7 @@ Cmain::Cmain()
 	CreateDirectory(L"../../bin/Scripts", NULL);
 	CreateDirectory(ScenarioParser::apath.c_str(), NULL);
 	LoadOptions(); //reading from ini
+	scenario.w = &w; scenario.h = &h;
 		if (!Background_texture.loadFromFile("../../bin/Images/gradient.png")) throw w_err(L"Missing file: \"bin/Images/gradient.png\"");
 		if (!michaupase³ke³_t.loadFromFile("../../bin/Images/margin.png")) throw w_err(L"Missing file from directory \"bin/Images/margin.png\"");
 		if (!scenario.next_t.loadFromFile("../../bin/Images/Next.png")) throw w_err(L"Missing file from directory \"bin/Images/Next.png\"");
@@ -244,8 +245,8 @@ void Cmain::SaveOptions()
 	else h = scenario.stoicheck(fulltwo, 0);
 	if (h < 600) h = 600;
 	else if (static_cast<unsigned int>(h) > desktop.y) h = desktop.y;
-	scenario.w = w;
-	scenario.h = h;
+	//scenario.w = w;
+	//scenario.h = h;
 	scenario.w2 = static_cast<float>(w / 12);
 
 	if (cfullscreen != fullscreen || w != cw || h != ch) 
@@ -577,8 +578,8 @@ void Cmain::LoadOptions()
 	else if (static_cast<unsigned int>(h) > desktop.y) h = desktop.y;
 	fulltwo = std::to_string(h);
 
-	scenario.w = w;
-	scenario.h = h;
+	//scenario.w = w;
+	//scenario.h = h;
 	scenario.w2 = round(w / 12.f);
 
 	std::getline(reader, name);
@@ -919,6 +920,14 @@ void Cmain::LoadOptions()
 	scenario.typeboxcolor.a = 0;
 
 	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.r = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.g = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.b = scenario.stoicheck(buffer, 0);
+	scenario.typeboxtextcolor.a = 0;
+
+	std::getline(reader, name); scut(name, 25U, buffer);
 	scenario.typeboxfillcolor.r = scenario.stoicheck(buffer, 0);
 	std::getline(reader, name); scut(name, 25U, buffer);
 	scenario.typeboxfillcolor.g = scenario.stoicheck(buffer, 0);
@@ -1077,6 +1086,9 @@ void Cmain::SaveToFile()
 		<< "\ntexttypeboxcolor.r = " << static_cast<int>(scenario.typeboxcolor.r)
 		<< "\ntexttypeboxcolor.g = " << static_cast<int>(scenario.typeboxcolor.g)
 		<< "\ntexttypeboxcolor.b = " << static_cast<int>(scenario.typeboxcolor.b)
+		<< "\ntexttypeboxtextcolor.r = " << static_cast<int>(scenario.typeboxtextcolor.r)
+		<< "\ntexttypeboxtextcolor.g = " << static_cast<int>(scenario.typeboxtextcolor.g)
+		<< "\ntexttypeboxtextcolor.b = " << static_cast<int>(scenario.typeboxtextcolor.b)
 		<< "\ntexttypeboxfillcolor.r = " << static_cast<int>(scenario.typeboxfillcolor.r)
 		<< "\ntexttypeboxfillcolor.g = " << static_cast<int>(scenario.typeboxfillcolor.g)
 		<< "\ntexttypeboxfillcolor.b = " << static_cast<int>(scenario.typeboxfillcolor.b)
