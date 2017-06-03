@@ -19,14 +19,13 @@ struct Stat																	//Stats that changes hero over game, you can see not
 {
 	std::wstring name;														//Name; identificator
 	bool hidden;															//If true - it won't show in gamestate -1
-	bool read = false;														//When acquiring all object of this type and processing them it might save a lot of time
-	unsigned int prior;														//Prior mechanizm is used to order all Stats
-	bool operator<(const Stat &cmp){
+	//unsigned int prior;														//Prior mechanizm is used to order all Stats
+	bool operator<(const Stat &cmp) const{
 		return this->name < cmp.name;
 	};
 protected:
-	Stat(std::wstring &name, const bool hidden, const unsigned int prior)
-		: name(name), hidden(hidden), prior(prior > priorlimit ? priorlimit : prior) {}
+	Stat(std::wstring &name, const bool hidden/*, const unsigned int prior*/)
+		: name(name), hidden(hidden)/*, prior(prior > priorlimit ? priorlimit : prior)*/ {}
 };
 
 struct IStat
@@ -48,8 +47,8 @@ protected:
 class IntStat : public Stat, public IStat									//Indicates in % how much you've gained something
 {
 public:
-	IntStat(std::wstring &name, const int value, const int max, const int min, const bool hidden, const unsigned int prior)
-		: Stat(name, hidden, prior), IStat(value), max(max), min(min)
+	IntStat(std::wstring &name, const int value, const int max, const int min, const bool hidden)
+		: Stat(name, hidden), IStat(value), max(max), min(min)
 	{
 		if (max == min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
 		else if (max < min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value lesser than minimum one.");
@@ -71,8 +70,8 @@ private:
 class IntStatOpposite : public Stat, public IStat								//Indicates in % how much you've gained something and another thing (while one increases, another decreases)
 {
 public:
-	IntStatOpposite(std::wstring &name, const int value, const int max, const int min, const int threshold, const bool hidden, const unsigned int prior, std::wstring &opposite)
-		: Stat(name, hidden, prior), IStat(value), max(max), min(min), threshold(threshold), opposite(opposite)
+	IntStatOpposite(std::wstring &name, const int value, const int max, const int min, const int threshold, const bool hidden, std::wstring &opposite)
+		: Stat(name, hidden), IStat(value), max(max), min(min), threshold(threshold), opposite(opposite)
 	{
 		if (max == min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
 		else if (max < min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value lesser than minimum one.");
@@ -95,16 +94,16 @@ private:
 
 struct Int : public Stat, public IStat
 {
-	Int(std::wstring &name, const int value, const bool hidden, const unsigned int prior)
-		: Stat(name, hidden, prior), IStat(value) {}
+	Int(std::wstring &name, const int value, const bool hidden)
+		: Stat(name, hidden), IStat(value) {}
 	sf::Vector2i pos;
 	sf::Text t;																//This is displayed in show_stats
 };
 
 struct StringStat : public Stat, public SStat								//Stat that's value is a string, eg. pseudonim of the hero
 {
-	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden, const unsigned int prior)
-		: Stat(name, namehidden, prior), SStat(value), vhidden(valuehidden) {}
+	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden)
+		: Stat(name, namehidden), SStat(value), vhidden(valuehidden) {}
 	bool vhidden;															//Might be usefull sometimes... hides value leaving only name
 	sf::Vector2i pos;
 	sf::Text t;

@@ -70,12 +70,51 @@ void Cmain::MainEvent()
 				}
 				else if (enternew && !newname.getString().isEmpty())
 				{
-					newname.setString(newname.getString().substring(0U, newname.getString().getSize() - 1U));
+					auto t = newname.getString();
+					if (t.getSize() > 1)
+					{
+						if (t[t.getSize()-1U] == '\n')
+						{
+							t.erase(t.getSize() - 2, 2);
+						}
+						else t.erase(t.getSize() - 1);
+					}
+					else t.clear();
+					newname.setString(t);
 					newname.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(newname.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(ctext.getGlobalBounds().height*0.6f)))));
 				}
 				else if (gamestate == 1 && scenario.typesel != -1)
 				{
-					if (scenario.typeboxes[scenario.typesel].s->length() != 0U) { scenario.typeboxes[scenario.typesel].s->pop_back(); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); scenario.ssreload = true; }
+					if (scenario.typeboxes[scenario.typesel].DeleteChar())
+					{
+						auto box = scenario.typeboxes[scenario.typesel].rt.getSize();
+						scenario.typeboxes[scenario.typesel].rt.setSize(sf::Vector2f(box.x, box.y - scenario.Tsize));
+						for (int x = scenario.typesel + 1; x != scenario.typeboxes.size(); ++x)
+						{
+							box = scenario.typeboxes[x].rt.getPosition();
+							scenario.typeboxes[x].rt.setPosition(box.x, box.y - scenario.Tsize);
+							box = scenario.typeboxes[x].t.getPosition();
+							scenario.typeboxes[x].t.setPosition(box.x, box.y - scenario.Tsize);
+						}
+						for (auto &c : scenario.choice)
+						{
+							box = c.c.getPosition();
+							c.c.setPosition(box.x, box.y - scenario.Tsize);
+							box = c.cs.getPosition();
+							c.cs.setPosition(box.x, box.y - scenario.Tsize);
+							box = c.text.getPosition();
+							c.text.setPosition(box.x, box.y - scenario.Tsize);
+						}
+						box = scenario.next.getPosition();
+						scenario.next.setPosition(box.x, box.y - scenario.Tsize);
+						scenario.dmargin -= scenario.Tsize;
+						box = sliders.getPosition();
+						sliders.setPosition(box.x, round(box.y * ((scenario.dmargin + scenario.Tsize) / scenario.dmargin)));
+						if (window.mapCoordsToPixel(sliders.getPosition()).y > smaxdown)
+						sliders.setPosition(window.mapPixelToCoords(sf::Vector2i(box.x, smaxdown - sliders.getGlobalBounds().height)));
+						slidersb = sliders.getGlobalBounds();
+					}
+					scenario.ssreload = true;
 				}
 			}
 			else if (mainevent.key.code == sf::Keyboard::Return) {
@@ -181,12 +220,12 @@ void Cmain::MainEvent()
 				if (scenario.slideratv)
 				{
 					if (gamestate == 1) {
-						lsetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st); //delta (1 or -1) is the move of slider
+						lsetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.scrolltimes); //delta (1 or -1) is the move of slider
 						sviewchange(lsetPos);
 					}
 					else if (gamestate == -1 && !resetsb)
 					{
-						ssetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.st);
+						ssetPos -= mainevent.mouseWheelScroll.delta * static_cast<float>(smax) / static_cast<float>(scenario.scrolltimes);
 						sviewchange(ssetPos);
 					}
 				}
@@ -249,14 +288,48 @@ void Cmain::MainEvent()
 			else if (enternew && (gamestate == 6 || gamestate == 7))
 			{
 				const sf::Uint32 &achar = mainevent.text.unicode;
-				if (newname.getString().getSize() < 13U && achar > 31U && achar < 127U && achar != 47U && achar != 92U && achar != 58U && achar != 42U && achar != 63U && achar != 34U && achar != 60U && achar != 62U && achar != 124U) {
-					newname.setString(newname.getString() + achar);
+				if (achar > 31U && achar < 127U && achar != 47U && achar != 92U && achar != 58U && achar != 42U && achar != 63U && achar != 34U && achar != 60U && achar != 62U && achar != 124U) {
+					auto t = newname.getString() + achar;
+					newname.setString(t);
+					if ((newname.getGlobalBounds().width) >(w - w/12.f))
+					{
+						t.insert(t.getSize() - 1U, L'\n');
+						newname.setString(t);
+					}
 					newname.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(newname.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(ctext.getGlobalBounds().height*0.6f)))));
 				}
 			}
 			else if (gamestate == 1 && scenario.typesel != -1)
 			{
-				if (scenario.typeboxes[scenario.typesel].s->length() != 15 && mainevent.text.unicode > 31U && mainevent.text.unicode < 127U) { scenario.typeboxes[scenario.typesel].s->push_back(mainevent.text.unicode); scenario.typeboxes[scenario.typesel].t.setString(*scenario.typeboxes[scenario.typesel].s); scenario.ssreload = true; }
+				if (scenario.typeboxes[scenario.typesel].InsertChar(mainevent.text.unicode))
+				{
+					auto box = scenario.typeboxes[scenario.typesel].rt.getSize();
+					scenario.typeboxes[scenario.typesel].rt.setSize(sf::Vector2f(box.x, box.y + scenario.Tsize));
+					for (int x = scenario.typesel + 1; x != scenario.typeboxes.size(); ++x)
+					{
+						box = scenario.typeboxes[x].rt.getPosition();
+						scenario.typeboxes[x].rt.setPosition(box.x, box.y + scenario.Tsize);
+						box = scenario.typeboxes[x].t.getPosition();
+						scenario.typeboxes[x].t.setPosition(box.x, box.y + scenario.Tsize);
+					}
+					for (auto &c : scenario.choice)
+					{
+						box = c.c.getPosition();
+						c.c.setPosition(box.x, box.y + scenario.Tsize);
+						box = c.cs.getPosition();
+						c.cs.setPosition(box.x, box.y + scenario.Tsize);
+						box = c.text.getPosition();
+						c.text.setPosition(box.x, box.y + scenario.Tsize);
+					}
+					box = scenario.next.getPosition();
+					scenario.next.setPosition(box.x, box.y + scenario.Tsize);
+					scenario.dmargin += scenario.Tsize;
+					box = sliders.getPosition();
+					sliders.setPosition(box.x, round(box.y * ((scenario.dmargin-scenario.Tsize)/scenario.dmargin)));
+					if (sliders.getPosition().y < smaxup) sliders.setPosition(box.x, smaxup);
+					slidersb = sliders.getGlobalBounds();
+				}
+				scenario.ssreload = true;
 			}
 			break;
 		}
@@ -316,7 +389,7 @@ void Cmain::onRelease()
 			stigger = false;
 			slidersb = sliders.getGlobalBounds();
 		}
-		else if (scenario.drawnext && Contains(scenario.Bnext))
+		else if (scenario.DrawNext && Contains(scenario.Bnext))
 		{
 			if (scenario.choiceneed == true && scenario.choicesel == -1) return;
 			sviewchange(0);

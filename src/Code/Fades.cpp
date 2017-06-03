@@ -32,21 +32,21 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	lsetPos = static_cast<float>(smaxup);
 	for (auto &i : scenario.i_stats)
 	{
-		i.t.setFillColor(scenario.statcolor);
-		i.s.setColor(colorminus1);
+		i.second.t.setFillColor(scenario.statcolor);
+		i.second.s.setColor(colorminus1);
 	}
 	for (auto &o : scenario.io_stats)
 	{
-		for (auto &t : o.t) t.setFillColor(scenario.statcolor);
-		o.s.setColor(colorminus1);
+		for (auto &t : o.second.t) t.setFillColor(scenario.statcolor);
+		o.second.s.setColor(colorminus1);
 	}
 	for (auto &i : scenario.Ints)
 	{
-		i.t.setFillColor(c);
+		i.second.t.setFillColor(c);
 	}
 	for (auto &s : scenario.s_stats)
 	{
-		s.t.setFillColor(c);
+		s.second.t.setFillColor(c);
 	}
 	//could've done at manageminus1: if (colorminus1.a != 0) Drawminus1(); But performance...
 }
@@ -179,25 +179,25 @@ inline void Cmain::Manageminus1(const bool add)
 	scenario.statcolor.a = colorminus1.a;
 	for (auto &i : scenario.i_stats)
 	{
-		if (i.hidden) continue;
-		i.t.setFillColor(scenario.statcolor);
-		i.s.setColor(colorminus1);
+		if (i.second.hidden) continue;
+		i.second.t.setFillColor(scenario.statcolor);
+		i.second.s.setColor(colorminus1);
 	}
 	for (auto &o : scenario.io_stats)
 	{
-		if (o.hidden) continue;
-		for (auto &t : o.t) t.setFillColor(scenario.statcolor);
-		o.s.setColor(colorminus1);
+		if (o.second.hidden) continue;
+		for (auto &t : o.second.t) t.setFillColor(scenario.statcolor);
+		o.second.s.setColor(colorminus1);
 	}
 	for (auto &i : scenario.Ints)
 	{
-		if (i.hidden) continue;
-		i.t.setFillColor(c);
+		if (i.second.hidden) continue;
+		i.second.t.setFillColor(c);
 	}
 	for (auto &s : scenario.s_stats)
 	{
-		if (s.hidden) continue;
-		s.t.setFillColor(c);
+		if (s.second.hidden) continue;
+		s.second.t.setFillColor(c);
 	}
 }
 
@@ -235,7 +235,7 @@ inline void Cmain::Draw1()
 		window.draw(t.t);
 	}
 	window.draw(michaupase³ke³);
-	if (scenario.drawnext) window.draw(scenario.next);
+	if (scenario.DrawNext) window.draw(scenario.next);
 	window.draw(showstats);
 	if (scenario.slideratv) {
 		window.draw(bars);
@@ -255,25 +255,25 @@ inline void Cmain::Drawminus1()
 	}
 	for (auto &i : scenario.i_stats)
 	{
-		if (i.hidden) continue;
-		window.draw(i.s);
-		window.draw(i.t);
+		if (i.second.hidden) continue;
+		window.draw(i.second.s);
+		window.draw(i.second.t);
 	}
 	for (auto &o : scenario.io_stats)
 	{
-		if (o.hidden) continue;
-		window.draw(o.s);
-		for (auto &t : o.t) window.draw(t);
+		if (o.second.hidden) continue;
+		window.draw(o.second.s);
+		for (auto &t : o.second.t) window.draw(t);
 	}
 	for (auto &i : scenario.Ints)
 	{
-		if (i.hidden) continue;
-		window.draw(i.t);
+		if (i.second.hidden) continue;
+		window.draw(i.second.t);
 	}
 	for (auto &s : scenario.s_stats)
 	{
-		if (s.hidden) continue;
-		window.draw(s.t);
+		if (s.second.hidden) continue;
+		window.draw(s.second.t);
 	}
 	window.draw(resets);
 }

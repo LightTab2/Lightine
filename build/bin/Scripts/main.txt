@@ -12,8 +12,8 @@ Myślisz sobie:
 #wp(początek)//#if(1==0) { Jakiś koleś ubrany jak hipis patrzy się na Ciebie. Obstawiasz, że to szaman.}
 //#if(1==1) {Szaman nadal czeka, jakby na zbawienie}
 `
-			Co robisz? //#enter(Tytuł)//#t(1)
-#enter(Tytuł)
+			Co robisz?
+#enter(Tytuł,0,2)
 #choice
 #if(1==0)
 #hidden yes
@@ -31,7 +31,7 @@ Podejdź do stacji kolejowej
 #choice
 Obraź szamana
 {
-#goto(69)
+#goto(Odmowa)
 }
 
 #choice
@@ -54,18 +54,20 @@ Zgódź się
 I... znika!
 #next
 Teraz już w okolicy nie ma nikogo.
-#goto(70)
+#goto(Odmowa2)
 	}
 
 #choice
 Odmów
 	{
-#goto(69)
+#goto(Odmowa)
 	}
 #next
 }
 #next
+#wp(Odmowa)
 Szaman się oburzył i sobie poszedł.
+#wp(Odmowa2)
 #choice
 #if(1!=2)
 #hidden no
@@ -73,13 +75,13 @@ Przeszukaj okoliczny teren.
 {
 	Nie masz dostępu do żywności i wody pitnej, na dodatek najbliższe miasto jest ponad 400 km drogi stąd.
 #set(1,2)
-#goto(70)
+#goto(Odmowa2)
 }
 
 #choice
 Zadźwoń po Pomoc
 {
-	Okazuję się, że samolot, który miał Cię ratować (tak, tutaj jest lądowisko w pobliżu) został porwany, a Ty znajdując się na jego pokładzie za chwile zginiesz, rozbijając się zapewne o jakiś wysoki budynek.
+	Okazuję się, że samolot, który miał Cię ratować (tak, tutaj jest lądowisko w pobliżu) został porwany. Ty znajdując się na jego pokładzie za chwile zginiesz, rozbijając się zapewne o jakiś wysoki budynek.
 #choice
 Zaproponuj dołączenie do grupy terrorystycznej
 	{

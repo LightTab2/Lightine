@@ -18,24 +18,39 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include "TypeBox.h"
 class ScenarioParser													//Parses scenario file, inserting data into program
 {
-public:																	//Read from goto to end(next or end command)
-	void Parse();
+public:
+	friend class Cmain;
+																		//Read from goto to end(next or end command)
+	void Parse();	
+
+	bool pempty = false;												//If profiles are empty
+	bool sempty = false;												//If stories are empty
+private:
 																		//Prevents crash and does std::stoi; if failure: ReturnInt is set to Default and returns false
-	const bool stoicheck(std::wstring &NumberInText, int &ReturnInt, const int Default = 0);
-	const bool stoicheck(std::wstring &NumberInText, unsigned int &ReturnUInt, const int Default = 0);
-	const int stoicheck(std::string &NumberInText, const int Default = 0);
+	const bool stoiCheck(const std::wstring& NumberInText,
+	                     int &ReturnInt,
+	                     int Default = 0);										
+																		//Prevents crash and does std::stoi; if failure: ReturnUInt is set to Default and returns false
+	const bool stoiCheck(std::wstring &NumberInText,
+		unsigned int &ReturnUInt,
+		const int Default = 0);
+																		//Prevents crash and returns std::stoi; if failure: returns Default
+	const int stoiCheck(std::string &NumberInText, 
+		const int Default = 0); 
 																		//Checks if there's already an object with the same name
-	bool chName(const std::wstring &NameToFind, bool ThrowError = false);
-	bool drawnext = false;												//True - next is rendered
-	bool debug = false;													//Makes it easier to write stories			
-	bool Pturn = false;													//True when player need to make a choice or move (type, click next etc.)
-	int owd = 0;														//The right margin
+	bool checkName(const std::wstring &NameToFind, 
+		bool ThrowError = false);
+
+	bool DrawNext = false;												//True - next is rendered
+	bool Debug = false;													//Makes it easier to write stories			
+	bool PlayerTurn = false;											//True when player need to make a choice or move (type, click next etc.)
+	int rmargin = 0;													//The right margin
 	//int th = 0;														//Height of one text from additional
-	int the = 0;														//Current down margin
-	int she = 0;														//Like 'the' but for gamestate '-1'
+	int dmargin = 0;													//Current down margin
+	int sdmargin = 0;													//Like 'dmargin' but for gamestate '-1', s stands for Stats'
 	float w2;															//Made to improve performance - calculates commonly used statement //choice
 	int *h;																//Copy of h in Cmain, it needs to change change in Cmain::sSaveOptions
-	int st = 0;															//How many times you need to scroll to get from top to down
+	int scrolltimes = 0;												//How many times you need to scroll to get from top to down
 	int *w;																//Copy of w in Cmain, it needs to change in Cmain::sSaveOptions
 	int sgoto = 0;														//Parse() starts of reading at this line
 	int cgoto = 0;														//Copy of sgoto, used when saving the game
@@ -44,20 +59,19 @@ public:																	//Read from goto to end(next or end command)
 	int	typesel = -1;													//Which TypeBox is selected, it also indicates if player is focused on typing anything to any typebox
 	int ttignore = 0;													//number of Tabs to being ignored
 	bool slideratv = false;												//Is slider active(rendered and able to be pushed)
-	bool pempty = false;												//If profiles are empty
-	bool sempty = false;												//If stories are empty
 	bool loadtextonly = false;											//Read only text, do not execute any commands if true
 	bool choiceneed = false;											//So you can't click Next when no choice is selected if it is true
 	bool ssreload = true;												//Tells if Show_Stats needs to be called(Stats images reloaded)
 	bool formattype = false;											//If true SplitText() occurs every line
+	float Tsize;														//Maximum height of a single line in TypeBox
 	sf::Text text;														//Vector of text that are displayed as current story
 	std::vector<Choice> choice;											//List of choice that are avaiable
 	std::vector<TypeBox> typeboxes;										//Boxes where input can occur
-	std::vector<IntStat> i_stats;										//IntStats' vector
-	std::vector<IntStatOpposite> io_stats;								//IntStatOpposities' vector
-	std::vector<StringStat> s_stats;									//StringStats' vector
-	std::vector<Int> Ints;												//Ints' vector
-	std::vector<StcString> stc_s;										//Stc StringStats' vector
+	std::multimap<unsigned int, IntStat> i_stats;						//IntStats' multimap
+	std::multimap<unsigned int, IntStatOpposite> io_stats;				//IntStatOpposities' multimap
+	std::multimap<unsigned int, StringStat> s_stats;					//StringStats' multimap
+	std::multimap<unsigned int, Int> Ints;								//Ints' multimap
+	std::vector<StcString> stc_s;										//Stc StringStats' multimap
 	std::vector<StcInt> stc_i;											//Stc IntStatz' vector
 	std::vector<sf::Text> customtxt;									//Custom formated text user can create
 	std::vector<sf::Text> gaintext;										//Tells player if he had gained anything; can be turned on/off
@@ -74,7 +88,6 @@ public:																	//Read from goto to end(next or end command)
 	//std::wstring *type;												//So you can enter some text and make StringStat out of it
 	sf::ConvexShape rrect;
 	const std::locale utf8_locale = std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>);	//Gets current locale to read widestrings
-private:
 																		//Basically core of Parse(), where loop is called
 	void ParseMainBody();
 																		//Heart of parsing the text
@@ -102,7 +115,7 @@ private:
 																		//Shows your all glorious fails and almighty weaknesses of the hero(victories and strenghts are shown too, but who cares?)
 	void Show_stats();
 																		//Checks if the text isn't just a piled up '\n'									
-	bool NewlineCheck(std::wstring &TextToCheck);
+	static bool NewlineCheck(const std::wstring& TextToCheck);
 																		//Creates the image of IntStatOpposite (I'll allow to customize colors soon here)
 	const sf::Image IOStatspecial(const int w, const int h, int value, int min, int max, int threshold);
 																		//Creates the image of IntStat(here too)
@@ -132,12 +145,12 @@ StcString* FindStcS(const std::wstring &name);
 	bool FindStcS(const std::wstring &name, const StcString *&rt);
 	bool FindString(const std::wstring &name, std::wstring &rt);
 	bool FindInt(const std::wstring &name, int &rt);
-
+																		//Finds '#' and eliminates all tabs that are obstacles to it
 	bool ElTabs(std::wstring &insr);
-
+																		//Ignores ttignore(number of tabs to ignore) tabs
 	void IgnoreTabs(std::wstring &insr);
-
-	void ScanForWaypoints(); //initializes all waypionts for given file;
+																		//Initializes all waypionts for given file;
+	void ScanForWaypoints(); 
 	//inline void TabFind(std::wstring &preinsr);
 	std::wstring insr;													//Contains text that will be splitted into tinsr
 	std::wstring tinsr;													//Splitted insr that will be displayed

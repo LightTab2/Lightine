@@ -11,12 +11,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 #include "txtReader.h"
-#include <ctime>
-#include <map>
 //Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
 {
-	friend class ScenarioParser;
 	public:
 		bool quit = false;															//True - program closes	
 
@@ -30,8 +27,6 @@ class Cmain
 		ScenarioParser scenario;													//Parses stories
 		std::vector<sf::Text> profiles;												//Profiles that can be selected
 		std::vector<sf::Text> stories; 												//Stories that can be selected
-		int w = 800;																//Width of the window, in pixels
-		int	h = 600;																//Height of the window, in pixels
 	private:	
 		bool fullscreen = true;														//Enables fullscreen?
 		bool cfullscreen = false;													//Like cmusic, used in SaveOptions(). Maybe use pointers here? As far as I know they're 4 bytes, so there's no reason to that.
@@ -75,6 +70,8 @@ class Cmain
 		int	smax = 0;																//The number of movement that can be done by slider
 		int smaxup = 0;																//Minimum slider's position (up)
 		int	smaxdown = 0;															//Maximum slider's position (down)
+		int w = 800;																//Width of the window, in pixels
+		int	h = 600;																//Height of the window, in pixels
 		int	smouseposy = 0;															//Mousepos - smaxup
 		float lsetPos = 0;															//Used in (saves current possition)
 		float ssetPos = 0;															//lsetPos for gamestate -1
@@ -148,7 +145,7 @@ class Cmain
 		sf::RectangleShape profilesmenu;											//The rectangle where profiles or stories are stored
 		
 		sf::Color
-			color[34],																//Many, very many colors, so you can adjust your game
+			color[35],																//Many, very many colors, so you can adjust your game
 			&textcolor = color[0],
 			&menucolor = color[1],
 			&menuselectcolor = color[2],
@@ -182,7 +179,8 @@ class Cmain
 			&textchoicecolor = color[30],
 			&textchoiceunavaiblecolor = color[31],
 			&textchoicefillcolor = color[32],
-			&menuhelpcolor = color[33];
+			&menuhelpcolor = color[33],
+			&menuinsertcolor = color[34];
 		
 		sf::Clock errclock;															//Manages enternewerror_t lifetime
 

@@ -11,8 +11,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #include "Cmain.h"
 #include <limits>
-#include <codecvt>
-#include <cstdlib>
 
 void Cmain::onTick()
 {
@@ -30,25 +28,25 @@ void Cmain::sviewchange(float setPos)
 {
 	if (setPos + static_cast<int>(sliders.getGlobalBounds().height) > smaxdown) setPos = round(smaxdown - sliders.getGlobalBounds().height);
 	else if (setPos < smaxup) setPos = static_cast<float>(smaxup);
-	if (gamestate != -1) numbss = static_cast<int>(round(scenario.the - h) * (setPos - smaxup) / smax);
-	else numbss = static_cast<int>((scenario.she - h) * (setPos - smaxup) / smax);
+	if (gamestate != -1) numbss = static_cast<int>(round(scenario.dmargin - h) * (setPos - smaxup) / smax);
+	else numbss = static_cast<int>((scenario.sdmargin - h) * (setPos - smaxup) / smax);
 	window.setView(sf::View(sf::Vector2f(window.getDefaultView().getCenter().x, round(h / 2.f + numbss)), sf::Vector2f(static_cast<float>(w), static_cast<float>(h))));
 	sliders.setPosition(window.mapPixelToCoords(sf::Vector2i(static_cast<int>(sliders.getPosition().x), static_cast<int>(setPos))));
 	bars.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(bars.getGlobalBounds().width), 0)));
-	for (IntStat& i : scenario.i_stats)
+	for (auto& i : scenario.i_stats)
 	{
-		i.t.setPosition(window.mapPixelToCoords(i.pos[0]));
-		i.s.setPosition(window.mapPixelToCoords(i.pos[1]));
+		i.second.t.setPosition(window.mapPixelToCoords(i.second.pos[0]));
+		i.second.s.setPosition(window.mapPixelToCoords(i.second.pos[1]));
 	}
-	for (IntStatOpposite& o : scenario.io_stats)
+	for (auto& o : scenario.io_stats)
 	{
-		o.t[0].setPosition(window.mapPixelToCoords(o.pos[0]));
-		o.t[1].setPosition(window.mapPixelToCoords(o.pos[1]));
-		o.t[2].setPosition(window.mapPixelToCoords(o.pos[2]));
-		o.s.setPosition(window.mapPixelToCoords(o.pos[3]));
+		o.second.t[0].setPosition(window.mapPixelToCoords(o.second.pos[0]));
+		o.second.t[1].setPosition(window.mapPixelToCoords(o.second.pos[1]));
+		o.second.t[2].setPosition(window.mapPixelToCoords(o.second.pos[2]));
+		o.second.s.setPosition(window.mapPixelToCoords(o.second.pos[3]));
 	}
-	for (Int& I : scenario.Ints) I.t.setPosition(window.mapPixelToCoords(I.pos));
-	for (StringStat& s : scenario.s_stats) s.t.setPosition(window.mapPixelToCoords(s.pos));
+	for (auto& I : scenario.Ints) I.second.t.setPosition(window.mapPixelToCoords(I.second.pos));
+	for (auto& s : scenario.s_stats) s.second.t.setPosition(window.mapPixelToCoords(s.second.pos));
 	button_1_text.setPosition(window.mapPixelToCoords(pos[0]));
 	button_2_text.setPosition(window.mapPixelToCoords(pos[1]));
 	button_3_text.setPosition(window.mapPixelToCoords(pos[2]));

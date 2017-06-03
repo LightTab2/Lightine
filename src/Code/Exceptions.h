@@ -14,10 +14,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #include <codecvt>
 #define NOMINMAX
 #include "Windows.h"
-#include <memory>
 inline void warn(const std::wstring &msg)
 {
 	MessageBox(NULL, msg.c_str(), L"Warn", MB_ICONINFORMATION);
+	auto *p = &warn;
 }
 class w_err : public std::runtime_error
 {
