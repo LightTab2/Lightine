@@ -279,8 +279,9 @@ void Cmain::LoadSave()
 		if (db[0] == 0xFEFF) db.erase(0U, 1U);
 		else if (db[0] == 0xef && db[1] == 0xbb && db[2] == 0xbf) db.erase(0U, 3U);
 		if (db == L"#debug") {
- 			scenario.Parse();
-			scenario.choicesel = -1;
+			scenario.Debug = true;
+			scenario.ScanForErrors();
+			scenario.Parse();
 			return;
 		}
 	}

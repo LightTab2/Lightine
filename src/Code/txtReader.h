@@ -151,6 +151,8 @@ StcString* FindStcS(const std::wstring &name);
 	void IgnoreTabs(std::wstring &insr);
 																		//Initializes all waypionts for given file;
 	void ScanForWaypoints(); 
+																		//Checks every command if it is correct
+	void ScanForErrors();
 	//inline void TabFind(std::wstring &preinsr);
 	std::wstring insr;													//Contains text that will be splitted into tinsr
 	std::wstring tinsr;													//Splitted insr that will be displayed

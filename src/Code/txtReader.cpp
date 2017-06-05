@@ -10,8 +10,6 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "txtReader.h"
-#include <type_traits>
-#include <algorithm>
 extern unsigned int priorlimit;
 constexpr wchar_t* const split = L"`/`"; //Add an option to change it, for user preference
 const size_t split_l = std::wcslen(split);
@@ -61,9 +59,18 @@ void ScenarioParser::Parse()
 	if (!Debug) {
 		loadtextonly = true;
 		Save();
+		if (dmargin > *h) slideratv = true;
+		if (ssreload) Show_stats();
 	}
-	if (dmargin > *h) slideratv = true;
-	if (ssreload) Show_stats();
+	else
+	{
+		s_stats.clear();
+		i_stats.clear();
+		io_stats.clear();
+		Ints.clear();
+		Parse();
+	}
+
 }
 
 void ScenarioParser::Save()
@@ -128,9 +135,9 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			std::wstring arg = insrtttt.substr(8U, insrtttt.size()-9U);
 			stoiCheck(arg, ttignore);
 		}
-		SplitText(false, insr);
-		MergeText();
-		CreateChoice();
+			SplitText(false, insr);
+			MergeText();
+			CreateChoice();
 	}
 	else if (CCommand(L"#enter("))
 	{
@@ -157,8 +164,10 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	{
 		Debug = true;
 		std::wofstream save(savefile);
+		save << L"#debug";
 		dgoto = cgoto = 0;
 		loadtextonly = false;
+		ScanForErrors();
 	}
 	else if (insrtttt == L"#showstats") //it will be changed so stats will appear
 	{
@@ -357,7 +366,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 
 void ScenarioParser::SplitText(const bool w, std::wstring &insrt)
 {
-	if (insrt.empty()) return;
+	if (insrt.empty() || Debug) return;
 	size_t d;
 	std::wstring str;
 	while ((d = insrt.find(L'\n', 1U)) != std::wstring::npos)
@@ -866,7 +875,7 @@ bool ScenarioParser::checkName(const std::wstring &name, bool fatal)
 
 void ScenarioParser::MergeText()
 {
-	if (tinsr.empty()) return;
+	if (tinsr.empty() || Debug) return;
 	tinsr.pop_back();
 	text.setString(tinsr);
 	dmargin += static_cast<int>(floor(text.getLocalBounds().top + text.getGlobalBounds().height + text.getCharacterSize()));
@@ -1451,4 +1460,9 @@ void ScenarioParser::ScanForWaypoints()
 		}
 	}
 	in.clear();
+}
+
+void ScenarioParser::ScanForErrors()
+{
+	PlayerTurn = true; //force end of ParseMainBody
 }

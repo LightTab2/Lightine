@@ -185,7 +185,7 @@ class Cmain
 		sf::Clock errclock;															//Manages enternewerror_t lifetime
 
 		std::vector<sf::Vector2i> positions;										//Possible positions in profilesmenu
-				
+
 																					//Probably part of LoadSave()
 		void LoadStatics();
 																					//Loads save? dunno

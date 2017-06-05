@@ -23,7 +23,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	scenario.loadtextonly = false;
 	LoadSave();
 	resetsb = false;
-	scenario.choicesel = -1;
+	scenario.typesel = scenario.choicesel = -1;
 	colorminus1.a = 0;
 	resets.setColor(colorminus1);
 	sf::Color c = textcolor;
@@ -40,14 +40,8 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 		for (auto &t : o.second.t) t.setFillColor(scenario.statcolor);
 		o.second.s.setColor(colorminus1);
 	}
-	for (auto &i : scenario.Ints)
-	{
-		i.second.t.setFillColor(c);
-	}
-	for (auto &s : scenario.s_stats)
-	{
-		s.second.t.setFillColor(c);
-	}
+	for (auto &i : scenario.Ints) i.second.t.setFillColor(c);
+	for (auto &s : scenario.s_stats) s.second.t.setFillColor(c);
 	//could've done at manageminus1: if (colorminus1.a != 0) Drawminus1(); But performance...
 }
 
