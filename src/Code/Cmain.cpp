@@ -186,6 +186,7 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	smaxdown = h - static_cast<int>(round(h / 600.f * 8.f));
 	sliders.setPosition(round(bars.getPosition().x + round(w / 800.f * 6.f)), round(h / 600.f * 11.f));
 	smaxup = static_cast<int>(round(h / 600.f * 11.f));
+	lsetPos = ssetPos = static_cast<float>(smaxup);
 	showstats.setPosition(round(w - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - round(w / 800.f * 40.f)), 0);
 	showstats.setColor(sf::Color(255, 255, 255, 0));
 	resets.setPosition(round(w + (showstats.getGlobalBounds().width - resets.getGlobalBounds().width) / 2 - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - round(w / 800.f * 40.f)), 0);
@@ -231,11 +232,7 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 	
 	scenario.text.setPosition(round(w / 18.f), floor(h / 12.f));
-	scenario.ssreload = true;
 	LoadSave();
-	resbutton1_focus = resbutton2_focus = clicked = resetsb = false;
-	pcheck = scheck = true;
-	lsetPos = ssetPos = static_cast<float>(smaxup);
 }
 
 void Cmain::SaveOptions()
@@ -541,11 +538,7 @@ void Cmain::CreateNew()
 		if (profiles.empty()) scenario.pempty = true;
 		else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
 		else
-		{
-			scenario.pempty = scenario.sempty = false;
-			scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 			LoadSave();
-		}
 	}
 }
 void scut(std::string& to_cut, size_t pos, std::string& to_insert)

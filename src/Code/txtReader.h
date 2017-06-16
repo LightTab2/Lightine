@@ -19,13 +19,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 class ScenarioParser													//Parses scenario file, inserting data into program
 {
 public:
-	friend class Cmain;
-																		//Read from goto to end(next or end command)
-	void Parse();	
-
 	bool pempty = false;												//If profiles are empty
 	bool sempty = false;												//If stories are empty
 private:
+	friend class Cmain;
+																		//Read from goto to end(next or end command)
+	void Parse();	
 																		//Prevents crash and does std::stoi; if failure: ReturnInt is set to Default and returns false
 	const bool stoiCheck(const std::wstring& NumberInText,
 	                     int &ReturnInt,
@@ -44,6 +43,7 @@ private:
 	bool DrawNext = false;												//True - next is rendered
 	bool Debug = false;													//Makes it easier to write stories			
 	bool PlayerTurn = false;											//True when player need to make a choice or move (type, click next etc.)
+	bool allowdebugging = true;											//Controls if file already has been debugged
 	int rmargin = 0;													//The right margin
 	//int th = 0;														//Height of one text from additional
 	int dmargin = 0;													//Current down margin
@@ -71,8 +71,8 @@ private:
 	std::multimap<unsigned int, IntStatOpposite> io_stats;				//IntStatOpposities' multimap
 	std::multimap<unsigned int, StringStat> s_stats;					//StringStats' multimap
 	std::multimap<unsigned int, Int> Ints;								//Ints' multimap
-	std::vector<StcString> stc_s;										//Stc StringStats' multimap
-	std::vector<StcInt> stc_i;											//Stc IntStatz' vector
+	std::vector<StcString> stc_s, dstc_s;								//Stc StringStats' multimap, d version stands for debugging
+	std::vector<StcInt> stc_i, dstc_i;									//Stc IntStatz' vector, d version stands for debugging
 	std::vector<sf::Text> customtxt;									//Custom formated text user can create
 	std::vector<sf::Text> gaintext;										//Tells player if he had gained anything; can be turned on/off
 	sf::Texture next_t;													//Texture of next
@@ -153,6 +153,10 @@ StcString* FindStcS(const std::wstring &name);
 	void ScanForWaypoints(); 
 																		//Checks every command if it is correct
 	void ScanForErrors();
+																		//Loads save? dunno
+	void LoadSave();
+																		//Probably part of LoadSave()
+	void LoadStatics();
 	//inline void TabFind(std::wstring &preinsr);
 	std::wstring insr;													//Contains text that will be splitted into tinsr
 	std::wstring tinsr;													//Splitted insr that will be displayed

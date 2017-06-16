@@ -186,8 +186,6 @@ class Cmain
 
 		std::vector<sf::Vector2i> positions;										//Possible positions in profilesmenu
 
-																					//Probably part of LoadSave()
-		void LoadStatics();
 																					//Loads save? dunno
 		void LoadSave();
 																					//Gets data from bin\Options.ini		

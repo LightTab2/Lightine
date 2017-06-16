@@ -15,8 +15,7 @@ constexpr wchar_t* const split = L"`/`"; //Add an option to change it, for user 
 const size_t split_l = std::wcslen(split);
 constexpr wchar_t* const comment = L"//"; //Add an option to change it, for user preference
 constexpr wchar_t* const empty = L"`"; //Add an option to change it, for user preference
-//todo: add type function, add achievements, add custom texts, add gain text//change the colors
-//todo: naprawić ifcheck()
+
 void ScenarioParser::GotoLine(const int num)
 {
 	in.seekg(std::wifstream::beg);
@@ -52,6 +51,17 @@ void ScenarioParser::Parse()
 	if (!in) throw w_err(L"File that contains story couldn't be open [" + std::to_wstring(sgoto) + L']');
 	in.imbue(utf8_locale);
 	ScanForWaypoints();
+	{
+		std::wstring db;
+		std::getline(in, db);
+		if (db[0] == 0xFEFF) db.erase(0U, 1U);
+		else if (db[0] == 0xef && db[1] == 0xbb && db[2] == 0xbf) db.erase(0U, 3U);
+		if (db.find(L"#debug") == 0U && allowdebugging)
+		{
+			ScanForErrors();
+			return;
+		}
+	}
 	GotoLine(cgoto);
 	ParseMainBody();
 	in.close();
@@ -133,11 +143,14 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 		if (insrtttt.size() > 7U)
 		{
 			std::wstring arg = insrtttt.substr(8U, insrtttt.size()-9U);
-			stoiCheck(arg, ttignore);
+			if (!stoiCheck(arg, ttignore) && Debug) throw w_err(L"Fatal stoicheck failure in command \"#choice\"(setting TabsToIgnore) in \"" + arg + L"\"[" + std::to_wstring(sgoto) + L']');
 		}
+		if (!Debug)
+		{
 			SplitText(false, insr);
 			MergeText();
 			CreateChoice();
+		}
 	}
 	else if (CCommand(L"#enter("))
 	{
@@ -147,28 +160,37 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 		stoiCheck(insrtttt.substr(0U, insrtttt.find(L',')), limits.first);
 		stoiCheck(insrtttt.substr(insrtttt.find(L',') + 1), limits.second);
 		std::wstring *type = &FindSStat(name)->value;
-		if (!FindSStat(name)) warn(L"Error! TypeBox hasn't been created. There's no such a Stat with name \"" + insrtttt + L"\" [" + std::to_wstring(sgoto) + L']');
+		if (!FindSStat(name) && Debug) warn(L"Error! TypeBox hasn't been created. There's no such a Stat(atm) with name \"" + insrtttt + L"\" [" + std::to_wstring(sgoto) + L']');
 		else
 		{
 			typeboxes.push_back(TypeBox(type, limits));
-			SplitText(false, insr);
-			MergeText();
-			CreateTypeBox();
+			if (!Debug) {
+				SplitText(false, insr);
+				MergeText();
+				CreateTypeBox();
+			}
 		}
 	}
 	else if (CCommand(L"#gt("))
 	{
-		CreateGainText();
+		if (!Debug) CreateGainText();
 	}
-	else if (insrtttt == L"#debug")
+	/*else if (insrtttt == L"#debug")
 	{
+		if (debugging) return;
+		debugging = true;
+		if (Debug) return;
 		Debug = true;
 		std::wofstream save(savefile);
 		save << L"#debug";
 		dgoto = cgoto = 0;
 		loadtextonly = false;
-		ScanForErrors();
-	}
+		{
+			ScanForErrors();
+			//LoadSave();
+			Debug = false;
+		}
+	}*/
 	else if (insrtttt == L"#showstats") //it will be changed so stats will appear
 	{
 
@@ -179,11 +201,12 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	}
 	else if (CCommand(L"#piorlimit("))
 	{
-		if (stoiCheck(insrtttt, priorlimit)) throw w_err(L"FATAL stoicheck failure while exectuing \"#priorlimit\" command [" + std::to_wstring(sgoto) + L']');
+		if (stoiCheck(insrtttt, priorlimit)) throw w_err(L"FATAL stoicheck failure while exectuing \"#priorlimit\" command in \"" + insrtttt + L"\"[" + std::to_wstring(sgoto) + L']');
 	}
 	else if (!loadtextonly)
 	{
-		if (CCommand(L"#IntStatOpposite(")) Thingy(0, insrtttt);
+		if (CCommand(L"#IntStatOpposite(")) 
+			Thingy(0, insrtttt);
 		else if (CCommand(L"#IntStat(")) Thingy(1, insrtttt);
 		else if (CCommand(L"#StringStat(")) Thingy(2, insrtttt);
 		else if (CCommand(L"#Int(")) Thingy(3, insrtttt);
@@ -197,55 +220,67 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			insrtttt.erase(0U, n);
 			if (auto x = FindIStatO(name))
 			{
-				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 
 				if ((n = insrtttt.find(L',')) == std::wstring::npos) goto iocalc;
 				value = insrtttt.substr(0U, n);
 				insrtttt.erase(0U, n);
-				if (!stoiCheck(value, x->min)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(2nd argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->min)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(2nd argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 
 				if ((n = insrtttt.find(L',')) == std::wstring::npos) goto iocalc;
 				value = insrtttt.substr(0U, n);
 				insrtttt.erase(0U, n);
-				if (!stoiCheck(value, x->max)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(3nd argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->max)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(3nd argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 
 				if ((n = insrtttt.find(L',')) == std::wstring::npos) goto iocalc;
 				value = insrtttt.substr(0U, n);
-				if (!stoiCheck(value, x->threshold)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(4nd argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->threshold)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(4nd argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 			iocalc:
+				if (x->min >= x->max) throw w_err(L"\"#set\" command failure: a Stat with name \"" + name + L"\" has invalid minimal and maximal values of " + std::to_wstring(x->min) + L" and " + std::to_wstring(x->max) + L" [" + std::to_wstring(sgoto) + L']');
+				if (x->value < x->min) x->value = x->min;
+				else if (x->value > x->max) x->value = x->max;
+
+				float h = round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f);
 				x->t[2].setString(std::to_wstring(x->value));
-				x->t[2].setOrigin(2, round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f));
-				x->setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), x->s.getGlobalBounds().height, x->value, x->min, x->max, x->threshold));
+				x->t[2].setOrigin(2.f, h);
+
+				if (h < static_cast<int>(round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f))) h = static_cast<int>(round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f));
+				if (h < static_cast<int>(round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f))) h = static_cast<int>(round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f));
+
+				x->setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), h, x->value, x->min, x->max, x->threshold));
 				x->t[2].setPosition(static_cast<sf::Vector2f>(x->pos[2]));
 			}
 			else if (auto x = FindIStat(name))
 			{
-				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 
 				if ((n = insrtttt.find(L',')) == std::wstring::npos) goto icalc;
 				value = insrtttt.substr(0U, n);
 				insrtttt.erase(0U, n);
-				if (!stoiCheck(value, x->min)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(2nd argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->min)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(2nd argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 
 				if ((n = insrtttt.find(L',')) == std::wstring::npos) goto icalc;
 				value = insrtttt.substr(0U, n);
-				if (!stoiCheck(value, x->max)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(3nd argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->max)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(3nd argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 			icalc:
 				int arg[3] = { x->value, x->min, x->max };
+				if (arg[1] == arg[2]) throw w_err(L"\"#set\" command failure: a Stat with name \"" + name + L"\" has invalid minimal and maximal values of " + std::to_wstring(arg[1]) + L" and " + std::to_wstring(arg[2]) + L" [" + std::to_wstring(sgoto) + L']');
 				if (arg[1] < 0)
 				{
 					arg[0] -= arg[1];
 					arg[2] -= arg[1];
 					arg[1] = 0;
 				}
-				x->t.setString(x->name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%");
+				if (arg[0] < arg[1]) arg[0] = arg[1];
+				else if (arg[0] > arg[2]) arg[0] = arg[2];
+				x->t.setString(x->name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%"); //this line of code is reason why argument-based calculation happens here, instead of IntSpecial()
 				x->t.setOrigin(0, round(x->t.getLocalBounds().top + x->t.getLocalBounds().height / 2.f));
 				x->setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), x->s.getGlobalBounds().height, arg[0], arg[1], arg[2]));
 				x->t.setPosition(static_cast<sf::Vector2f>(x->pos[0]));
 			}
 			else if (auto x = FindInt(name))
 			{
-				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) [" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 				x->t.setString(x->name + L": " + std::to_wstring(x->value));
 				x->t.setOrigin(0, round(x->t.getLocalBounds().top));
 				x->t.setPosition(static_cast<sf::Vector2f>(x->pos));
@@ -258,9 +293,12 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 					if (!x->vhidden) x->t.setString(x->t.getString() + x->value);
 					x->t.setOrigin(0, round(x->t.getLocalBounds().top));
 					x->t.setPosition(static_cast<sf::Vector2f>(x->pos));
+			}				
+			else if (auto x = FindStcI(name)) {
+					int temp = 0;
+					if (!stoiCheck(value, temp)) if (!FindInt(value, temp)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
+				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 			}
-			else if (auto x = FindStcI(name))
-				if (!stoiCheck(value, x->value)) if (!FindInt(value, x->value)) throw w_err(L"FATAL stoicheck failure while exectuing \"#set\" command(1st argument) [" + std::to_wstring(sgoto) + L']');
 			else if (auto x = FindStcS(name))
 				if (!FindString(value, x->value)) x->value = value;
 		}
@@ -289,7 +327,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			std::wstring name = insrtttt.substr(0U, n);
 			insrtttt.erase(0U, n);
 			int val;
-			if (!stoiCheck(insrtttt.substr(n), val) || val < 0) throw w_err(L"FATAL stoicheck failure or value is below 0 while exectuing \"#prior\" command [" + std::to_wstring(sgoto) + L']');
+			if (!stoiCheck(insrtttt.substr(n), val) || val < 0) throw w_err(L"FATAL stoicheck failure or value is below 0 while exectuing \"#prior\" command in \"" + insrtttt.substr(n) + L"\"[" + std::to_wstring(sgoto) + L']');
 			for (auto x = i_stats.begin(); x != i_stats.end(); ++x)
 				if (insrtttt == x->second.name)
 				{
@@ -301,14 +339,28 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 		}
 		else if (CCommand(L"#Stc("))
 		{
-			size_t n;
-			if ((n = insrtttt.find(L',')) == std::wstring::npos) throw w_err(L"\"#stc\" command needs 2 arguments, not one or none [" + std::to_wstring(sgoto) + L']');;
-			std::wstring name = insrtttt.substr(0U, n);
-			if (checkName(name)) return;
-			std::wstring value = insrtttt.substr(n + 1U, insrtttt.size() - 1U - n);
-			int val;
-			if (stoiCheck(value, val)) stc_i.emplace_back(name, val);
-			else stc_s.emplace_back(name, value);
+			if (Debug)
+			{
+				size_t n;
+				if ((n = insrtttt.find(L',')) == std::wstring::npos) throw w_err(L"\"#stc\" command needs 2 arguments, not one or none [" + std::to_wstring(sgoto) + L']');;
+				std::wstring name = insrtttt.substr(0U, n);
+				checkName(name, true);
+				std::wstring value = insrtttt.substr(n + 1U, insrtttt.size() - 1U - n);
+				int val;
+				if (stoiCheck(value, val)) dstc_i.emplace_back(name, val);
+				else dstc_s.emplace_back(name, value);
+			}
+			else
+			{
+				size_t n;
+				if ((n = insrtttt.find(L',')) == std::wstring::npos) throw w_err(L"\"#stc\" command needs 2 arguments, not one or none [" + std::to_wstring(sgoto) + L']');;
+				std::wstring name = insrtttt.substr(0U, n);
+				if (checkName(name)) return;
+				std::wstring value = insrtttt.substr(n + 1U, insrtttt.size() - 1U - n);
+				int val;
+				if (stoiCheck(value, val)) stc_i.emplace_back(name, val);
+				else stc_s.emplace_back(name, value);
+			}
 		}
 		else if (CCommand(L"#erase("))
 		{
@@ -339,28 +391,54 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 					return;
 				}
 			}
-			for (auto x = stc_i.begin(); x != stc_i.end(); ++x) {
-				if (insrtttt == x->name) {
-					stc_i.erase(x);
-					return;
+			if (Debug)
+			{
+				for (auto x = dstc_i.begin(); x != dstc_i.end(); ++x) {
+					if (insrtttt == x->name) {
+						dstc_i.erase(x);
+						return;
+					}
 				}
-			}	
 
-			for (auto x = stc_s.begin(); x != stc_s.end(); ++x) {
-				if (insrtttt == x->name) {
-					stc_s.erase(x);
-					return;
+				for (auto x = dstc_s.begin(); x != dstc_s.end(); ++x) {
+					if (insrtttt == x->name) {
+						dstc_s.erase(x);
+						return;
+					}
+				}
+			}
+			else
+			{
+				for (auto x = stc_i.begin(); x != stc_i.end(); ++x) {
+					if (insrtttt == x->name) {
+						stc_i.erase(x);
+						return;
+					}
+				}
+
+				for (auto x = stc_s.begin(); x != stc_s.end(); ++x) {
+					if (insrtttt == x->name) {
+						stc_s.erase(x);
+						return;
+					}
 				}
 			}
 		}
-		else if (CCommand(L"file("))
+		else if (CCommand(L"#file("))
 		{
+			in.close();
+			if (Debug)
+			{
+				warn(L"#file(" + insrtttt + L") command detected, ignoring...");
+				return;
+			}
 			path = L"../../bin/Scripts/" + insrtttt;
 			in.open(path);
 			cgoto = sgoto = dgoto = 0;
 			choicesel = -1;
+			allowdebugging = true;
 		}
-		else if (Debug) w_err(L"Unknown command: " + insrtttt + L'[' + std::to_wstring(sgoto) + L']');
+		else if (Debug && insrtttt.find(L"#wp(") != 0U && insrtttt.find(L"#debug") != 0U) w_err(L"Unknown command: " + insrtttt + L'[' + std::to_wstring(sgoto) + L']');
 	}
 }
 
@@ -424,7 +502,7 @@ const int ScenarioParser::stoiCheck(std::string &checked, const int def)
 {
 	if (checked.empty())
 	{
-		if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
+		//if (Debug && StrictDebug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
 		return def;
 	}
 	for (char c : checked){
@@ -441,7 +519,7 @@ const int ScenarioParser::stoiCheck(std::string &checked, const int def)
 				continue;
 			}
 			std::wstring_convert<std::codecvt_utf8<wchar_t>> converter; //http://stackoverflow.com/questions/17103925/how-well-is-unicode-supported-in-c11/17106065#17106065
-			if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + converter.from_bytes(checked) + L"\" failed on char \"" + static_cast<wchar_t>(c) + L"\" [" + std::to_wstring(sgoto) + L']');
+			//if (Debug && StrictDebug) warn(L"[Stoicheck failure] stoicheck performed on \"" + converter.from_bytes(checked) + L"\" failed on char \"" + static_cast<wchar_t>(c) + L"\" [" + std::to_wstring(sgoto) + L']');
 			return def;
 		}
 	}
@@ -454,7 +532,7 @@ const bool ScenarioParser::stoiCheck(const std::wstring& checked, int &number, i
 	if (checked.empty())
 	{
 		number = def;
-		if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
+		//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
 		return false;
 	}
 	bool minus = false;
@@ -489,7 +567,7 @@ const bool ScenarioParser::stoiCheck(const std::wstring& checked, int &number, i
 		else if (checked[0] == 0xef && checked[1U] == 0xbb && checked[2U] == 0xbf) ec += 3U;
 		else {
 			number = def;
-			if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + checked + L"\" failed on char \"" + checked[ec] + L"\" [" + std::to_wstring(sgoto) + L']');
+			//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + checked + L"\" failed on char \"" + checked[ec] + L"\" [" + std::to_wstring(sgoto) + L']');
 			return false;
 		}
 	}
@@ -525,7 +603,7 @@ const bool ScenarioParser::stoiCheck(std::wstring &checked, unsigned int &number
 	if (checked.empty())
 	{
 		number = def;
-		if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
+		//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
 		return false;
 	}
 	for (wchar_t c : checked) {
@@ -542,7 +620,7 @@ const bool ScenarioParser::stoiCheck(std::wstring &checked, unsigned int &number
 				continue;
 			}
 			number = def;
-			if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + checked + L"\" failed on char \"" + c + L"\" [" + std::to_wstring(sgoto) + L']');
+			//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + checked + L"\" failed on char \"" + c + L"\" [" + std::to_wstring(sgoto) + L']');
 			return false;
 		}
 	}
@@ -587,7 +665,7 @@ void ScenarioParser::Thingy(const int state, std::wstring &insert)
 		{
 		case 0:
 			names[0] = insert.substr(0U, s_position);
-			checkName(names[0]);
+			if (checkName(names[0], Debug)) return;
 			++namelist;
 			break;
 		case 1:	
@@ -610,7 +688,8 @@ void ScenarioParser::Thingy(const int state, std::wstring &insert)
 			if (state == 0) names[namelist] = insert;
 			else if (!stoiCheck(insert, arguments[arglist - namelist])) throw w_err(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist - namelist) + L" [" + std::to_wstring(sgoto) + L']');
 			insert.clear();
-			if (state == 0) io_stats.emplace(arguments[5], IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], names[1]));
+			if (state == 0) 
+				io_stats.emplace(arguments[5], IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], names[1]));
 			else if (state == 1) i_stats.emplace(arguments[4], IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3]));
 			else if (state == 2) s_stats.emplace(arguments[2], StringStat(names[0], names[1], arguments[0], arguments[1]));
 			else if (state == 3) Ints.emplace(arguments[2], Int(names[0], arguments[0], arguments[1]));
@@ -720,7 +799,7 @@ void ScenarioParser::CreateChoice()
 						else choice.back().avaible = (sval == value);
 						continue;
 					}
-					else if (!stoiCheck(value, val)) if (!FindInt(value, val)) throw w_err(L"[Choice]FATAL stoicheck failure while evaluating \"#if\" result [" + std::to_wstring(sgoto) + L']');;
+					else if (!stoiCheck(value, val)) if (!FindInt(value, val)) throw w_err(L"[Choice]FATAL stoicheck failure while evaluating \"#if\" result in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');;
 					switch (to3)
 					{
 					case 0:
@@ -884,12 +963,12 @@ void ScenarioParser::MergeText()
 
 void ScenarioParser::Show_stats()
 {
-	sf::Text astat;
-	sf::Color c = astat.getFillColor(); c.a = 0;
-	astat.setFont(*text.getFont());
-	int th = static_cast<int>(round(text.getCharacterSize() * 0.9f));
-	sdmargin = static_cast<int>(1.4f * th);
-	astat.setCharacterSize(th);
+	int th = 8.f * (*w+*h)/1400.f;
+	sdmargin = static_cast<int>(text.getCharacterSize() * 1.3f);
+	auto txt = text;
+	const sf::Color &c = text.getFillColor();
+	txt.setFillColor(sf::Color(c.r, c.g, c.b, 0));
+
 	for (auto prior = priorlimit; prior != -1; --prior)
 	{
 		for (auto it = s_stats.equal_range(prior); it.first != it.second; ++it.first)
@@ -897,36 +976,39 @@ void ScenarioParser::Show_stats()
 			auto &s = it.first->second;
 			if (!s.hidden)
 			{
-				s.t = astat;
+				s.t = txt;
 				s.t.setString(s.name + L": ");
 				if (!s.vhidden) s.t.setString(s.t.getString() + s.value);
 				s.t.setOrigin(0, round(s.t.getLocalBounds().top));
 				s.t.setPosition(round(*w / 12.f), static_cast<float>(sdmargin));
 				s.pos = static_cast<sf::Vector2i>(s.t.getPosition());
-				sdmargin += static_cast<int>(round(th * 1.25f));
+				sdmargin += static_cast<int>(s.t.getGlobalBounds().height + 2 * th);
 			}
 		}
+		txt.setStyle(sf::Text::Bold);
+		txt.setFillColor(statcolor);
 		for (auto it = io_stats.equal_range(prior); it.first != it.second; ++it.first)
 		{
 			auto &i = it.first->second; 
 			if (!i.hidden)
 			{
-				astat.setFillColor(statcolor);
-				astat.setStyle(sf::Text::Bold);
-				for (auto &t : i.t) t = astat;
+				for (auto &t : i.t)
+					t = txt;
 				i.t[0].setString(i.name);
-				i.t[0].setOrigin(0, round(i.t[0].getLocalBounds().top + i.t[0].getLocalBounds().height / 2.f));
+				i.t[0].setOrigin(0, static_cast<int>(round(i.t[0].getLocalBounds().top + i.t[0].getGlobalBounds().height / 2.f)));
+				int h = static_cast<int>(round(i.t[0].getLocalBounds().top + i.t[0].getGlobalBounds().height));
 
 				i.t[1].setString(i.opposite);
-				i.t[1].setOrigin(1, round(i.t[1].getLocalBounds().top + i.t[1].getLocalBounds().height / 2.f));
+				i.t[1].setOrigin(0, round(i.t[1].getLocalBounds().top + i.t[1].getGlobalBounds().height / 2.f));
+				if (h < static_cast<int>(round(i.t[1].getLocalBounds().top + i.t[1].getGlobalBounds().height))) 
+					h = static_cast<int>(round(i.t[1].getLocalBounds().top + i.t[1].getGlobalBounds().height));
 
 				i.t[2].setString(std::to_wstring(i.value));
-				i.t[2].setOrigin(2, round(i.t[2].getLocalBounds().top + i.t[2].getLocalBounds().height / 2.f));
+				i.t[2].setOrigin(0, round(i.t[2].getLocalBounds().top + i.t[2].getGlobalBounds().height / 2.f));
+				if (h < static_cast<int>(round(i.t[2].getLocalBounds().top + i.t[2].getGlobalBounds().height))) 
+					h = static_cast<int>(round(i.t[2].getLocalBounds().top + i.t[2].getGlobalBounds().height));
 
-				astat.setFillColor(c);
-				astat.setStyle(sf::Text::Regular);
-
-				i.setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(round(th * 1.2f)), i.value, i.min, i.max, i.threshold));
+				i.setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(h + th/2), i.value, i.min, i.max, i.threshold));
 				i.s.setPosition(round(*w / 12.f), static_cast<float>(sdmargin));
 				i.s.setColor(sf::Color(255, 255, 255, 0));
 				i.pos[3] = sf::Vector2i(static_cast<int>(round(*w / 12.f)), static_cast<int>(i.s.getPosition().y));
@@ -941,6 +1023,8 @@ void ScenarioParser::Show_stats()
 				i.pos[1] = static_cast<sf::Vector2i>(i.t[1].getPosition());
 				i.t[2].setPosition(round(x  + (i.t[1].getGlobalBounds().left - x - i.t[2].getGlobalBounds().width) / 2.f), y);
 				i.pos[2] = static_cast<sf::Vector2i>(i.t[2].getPosition());
+				
+				sdmargin += static_cast<int>(round(h + 2 * th));
 			}
 		}
 		for (auto it = i_stats.equal_range(prior); it.first != it.second; ++it.first)
@@ -948,8 +1032,6 @@ void ScenarioParser::Show_stats()
 			auto &i = it.first->second;
 			if (!i.hidden)
 			{
-				astat.setFillColor(statcolor);
-				astat.setStyle(sf::Text::Bold);
 				int arg[3] = { i.value, i.min, i.max };
 				if (arg[1] < 0)
 				{
@@ -957,33 +1039,32 @@ void ScenarioParser::Show_stats()
 					arg[2] -= arg[1];
 					arg[1] = 0;
 				}
-				i.t = astat;
+				i.t = txt;
 				i.t.setString(i.name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%");
 				i.t.setOrigin(0, round(i.t.getLocalBounds().top + i.t.getLocalBounds().height / 2.f));
-				i.setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(round(th * 1.2f)), arg[0], arg[1], arg[2]));
+				i.setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), static_cast<int>(i.t.getGlobalBounds().height + i.t.getLocalBounds().top + th/2), arg[0], arg[1], arg[2]));
 				i.s.setPosition(round(*w / 12.f), static_cast<float>(sdmargin));
 				i.s.setColor(sf::Color(255, 255, 255, 0));
 				i.pos[1] = sf::Vector2i(static_cast<int>(round(*w / 12.f)), static_cast<int>(i.s.getPosition().y));
 				i.t.setPosition(round(*w / 11.f), round(i.s.getPosition().y + i.s.getGlobalBounds().height / 2.f));
 				i.pos[0] = static_cast<sf::Vector2i>(i.t.getPosition());
 
-				astat.setFillColor(c);
-				astat.setStyle(sf::Text::Regular);
-
-				sdmargin += static_cast<int>(round(th *1.65f));
+				sdmargin += static_cast<int>(round(i.t.getGlobalBounds().height + i.t.getLocalBounds().top + 2.5f * th));
 			}
 		}
+		txt.setStyle(sf::Text::Regular);
+		txt.setFillColor(sf::Color(c.r,c.g,c.b,0));
 		for (auto it = Ints.equal_range(prior); it.first != it.second; ++it.first)
 		{
 			auto &i = it.first->second;
 			if (!i.hidden)
 			{
-				i.t = astat;
+				i.t = txt;
 				i.t.setString(i.name + L": " + std::to_wstring(i.value));
 				i.t.setOrigin(0,round(i.t.getLocalBounds().top));
 				i.t.setPosition(round(*w / 12.f), static_cast<float>(sdmargin));
 				i.pos = static_cast<sf::Vector2i>(i.t.getPosition());
-				sdmargin += static_cast<int>(round(th * 1.25f));
+				sdmargin += static_cast<int>(round(i.t.getGlobalBounds().height + 2 * th));
 			}
 		}
 	}
@@ -1084,7 +1165,7 @@ bool ScenarioParser::IfCheck(std::wstring &insr)
 	}
 	else
 	{
-		if (!stoiCheck(value, val)) if (!FindInt(value, val)) throw w_err(L"[Choice]FATAL stoicheck failure while evaluating \"#if\" result [" + std::to_wstring(sgoto) + L']');
+		if (!stoiCheck(value, val)) if (!FindInt(value, val)) throw w_err(L"[Choice]FATAL stoicheck failure while evaluating \"#if\" result in \"" + value + L"\"[" + std::to_wstring(sgoto) + L']');
 		switch (to3)
 		{
 		case 0:
@@ -1159,9 +1240,10 @@ bool ScenarioParser::NewlineCheck(const std::wstring& checked)
 
 size_t ScenarioParser::Pfind(const std::wstring& str, wchar_t c)
 {
-	size_t r = str.find(c);
-	if (r == std::wstring::npos) w_err(L"Critical function failed in string \"" + str + L"\" while searching for \'" + c + L"\' [" + std::to_wstring(sgoto) + L']'); //it will controll flow, so don't worry about the warrning
-	else return r;
+	std::wstring::size_type r = str.find(c);
+	if (r == std::wstring::npos) 
+		throw w_err(L"Critical function failed while searching for \'" + std::to_wstring(c) + L"\' in string \"" + str + L"\" [" + std::to_wstring(sgoto) + L']'); //it will controll flow, so don't worry about the warrning
+	return r;
 }
 
 inline IntStat* ScenarioParser::FindIStat(const std::wstring &name)
@@ -1263,39 +1345,69 @@ inline bool ScenarioParser::FindSStat(const std::wstring &name, const StringStat
 
 inline StcInt* ScenarioParser::FindStcI(const std::wstring &name)
 {
-	for (StcInt &i : stc_i)
-		if (name == i.name)
-			return &i;
+	if (Debug)
+	{
+		for (StcInt &i : dstc_i)
+			if (name == i.name)
+				return &i;
+	}
+	else
+		for (StcInt &i : stc_i)
+			if (name == i.name)
+				return &i;
 	return nullptr;
 }
 
 inline bool ScenarioParser::FindStcI(const std::wstring &name, const StcInt *&rt)
 {
-	for (const StcInt &i : stc_i) {
-		if (name == i.name) {
-			rt = &i;
-			return true;
-		}
+	if (Debug)
+	{
+		for (const StcInt &i : dstc_i)
+			if (name == i.name) {
+				rt = &i;
+				return true;
+			}
 	}
+	else
+		for (const StcInt &i : stc_i)
+			if (name == i.name) {
+				rt = &i;
+				return true;
+			}
 	return false;
 }
 
 inline StcString* ScenarioParser::FindStcS(const std::wstring &name)
 {
-	for (StcString &s : stc_s) 
-		if (name == s.name)
-			return &s;
+	if (Debug)
+	{
+		for (StcString &s : dstc_s)
+			if (name == s.name)
+				return &s;
+	}
+	else
+		for (StcString &s : stc_s) 
+			if (name == s.name)
+				return &s;
 	return nullptr;
 }
 
 inline bool ScenarioParser::FindStcS(const std::wstring &name, const StcString *&rt)
 {
-	for (const StcString &s : stc_s) {
-		if (name == s.name) {
-			rt = &s;
-			return true;
-		}
+	if (Debug)
+	{
+		for (const StcString &s : dstc_s)
+			if (name == s.name) {
+				rt = &s;
+				return true;
+			}
 	}
+	else
+		for (const StcString &s : stc_s)
+			if (name == s.name) {
+				rt = &s;
+				return true;
+			}
 	return false;
 }
 
@@ -1378,7 +1490,10 @@ void ScenarioParser::TextProcess(std::wstring &preinsr, std::wstring &insr)
 			int line;
 			if (stoiCheck(preinsr, line)) GotoLine(line - 1);
 			else if (waypoints.find(preinsr) != waypoints.end()) GotoLine(waypoints.at(preinsr));
-			else throw w_err(L"\"#goto\" command's stoicheck failure! Check if you didn't use a letter or if you put too many non-digit characters [" + std::to_wstring(sgoto) + L']');
+			else throw w_err(L"\"#goto\" command's stoicheck fatal failure! in \"" + preinsr + L"\"["
+				L"\nAre you sure waypoint contains at least one letter?"
+				L"\nOtherwise number put inside is invalidly inserted ["
+				+ std::to_wstring(sgoto) + L']');
 			dgoto = 0;
 			return;
 		}
@@ -1415,7 +1530,7 @@ bool ScenarioParser::ElTabs(std::wstring &insr)
 		insr.erase(0U, pos);
 		return true;
 	}
-	else return false;
+	return false;
 }
 
 void ScenarioParser::IgnoreTabs(std::wstring &insr)
@@ -1453,16 +1568,223 @@ void ScenarioParser::ScanForWaypoints()
 		{
 			insr.erase(0U, 4U);
 			insr.pop_back();
-			size_t n;
-			n = Pfind(insr, L',');
-			std::wstring name = insr.substr(0U, n);
-			waypoints[name] = gto;
+			waypoints[insr] = gto;
 		}
 	}
 	in.clear();
+	in.seekg(std::wifstream::beg);
 }
 
 void ScenarioParser::ScanForErrors()
 {
-	PlayerTurn = true; //force end of ParseMainBody
+	Debug = true;
+	cgoto = sgoto;
+	in.seekg(std::wifstream::beg);
+	int openbrace = 0, closedbrace = 0;
+	ScanForWaypoints();
+	while (std::getline(in, insr))
+	{
+		++sgoto;
+		while (insr.find('[') != std::wstring::npos) ++openbrace;
+		while (insr.find('[') != std::wstring::npos) ++closedbrace;
+		if (CommentCheck(insr)) continue;
+		IgnoreTabs(insr);
+		if (insr[0U] == '#' || ElTabs(insr))
+		{
+			if (insr.find(L"#goto(") == 0U)
+			{
+				insr.erase(0U, 6U);
+				insr.pop_back();
+				int line;
+				Debug = false;
+				if (!stoiCheck(insr, line)) {
+					Debug = true;
+					if (waypoints.find(insr) == waypoints.end())
+						throw w_err(L"\"#goto\" command's stoicheck fatal failure! In \"" + insr +
+							L"\"\nAre you sure waypoint contains at least one letter?"
+							L"\nOtherwise number put inside is invalidly inserted ["
+							+ std::to_wstring(sgoto) + L']');
+				}
+			}
+			else ExecuteCommand(insr);
+		}
+		if (openbrace != closedbrace) throw w_err(L"Number of \'{\' isn't "
+			L"equal number of \'}\'\n"
+			L"This can cause errors debugger can't detect ["
+			+ std::to_wstring(sgoto) + L']');
+	}
+	insr.clear();
+	Debug = false;
+	in.clear(); //removing badbit, redundant?
+	in.close();
+	sgoto = 0; //redu?
+	sgoto = cgoto; //redu?
+	allowdebugging = false;
+	LoadSave();
+}
+
+void ScenarioParser::LoadSave()
+{
+	i_stats.clear();
+	io_stats.clear();
+	s_stats.clear();
+	Ints.clear();
+	LoadStatics();
+	std::wfstream save(savefile);
+	if (save)
+	{
+		std::wstring insert;
+		const std::locale empty_locales = std::locale::empty();
+		const std::codecvt_utf8<wchar_t>* converters = new std::codecvt_utf8<wchar_t>;
+		const std::locale utf8_locales = std::locale(empty_locales, converters);
+		save.imbue(utf8_locales);
+		int state = 0;
+		sf::Uint8 t = 0;
+		while (state < 5) //reading... 
+		{
+			std::getline(save, insert);
+			if (insert.empty()) break; //throw "[LoadingSave] Error: the save contains an empty line or is empty [" + scenario.sgoto + ']';
+			if (insert[0] == L'}') {
+				++state;
+				continue;
+			}
+			std::wstring name;
+			int arglistx;
+			if (state == 0)
+			{
+				switch (t)
+				{
+				case 0:
+					if (!stoiCheck(insert, sgoto)) warn(L"[LoadingSave]FATAL stoicheck failure(\"goto\" variable) in \"" + insert + L"\"[");
+					cgoto = sgoto;
+					break;
+				case 1:
+					stoiCheck(insert, dgoto);
+					break;
+				case 2:
+				{
+					int variable = 0;
+					if (!stoiCheck(insert, variable)) warn(L"[LoadingSave]FATAL stoicheck failure(\"loadtextonly\" variable) in \"" + insert + L"\"[");
+					loadtextonly = static_cast<bool>(variable);
+				}
+				break;
+				case 3:
+					path = insert;
+					break;
+				}
+				++t;
+				continue;
+			}
+			else if (state == 1) {
+				name = L"IntStatOpposite";
+				arglistx = 7;
+			}
+			else if (state == 2) {
+				name = L"IntStat";
+				arglistx = 5;
+			}
+			else if (state == 3) {
+				name = L"StringStat";
+				arglistx = 4;
+			}
+			else if (state == 4)
+			{
+				name = L"Int";
+				arglistx = 3;
+			}
+			std::wstring names[2];
+			int arguments[6];
+			int arglist;
+			int namelist = 0;
+			for (arglist = 0; arglist < arglistx; ++arglist)
+			{
+				size_t s_position;
+				if (insert.empty() || (s_position = insert.find(L',')) == std::wstring::npos)
+					warn(L"[LoadingSave]Error: an/a " + name + L" with name \"" + (names[0].empty() ? L"unknown" : names[0]) +
+						L"\" couldn't be loaded (missing argument or an empty argument)");
+				switch (arglist)
+				{
+				case 0:
+					names[0] = insert.substr(0U, s_position);
+					if (checkName(names[0])) return;
+					++namelist;
+					break;
+				case 1:
+					if (state == 3) {
+						names[1] = insert.substr(0U, s_position);
+						++namelist;
+					}
+					else if (!stoiCheck(insert.substr(0U, s_position), arguments[0])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" failed its stoicheck on argument 1");
+					break;
+				default:
+					if (!stoiCheck(insert.substr(0U, s_position), arguments[arglist - 1])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist));
+					break;
+				}
+				insert.erase(0U, s_position + 1U);
+			}
+			if (arglist == arglistx)
+			{
+				if (!insert.empty())
+				{
+					if (state == 1) names[namelist] = insert.substr(0U, insert.size());
+					else if (!stoiCheck(insert.substr(0U, insert.size()), arguments[arglist - namelist])) warn(L"[Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist - namelist));
+					insert.clear();
+					if (state == 1) io_stats.emplace(arguments[5], IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], names[1]));
+					else if (state == 2) i_stats.emplace(arguments[4], IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3]));
+					else if (state == 3) s_stats.emplace(arguments[2], StringStat(names[0], names[1], arguments[0], arguments[1]));
+					else if (state == 4) Ints.emplace(arguments[2], Int(names[0], arguments[0], arguments[1]));
+				}
+				else warn(L"[LoadingSave] Error: an/a " + name + L" with name \"" + names[0] + L"\" couldn't be loaded (last argument empty)");
+			}
+			else if (arglist == 1) warn(L"Error: could not load(missing arguments or stoicheck failure) an/a " + name + L" with name\"" + names[0] + L'\"');
+			else warn(L"Error: could not load(missing arguments or stoicheck failure) an/a " + name + L" with missing name");
+		}
+		Parse();
+		//choicesel = -1;
+	}
+	else
+	{
+		static bool attempt = false;
+		if (attempt) throw w_err(L"Could not create save file \"" + savefile + L'\"');
+		std::wofstream save(savefile);
+		attempt = true;
+		LoadSave();
+	}
+}
+
+void ScenarioParser::LoadStatics()
+{
+	std::wfstream save(apath + L"\\Stc.txt");
+	if (save)
+	{
+		std::wstring insert;
+		std::getline(save, insert);
+		const std::locale empty_locales = std::locale::empty();
+		const std::codecvt_utf8<wchar_t>* converters = new std::codecvt_utf8<wchar_t>;
+		const std::locale utf8_locales = std::locale(empty_locales, converters);
+		save.imbue(utf8_locales);
+		if (insert[0U] == 0xFEFF) //not sure if necessary
+			insert.erase(0U, 1U);
+		else if (insert[0U] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf)
+			insert.erase(0U, 3U);
+		while (insert[0U] != L'}')
+		{
+			if (insert.empty()) break;
+			std::wstring name = insert.substr(0U, insert.find(L','));
+			if (checkName(name)) { std::getline(save, insert); continue; } //I don't remeber the point of this one, perhaps it's redundant
+			int value;
+			if (stoiCheck(insert.substr(insert.find(L',') + 1U), value))
+				stc_i.emplace_back(name, value);
+			else throw w_err(L"Error loading Stc.txt, this should not happend unless you were editing files. Delete Stc.txt");
+			std::getline(save, insert);
+		}
+		while (std::getline(save, insert))
+		{
+			std::wstring name = insert.substr(0U, insert.find(L',')), value = insert.substr(insert.find(L',') + 1U);
+			if (checkName(name)) continue;
+			warn(value);
+			stc_s.emplace_back(name, value);
+			if (insert.empty()) break;
+		}
+	}
 }

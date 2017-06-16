@@ -1,3 +1,4 @@
+#debug
 #StringStat(Tytuł,"nieznany",0,0,0)
 #Int(Kasa,90,0,0)
 #IntStat(Respekt Ulicy,0,100,-100,0,0)
