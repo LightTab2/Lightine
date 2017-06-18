@@ -24,7 +24,7 @@ public:
 private:
 	friend class Cmain;
 																		//Read from goto to end(next or end command)
-	void Parse();	
+	const bool Parse(const bool loadgame);	
 																		//Prevents crash and does std::stoi; if failure: ReturnInt is set to Default and returns false
 	const bool stoiCheck(const std::wstring& NumberInText,
 	                     int &ReturnInt,
@@ -52,7 +52,7 @@ private:
 	int *h;																//Copy of h in Cmain, it needs to change change in Cmain::sSaveOptions
 	int scrolltimes = 0;												//How many times you need to scroll to get from top to down
 	int *w;																//Copy of w in Cmain, it needs to change in Cmain::sSaveOptions
-	int sgoto = 0;														//Parse() starts of reading at this line
+	int sgoto = 0;														//Parse starts of reading at this line
 	int cgoto = 0;														//Copy of sgoto, used when saving the game
 	int dgoto = 0;														//Stops parsing when sgoto hits dgoto's value	
 	int	choicesel = -1;													//Currently selected Choice
@@ -88,7 +88,7 @@ private:
 	//std::wstring *type;												//So you can enter some text and make StringStat out of it
 	sf::ConvexShape rrect;
 	const std::locale utf8_locale = std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>);	//Gets current locale to read widestrings
-																		//Basically core of Parse(), where loop is called
+																		//Basically core of Parse, where loop is called
 	void ParseMainBody();
 																		//Heart of parsing the text
 	void TextProcess(std::wstring &TextToProcess, std::wstring &AddReturnTo);
@@ -157,9 +157,13 @@ StcString* FindStcS(const std::wstring &name);
 	void LoadSave();
 																		//Probably part of LoadSave()
 	void LoadStatics();
+																		//Part of IfCheck();
+	void elsecheck(bool IFb);
 	//inline void TabFind(std::wstring &preinsr);
 	std::wstring insr;													//Contains text that will be splitted into tinsr
 	std::wstring tinsr;													//Splitted insr that will be displayed
 	std::wifstream in;													//File from which parser gets data
 	std::map<std::wstring, int> waypoints;								//Waypoints for #goto
+	std::wstring fpath;													//Simplest imo way to make #file work is making copies of certain variables to save things proper
+	int fcgoto;															//Simplest imo way to make #file work is making copies of certain variables to save things proper
 };

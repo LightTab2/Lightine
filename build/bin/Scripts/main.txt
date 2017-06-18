@@ -5,14 +5,14 @@
 #IntStatOpposite(Lewość,10,30,-10,10,0,0,Prawość)
 #Stc(1,0)
 #set(1,0)
+#wp(początek)//#if(1==0) { Jakiś koleś ubrany jak hipis patrzy się na Ciebie. Obstawiasz, że to szaman.}
 	Budzisz się w lesie, a w głowie Ci wiruje, jakby latało w niej rumuńskie tornado.
 W tym miejscu znajduje się stacja kolejowa!
+`
 Myślisz sobie:
 
 -Kto buduje stacje kolejowe w lesie!?//spacja tutaj
-#wp(początek)//#if(1==0) { Jakiś koleś ubrany jak hipis patrzy się na Ciebie. Obstawiasz, że to szaman.}
 //#if(1==1) {Szaman nadal czeka, jakby na zbawienie}
-`
 			Co robisz?
 #enter(Tytuł,0,2)
 #choice
@@ -72,7 +72,7 @@ Szaman się oburzył i sobie poszedł.
 #choice
 #if(1!=2)
 #hidden no
-Przeszukaj okoliczny teren.
+Przeszukaj okoliczny teren
 {
 	Nie masz dostępu do żywności i wody pitnej, na dodatek najbliższe miasto jest ponad 400 km drogi stąd.
 #set(1,2)
@@ -80,7 +80,7 @@ Przeszukaj okoliczny teren.
 }
 
 #choice
-Zadźwoń po Pomoc
+Zadźwoń po pomoc
 {
 	Okazuję się, że samolot, który miał Cię ratować (tak, tutaj jest lądowisko w pobliżu) został porwany. Ty znajdując się na jego pokładzie za chwile zginiesz, rozbijając się zapewne o jakiś wysoki budynek.
 #choice

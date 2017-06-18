@@ -14,8 +14,6 @@ int main(){
 		Cmain cmain;
 	if (cmain.quit) return -1;
 		cmain.Intro();
-		if (cmain.profiles.empty()) cmain.scenario.pempty = true; //Redundant?
-		else if (cmain.stories.empty()) cmain.scenario.sempty = true; //Redundant?
 	try{
 		cmain.GameLoop();
 	}

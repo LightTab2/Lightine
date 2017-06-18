@@ -21,6 +21,6 @@ public:
 	sf::Sprite sprite;														//Sprite of the image
 	int lifetime;															//How long does it "live" after it hit its lifeline
 	int fadetime;															//How long does it fade away
-	int lifeline;															//Used in check (after every Parse()) if sgoto is higher than it, if true - creates lifeclock
+	int lifeline;															//Used in check (after every Parse) if sgoto is higher than it, if true - creates lifeclock
 	std::unique_ptr<sf::Clock> lifeclock;									//When created, exist lifetime long (in microseconds)
 };

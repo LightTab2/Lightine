@@ -18,19 +18,25 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 {
 	scenario.text.setString(L"");
 	scenario.choice.clear();
-	scenario.cgoto = scenario.sgoto = scenario.dgoto = 0;
-	std::wofstream save(L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt");
+	scenario.cgoto = scenario.sgoto = scenario.dgoto = scenario.ttignore = 0;
 	scenario.loadtextonly = false;
-	LoadSave();
+	scenario.ssreload = true;
+	scenario.i_stats.clear();
+	scenario.io_stats.clear();
+	scenario.s_stats.clear();
+	scenario.Ints.clear();
+	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
+	scenario.allowdebugging = true; 
+	if (!scenario.Parse(false)) DeleteStory();
 	resetsb = false;
 	scenario.typesel = scenario.choicesel = -1;
 	colorminus1.a = 0;
 	resets.setColor(colorminus1);
-	sf::Color c = textcolor;
-	c.a = colorminus1.a;
 	scenario.statcolor.a = colorminus1.a;
 	lsetPos = static_cast<float>(smaxup);
-	for (auto &i : scenario.i_stats)
+	scenario.ssreload = true;
+
+	/*for (auto &i : scenario.i_stats)
 	{
 		i.second.t.setFillColor(scenario.statcolor);
 		i.second.s.setColor(colorminus1);
@@ -42,7 +48,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	}
 	for (auto &i : scenario.Ints) i.second.t.setFillColor(c);
 	for (auto &s : scenario.s_stats) s.second.t.setFillColor(c);
-	//could've done at manageminus1: if (colorminus1.a != 0) Drawminus1(); But performance...
+	*/
 }
 
 inline void Cmain::Manage67(const bool add) //this code could've been better in aspect of transparency, but performance is the prior here

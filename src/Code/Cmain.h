@@ -61,8 +61,6 @@ class Cmain
 		int selectionp = 0;															//Selected (in-use) profile
 		int	arroweds_margin = 0;													//Maximal arroweds
 		int	arrowedp_margin = 0;													//Maximal arrowedp
-		int cselections = 0;														//Like cmusic, used in SaveOptions()
-		int cselectionp = 0;														//Like cmusic, used in SaveOptions()
 		int	gamestate = 1;															//State of the game. -1-statistics menu 0-main menu 1-game 2-options 3-graphics options 4-audio options 5-save settings 6-profile settings 7-story settings
 		unsigned int menucapacity = 0;												//Maximum number of sf::Text(s), that are able to render in profilesmenu
 		int	antialias = 0;															//Antialiasing setting

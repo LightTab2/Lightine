@@ -109,8 +109,6 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	cfullone = fullone;
 	cfulltwo = fulltwo;
 	cfullscreen = fullscreen;
-	cselectionp = selectionp;
-	cselections = selections;
 	csound = sound;
 	cmusic = music;
 	//control variables set
@@ -229,7 +227,7 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	scenario.Tsize = ceil(t.getGlobalBounds().height);
 	
 	getSaveData();
-	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
+	if (!stories.empty()) scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
 	
 	scenario.text.setPosition(round(w / 18.f), floor(h / 12.f));
 	LoadSave();
@@ -256,10 +254,10 @@ void Cmain::SaveOptions()
 	if (cfullscreen != fullscreen || w != cw || h != ch) 
 	{
 		window.close();
-		sSaveOptions();
 		SaveToFile();
+		sSaveOptions();
 	}
-	else if (cselections != selections || cselectionp != selectionp || cmusic != music || csound != sound)
+	else if (cmusic != music || csound != sound)
 		SaveToFile();
 }
 
@@ -361,6 +359,7 @@ void Cmain::getSaveData()
 {
 	std::ifstream file;
 	file.open("../../bin/Stories.txt");
+	file.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
 	if (!file) throw w_err(L"Could not open \"../../bin/Stories.txt\"");
 	std::string insert; //Buffer for reading profiles
 	sf::Text insert_text = newname;	
@@ -372,27 +371,38 @@ void Cmain::getSaveData()
 	profiles.clear();
 	
 	stories.clear();
+	bool first = true;
 	for (;;)
 	{
 		if (!std::getline(file, insert)) break;
+		if (first)
+		{
+			if (insert[0] == 0xFEFF) insert.erase(0U, 1U); //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (insert[0] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf) insert.erase(0U, 3U);
+			first = false;
+		}
 		insert_text.setString(insert);
 		stories.push_back(insert_text);
 	}
-	if (selections >= static_cast<int>(stories.size())) selections = static_cast<int>(stories.size()) - 1;
+	if (!stories.empty() && selections >= static_cast<int>(stories.size())) selections = static_cast<int>(stories.size()) - 1;
 	insert_text.setFillColor(menuprofilescolor);
 	file.close();
 	file.open("../../bin/Profiles.txt");
 	if (!file) throw w_err(L"Could not open \"../../bin/Profiles.txt\"");
+	first = false;
 	for (;;)
 	{
 		if (!std::getline(file, insert)) break;
+		if (first)
+		{
+			if (insert[0] == 0xFEFF) insert.erase(0U, 1U); //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (insert[0] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf) insert.erase(0U, 3U);
+			first = false;
+		}
 		insert_text.setString(insert);
 		profiles.push_back(insert_text);
 	}
-	if (selectionp >= static_cast<int>(profiles.size())) selectionp = static_cast<int>(profiles.size()) - 1;
-	if (profiles.empty()) scenario.pempty = true;
-	else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-	else scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+	if (!profiles.empty() && selectionp >= static_cast<int>(profiles.size())) selectionp = static_cast<int>(profiles.size()) - 1;
 	{
 		std::wstring temp;
 		temp.reserve(95);
@@ -415,7 +425,6 @@ void Cmain::getSaveData()
 	arroweds = selections - static_cast<int>(menucapacity/2U);
 	if (arroweds < 0) arroweds = 0;
 	else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
-
 }
 
 void Cmain::setupMenu()
@@ -431,7 +440,7 @@ void Cmain::setupMenu()
 		}
 		if (selections == 0) arrowed_up = true;
 		else arrowed_up = false; 
-		if (selections == stories.size() - 1U) arrowed_dn = true;
+		if (stories.empty() || selections == (stories.size() - 1U)) arrowed_dn = true;
 		else arrowed_dn = false;
 		scheck = false;
 	}
@@ -446,7 +455,7 @@ void Cmain::setupMenu()
 		}
 		if (selectionp == 0U) arrowed_up = true;
 		else arrowed_up = false;
-		if (selectionp == profiles.size() - 1U) arrowed_dn = true;
+		if (profiles.empty() || selectionp == (profiles.size() - 1U)) arrowed_dn = true;
 		else arrowed_dn = false;
 		pcheck = false;
 	}
@@ -470,21 +479,22 @@ void Cmain::setupMenu()
 
 void Cmain::CreateNew()
 {
-	std::string name; //name of new profile/story (all characters are lower)
-	for (char &c : newname.getString().toAnsiString()) name.push_back(tolower(c)); //getting all chars to lower(can't create 2 files with the same name in Windows)
+	std::wstring name; //name of new profile/story (all characters are lower)
+	for (const wchar_t &c : newname.getString().toWideString()) name.push_back(tolower(c)); //getting all chars to lower(can't create 2 files with the same name in Windows)
 	enternewerror = false;
 	if (!name.empty())
 	{
 		if (gwhich)
 		{
-			std::ofstream sfile("../../bin/Stories.txt", std::ios::trunc);
-			std::string oldname;
+			std::wofstream sfile(L"../../bin/Stories.txt", std::ios::trunc);
+			sfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+			std::wstring oldname;
 			for (auto &s : stories)
 			{
-				oldname.clear();
-				sfile << s.getString().toAnsiString() << std::endl;
-				for (char &c : s.getString().toAnsiString()) oldname.push_back(tolower(c)); //getting all chars to lower
+				sfile << s.getString().toWideString() << std::endl;
+				for (const wchar_t &c : s.getString().toWideString()) oldname.push_back(tolower(c)); //getting all chars to lower
 				if (oldname == name) enternewerror = true;
+				oldname.clear();
 			}
 			if (enternewerror)
 			{
@@ -493,10 +503,12 @@ void Cmain::CreateNew()
 				return;
 			}
 			stories.push_back(newname);
+			sfile << stories.back().getString().toWideString() << std::endl;
 			newname.setString("");
 			for (auto &s : profiles)
 			{
-				std::ofstream file("../../bin/Saves/" + s.getString().toAnsiString() + "_" + stories.back().getString().toAnsiString() + ".txt");
+				std::wifstream temp(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt"); //check if there's already a save
+				if (!temp) std::wofstream file(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt");
 			}
 			if (stories.size() > menucapacity) {
 				arroweds += 1;
@@ -507,13 +519,14 @@ void Cmain::CreateNew()
 		}
 		else
 		{
-			std::ofstream pfile("../../bin/Profiles.txt", std::ios::trunc);
-			std::string oldname;
+			std::wofstream pfile(L"../../bin/Profiles.txt", std::ios::trunc);
+			pfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+			std::wstring oldname;
 			for (auto &p : profiles) //checking if there's already a profile with the same name
 			{
 				oldname.clear();
-				pfile << p.getString().toAnsiString() << std::endl;
-				for (char &c : p.getString().toAnsiString()) oldname.push_back(tolower(c)); //getting all chars to lower
+				pfile << p.getString().toWideString() << std::endl;
+				for (const wchar_t &c : p.getString().toWideString()) oldname.push_back(tolower(c)); //getting all chars to lower
 				if (oldname == name) enternewerror = true;
 			}
 			if (enternewerror)
@@ -523,10 +536,12 @@ void Cmain::CreateNew()
 				return;
 			}
 			profiles.push_back(newname);
+			pfile << profiles.back().getString().toWideString() << std::endl;
 			newname.setString("");
 			for (auto &s : stories)
 			{
-				std::ofstream file("../../bin/Saves/" + profiles.back().getString().toAnsiString() + "_" + s.getString().toAnsiString() + ".txt");
+				std::wifstream temp(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt"); //check if there's already a save
+				if (!temp) std::wofstream file(L"../../bin/Saves/" + profiles.back().getString().toWideString() + L"_" + s.getString().toWideString() + L".txt");
 			}
 			if (profiles.size() > menucapacity) {
 				arrowedp += 1;
@@ -535,12 +550,9 @@ void Cmain::CreateNew()
 			pcheck = true;
 			enternew = false;
 		}
-		if (profiles.empty()) scenario.pempty = true;
-		else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-		else
-			LoadSave();
+		//if (scenario.pempty || scenario.sempty) LoadSave();
 	}
-}
+}	
 void scut(std::string& to_cut, size_t pos, std::string& to_insert)
 {
 	if (pos <= to_cut.size()) to_insert = to_cut.substr(pos);

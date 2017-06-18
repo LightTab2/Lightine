@@ -33,10 +33,10 @@ void Cmain::MainEvent()
 			if (mainevent.key.code == sf::Keyboard::Escape) {
 				if (gamestate == 0 && !prov) { visible = false; prov = true; gamestate = 1; }
 				else if (gamestate == 1 && !prov) { visible = false; prov = true; gamestate = 0; stigger = false; }
-				else if (gamestate == 2) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); }
-				else if (gamestate == 3) { if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); SaveOptions(); } }
-				else if (gamestate == 4) { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); SaveOptions(); }
-				else if (gamestate == 5) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); }
+				else if (gamestate == 2) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   }
+				else if (gamestate == 3) { if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); } }
+				else if (gamestate == 4) { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); }
+				else if (gamestate == 5) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   }
 				else if (gamestate == 6 || gamestate == 7) {
 				if (enternew) {
 					if (enternewerror) {
@@ -47,7 +47,7 @@ void Cmain::MainEvent()
 				else if (k_delete) {
 					k_delete = false; gwhich ? scheck = true : pcheck = true;
 				}
-				else { visible = false; gamestate = 5; errclock.restart(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); gwhich ? scheck = true : pcheck = true; SaveOptions(); } }
+				else { visible = false; gamestate = 5; errclock.restart(); LoadSave(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   gwhich ? scheck = true : pcheck = true; } }
 				else if (gamestate == -1) {
 					if (resetsb) {
 						resetsb = false;
@@ -57,11 +57,12 @@ void Cmain::MainEvent()
 						disrandomnameLOL = true;
 					}
 					else {
-						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); sviewchange(lsetPos);
+						visible = false; gamestate = 1; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   sviewchange(lsetPos);
 					}
 				}
 				disbutton = false;
 				disrandomnameLOL = true;
+				button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds();
 			}
 			else if (mainevent.key.code == sf::Keyboard::BackSpace) {
 				if (gamestate == 3 && !fullscreen) {
@@ -154,7 +155,7 @@ void Cmain::MainEvent()
 			{
 				if (gamestate == 6 && !k_delete && !enternew)
 				{
-					if (round(menucapacity / 2U) <= (profiles.size() - 1U) - selectionp && arrowedp > 0)
+					if (!profiles.empty() && round(menucapacity / 2U) <= (profiles.size() - 1U) - selectionp && arrowedp > 0)
 					{
 						pcheck = true;
 						arrowedp -= 1;
@@ -162,13 +163,12 @@ void Cmain::MainEvent()
 					if (selectionp > 0)
 					{
 						selectionp -= 1;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						pcheck = true;
 					}
 				}
 				else if (gamestate == 7 && !k_delete && !enternew)
 				{
-					if (round(menucapacity / 2U) <= (stories.size() - 1U) - selections && arroweds > 0)
+					if (!stories.empty() && round(menucapacity / 2U) <= (stories.size() - 1U) - selections && arroweds > 0)
 					{
 						scheck = true;
 						arroweds -= 1;
@@ -176,7 +176,6 @@ void Cmain::MainEvent()
 					if (selections > 0)
 					{
 						selections -= 1;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						scheck = true;
 					}
 				}
@@ -190,10 +189,9 @@ void Cmain::MainEvent()
 						pcheck = true;
 						arrowedp += 1;
 					}
-					if (static_cast<unsigned int>(selectionp) < profiles.size() - 1U)
+					if (!profiles.empty() && static_cast<unsigned int>(selectionp) < profiles.size() - 1U)
 					{
 						selectionp += 1;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						pcheck = true;
 					}
 				}
@@ -204,10 +202,9 @@ void Cmain::MainEvent()
 						scheck = true;
 						arroweds += 1;
 					}
-					if (static_cast<unsigned int>(selections) < stories.size() - 1U)
+					if (!stories.empty() && static_cast<unsigned int>(selections) < stories.size() - 1U)
 					{
 						selections += 1;
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						scheck = true;
 					}
 				}
@@ -236,10 +233,8 @@ void Cmain::MainEvent()
 				if (arrowedp < 0) arrowedp = 0;
 				else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
 				if (selectionp < 0) selectionp = 0;
-				else if (static_cast<unsigned int>(selectionp) >= profiles.size()) selectionp = static_cast<int>(profiles.size()) - 1;
-				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+				else if (static_cast<unsigned int>(selectionp) >= profiles.size()) selectionp = profiles.empty() ? 0 : (static_cast<int>(profiles.size()) - 1);
 				pcheck = true;
-				LoadSave();
 			}
 			else if (gamestate == 7)
 			{
@@ -248,10 +243,8 @@ void Cmain::MainEvent()
 				if (arroweds < 0) arroweds = 0;
 				else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 				if (selections < 0) selections = 0;
-				else if (static_cast<unsigned int>(selections) >= stories.size()) selections = static_cast<int>(stories.size()) - 1;
-				if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
+				else if (static_cast<unsigned int>(selections) >= stories.size()) selections = stories.empty() ? 0 : (static_cast<int>(stories.size()) - 1);
 				scheck = true;
-				LoadSave();
 			}
 		break;
 		case sf::Event::MouseButtonPressed:
@@ -287,7 +280,10 @@ void Cmain::MainEvent()
 			else if (enternew && (gamestate == 6 || gamestate == 7))
 			{
 				const sf::Uint32 &achar = mainevent.text.unicode;
-				if (achar > 31U && achar < 127U && achar != 47U && achar != 92U && achar != 58U && achar != 42U && achar != 63U && achar != 34U && achar != 60U && achar != 62U && achar != 124U) {
+				if (achar > 31U && achar != 34U &&
+					achar != 42U && achar != 47U && achar != 58U &&
+					achar != 60U && achar != 62U && achar != 63U &&
+					achar != 92U && achar != 124U && achar != 127U) {
 					auto t = newname.getString() + achar;
 					newname.setString(t);
 					if ((newname.getGlobalBounds().width) >(w - w/12.f))
@@ -361,7 +357,7 @@ void Cmain::onRelease()
 			else if (Contains(button_3)) {
 				resetsb = false;
 				button_3_text.setString("Back");
-				button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width) - static_cast<int>(round(60.f * w / 800.f)), h - static_cast<int>(round(h / 600.f * 90.f)))));
+					button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w - static_cast<int>(button_3_text.getGlobalBounds().width) - static_cast<int>(round(60.f * w / 800.f)), h - static_cast<int>(round(h / 600.f * 90.f)))));
 				disbutton = false;
 				disrandomnameLOL = true;
 			}
@@ -392,14 +388,13 @@ void Cmain::onRelease()
 		{
 			if (scenario.choiceneed == true && scenario.choicesel == -1) return;
 			sviewchange(0);
-			scenario.choiceneed = scenario.loadtextonly = false;
 			if (scenario.choicesel > -1)
 			{
 				scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
 				scenario.dgoto = scenario.choice[scenario.choicesel].dgto;
 			}
 			else { scenario.cgoto = scenario.sgoto; scenario.dgoto = 0; }
-			scenario.Parse();
+			if (!scenario.Parse(false)) DeleteStory();
 		}
 		else
 		{
@@ -471,7 +466,7 @@ void Cmain::onRelease()
 			enternew = true; pcheck = true;
 		}
 		else if (Contains(button_3)) {
-			visible = false; gamestate = 5; button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); pcheck = true; SaveOptions();
+			visible = false; gamestate = 5; LoadSave(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); pcheck = true;
 		}
 		break;
 	case 7:
@@ -497,7 +492,7 @@ void Cmain::onRelease()
 			enternew = true; scheck = true;
 		}
 		else if (Contains(button_3)) {
-			visible = false; gamestate = 5; button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f)))) ); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); button_1 = button_1_text.getGlobalBounds(); button_2 = button_2_text.getGlobalBounds(); button_3 = button_3_text.getGlobalBounds(); scheck = true; SaveOptions();
+			visible = false; gamestate = 5; LoadSave(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); scheck = true;
 		}
 		break;
 	}
@@ -581,32 +576,28 @@ void Cmain::onClick()
 			if (Contains(arrowdn_b)) {
 				if (static_cast<unsigned int>(selectionp) >= menucapacity / 2U && arrowedp < arrowedp_margin)
 					arrowedp += 1;
-				if (static_cast<unsigned int>(selectionp) < profiles.size() - 1U) {
+				if (!profiles.empty() && static_cast<unsigned int>(selectionp) < (profiles.size() - 1U)) {
 					selectionp += 1;
 				}
 				pcheck = true;
-				LoadSave();
 			}
 			else if (Contains(arrowup_b)) {
-				if (menucapacity / 2U <= (profiles.size() - 1U) - selectionp && arrowedp > 0) 
+				if (!profiles.empty() && menucapacity / 2U <= (profiles.size() - 1U) - selectionp && arrowedp > 0) 
 					arrowedp -= 1;
 				if (selectionp > 0) {
 					selectionp -= 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				pcheck = true;
-				LoadSave();
 			}
 			else {
-				for (size_t repeated = 0U; repeated != menucapacity && repeated != profiles.size(); ++repeated) {
-					if (Contains(profiles[arrowedp + repeated].getGlobalBounds()) && selectionp != repeated) {
-						selectionp = arrowedp + static_cast<int>(repeated);
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
-						arrowedp += static_cast<int>(repeated - menucapacity / 2U);
+				for (int repeated = 0U; repeated != menucapacity && repeated != profiles.size(); ++repeated) {
+					if (Contains(profiles[arrowedp + repeated].getGlobalBounds()) && selectionp != (arrowedp + repeated)) {
+						selectionp = arrowedp + repeated;
+						arrowedp += repeated - menucapacity / 2U;
 						if (arrowedp < 0) arrowedp = 0;
 						else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
 						pcheck = true;
-						LoadSave();
+						return;
 					}
 				}
 			}
@@ -617,33 +608,28 @@ void Cmain::onClick()
 			if (Contains(arrowdn_b)) {
 				if (static_cast<unsigned int>(selections) >= menucapacity / 2U && arroweds < arroweds_margin)
 					arroweds += 1;
-				if (static_cast<unsigned int>(selections) < stories.size() - 1U) {
+				if (!stories.empty() && static_cast<unsigned int>(selections) < (stories.size() - 1U)) {
 					selections += 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				scheck = true;
-				LoadSave();
 			}
 			else if (Contains(arrowup_b)) {
-				if (menucapacity / 2U <= (stories.size() - 1U - selections) && arroweds > 0)
+				if (!stories.empty() && menucapacity / 2U <= (stories.size() - 1U - selections) && arroweds > 0)
 					arroweds -= 1;
 				if (selections > 0) {
 					selections -= 1;
-					if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 				}
 				scheck = true;
-				LoadSave();
 			}
 			else {
 				for (size_t repeated = 0U; repeated != menucapacity && repeated != stories.size(); ++repeated) {
-					if (Contains(stories[arroweds + repeated].getGlobalBounds()) && selections != repeated) {
+					if (Contains(stories[arroweds + repeated].getGlobalBounds()) && selections != (arroweds + repeated)) {
 						selections = arroweds + static_cast<int>(repeated);
-						if (!scenario.sempty && !scenario.pempty) scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 						arroweds += static_cast<int>(repeated - menucapacity / 2U);
 						if (arroweds < 0) arroweds = 0;
 						else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 						scheck = true;
-						LoadSave();
+						return;
 					}
 				}
 			}

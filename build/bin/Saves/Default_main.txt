@@ -1,6 +1,5 @@
+7
 0
-0
-1
 ../../bin/Scripts/main.txt
 }
 Lewość,10,30,-10,10,0,0,Prawość
@@ -9,5 +8,5 @@ Respekt Ulicy,0,100,-100,0,0
 }
 Tytuł,"nieznany",0,0,0
 }
-Kasa,90,0,0
+Kasa,100,0,0
 }
