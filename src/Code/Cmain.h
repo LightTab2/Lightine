@@ -11,8 +11,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 #include "txtReader.h"
-
-//Hello everyone, I wish to say that my English isn't so good and any correction would be very kind =)
+//Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
 {
 	public:
@@ -20,8 +19,6 @@ class Cmain
 
 																					//The constructor
 		Cmain();
-																					//The deconstructor
-		~Cmain();
 																					//"Tick" is every call of this function, essential for program to work
 		void GameLoop();
 																					//"Lightine appears before"
@@ -30,8 +27,6 @@ class Cmain
 		ScenarioParser scenario;													//Parses stories
 		std::vector<sf::Text> profiles;												//Profiles that can be selected
 		std::vector<sf::Text> stories; 												//Stories that can be selected
-		int w = 800;																//Width of the window, in pixels
-		int	h = 600;																//Height of the window, in pixels
 	private:	
 		bool fullscreen = true;														//Enables fullscreen?
 		bool cfullscreen = false;													//Like cmusic, used in SaveOptions(). Maybe use pointers here? As far as I know they're 4 bytes, so there's no reason to that.
@@ -57,7 +52,6 @@ class Cmain
 		bool resetsb = false;														//Sub-gamestate in gamestate -1
 		bool disrandomnameLOL = true;												//Optimization for instructions based on clicked
 		bool disbutton = false;														//Optimization for instructions based on clicked
-
 		int	fontsize1 = 0;															//Font's size for small resolution
 		int	fontsize2 = 0;															//Font's size for medium resolution
 		int	fontsize3 = 0;	 														//Font's size for big resolution
@@ -67,23 +61,23 @@ class Cmain
 		int selectionp = 0;															//Selected (in-use) profile
 		int	arroweds_margin = 0;													//Maximal arroweds
 		int	arrowedp_margin = 0;													//Maximal arrowedp
-		int cselections = 0;														//Like cmusic, used in SaveOptions()
-		int cselectionp = 0;														//Like cmusic, used in SaveOptions()
 		int	gamestate = 1;															//State of the game. -1-statistics menu 0-main menu 1-game 2-options 3-graphics options 4-audio options 5-save settings 6-profile settings 7-story settings
 		unsigned int menucapacity = 0;												//Maximum number of sf::Text(s), that are able to render in profilesmenu
-		int	she = 0;																//Like the but for gamestate -1
 		int	antialias = 0;															//Antialiasing setting
 		int	framelimit = 0;															//Maximum fps
 		int	smax = 0;																//The number of movement that can be done by slider
 		int smaxup = 0;																//Minimum slider's position (up)
 		int	smaxdown = 0;															//Maximum slider's position (down)
+		int w = 800;																//Width of the window, in pixels
+		int	h = 600;																//Height of the window, in pixels
 		int	smouseposy = 0;															//Mousepos - smaxup
 		float lsetPos = 0;															//Used in (saves current possition)
 		float ssetPos = 0;															//lsetPos for gamestate -1
 		int numbss = 0;																//The real view change done
 
-		float choicefactor = 0;														//Used in Fades to create precise alpha of choicefillcolor
-		float profilesmenufillfactor = 0;
+		float choicefactor = 0;														//Used in Fades to determine precise alpha of choicefillcolor
+		float typeboxfactor = 0;													//Used in Fades to determine precise alpha of scenario.typeboxfillcolor
+		float profilesmenufillfactor = 0;											//Used in Fades to determine precise alpha of menuprofilesmenufillcolor
 
 		std::string	fulltwo;														//String that holds height value
 		std::string	fullone;														//String that holds width value
@@ -101,11 +95,11 @@ class Cmain
 		sf::Font font2;								 								//Font for the game's text(scenario.additional)
 
 		sf::Sprite Background;														//"Super secret image that has inside very hidden data about safety of our country. Trust me." I think it's background image, but not sure lfmao
-		sf::Sprite michaupase³ke³;													//Much Informations Contains Heavy And Universal "Partically Anihilated Squirell" Enquired f£om King £obert (£ stands for joker) Hehe you'll have to figure out what is it, because idk how to explain it. 
+		sf::Sprite michaupase³ke³;													//Horizontal bar where show_stats is located, later inventory too
 		sf::Sprite sliders;															//Slider used to move the view
 		sf::Sprite bars;															//Slider moves within it
-		sf::Sprite arrowdn;															//The "down" arrow(with syndrome of... wait no...nvm) sprite
-		sf::Sprite arrowup;															//The "up" arrow("up" sometimes stands for "high", so maybe it've taken some... wait no...nvm, my logic O_o) sprite
+		sf::Sprite arrowdn;															//The "down" arrow sprite
+		sf::Sprite arrowup;															//The "up" arrow sprite
 		sf::Sprite showstats;														//The "Show Stats" image seen in gamestate 1
 		sf::Sprite resets;															//When you'll click showstats you'll see it in the same position
 
@@ -131,7 +125,7 @@ class Cmain
 		sf::Text ntext;																//"Enter name:"
 		sf::Text newname;															//Name you entered
 		sf::Text enternewerror_t;													//"Error: There's already an object with the same name"
-
+		sf::Text endmessage;														//Customizable text placed before choices
 		sf::FloatRect button[3],													//Boundaries of a button
 			&button_1 = button[0],
 			&button_2 = button[1],
@@ -149,7 +143,7 @@ class Cmain
 		sf::RectangleShape profilesmenu;											//The rectangle where profiles or stories are stored
 		
 		sf::Color
-			color[37],																//Many, very many colors, so you can adjust your game
+			color[35],																//Many, very many colors, so you can adjust your game
 			&textcolor = color[0],
 			&menucolor = color[1],
 			&menuselectcolor = color[2],
@@ -179,24 +173,16 @@ class Cmain
 			&menuprofilesselectcolor = color[26],
 			&menustoriescolor = color[27],
 			&menustoriesselectcolor = color[28],
-			//&menusoutlinecolor = color[27],
 			&menuerrorcolor = color[29],
-			&statcolor = color[30],
-			&statgaincolor = color[31],
-			&statlosscolor = color[32],
-			&textchoicecolor = color[33],
-			&textchoiceunavaiblecolor = color[34],
-			&textchoicefillcolor = color[35],
-			&menuhelpcolor = color[36];
+			&textchoicecolor = color[30],
+			&textchoiceunavaiblecolor = color[31],
+			&textchoicefillcolor = color[32],
+			&menuhelpcolor = color[33],
+			&menuinsertcolor = color[34];
 		
 		sf::Clock errclock;															//Manages enternewerror_t lifetime
 
-		std::vector<sf::Text> s_pos;												//Various stats
-		std::vector<sf::Texture> i_pos;												//Textures for v_pos
-		std::vector<sf::Sprite> v_pos;												//IntStats and IntStatOpposities stats
-		std::vector<sf::Vector2i> s_posv,											//Positions of s_pos
-								positions,											//Possible positions in profilesmenu
-								v_posi;												//Positions of v_pos
+		std::vector<sf::Vector2i> positions;										//Possible positions in profilesmenu
 
 																					//Loads save? dunno
 		void LoadSave();
@@ -211,7 +197,7 @@ class Cmain
 																					//Saves game's options
 		void SaveOptions();
 																					//Creates window; used in sSaveOptions() and constructor
-		inline void createWindow();													
+		void createWindow();													
 																					//A method, created to improve readablity in SaveOptions()
 		void SaveToFile();
 																					//Steers the menu look
@@ -236,26 +222,22 @@ class Cmain
 		void PrepareMenu();
 																					//Resets the progress
 		void Reset();
-																					//Shows your all glorious fails and almighty weaknesses of the hero
-		void Show_stats();
 																					//Checks if you clicked on shwstats
-		inline void ssb();
-																					//Creates the image of IntStatOpposite (I'll allow to customize colors soon here)
-		sf::Image IOStatspecial(int w, int h, int value, int min, int max, int threshold);
-																					//Creates the image of IntStat(here too)
-		sf::Image IntSpecial(int w, int h, int value, int min, int max);
+		void ssb();
 																					//Check if mousepos is contained in box	
-		inline bool Contains(sf::FloatRect &box);					
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manage67(bool add);	
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manage1(bool add);
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Manageminus1(bool add);
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Draw67();
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Draw1();
-																					//The code that doesn't look good, because made for performance, splitted from PrepareMenu()
-		inline void Drawminus1();
+		const bool Contains(const sf::FloatRect &box);					
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manage67(const bool add);	
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manage1(const bool add);
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manageminus1(const bool add);
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Draw67();
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Draw1();
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Drawminus1();
+
+		void resetSel();
 };

@@ -10,105 +10,114 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "Cmain.h"
-#include <ctime>
-#include <windows.h>
-//Personal challenge - multithreading in Fades.cpp
 
-unsigned int priorlimit = 5;
+unsigned int priorlimit = 5U;
+std::wstring ScenarioParser::apath;
 Cmain::Cmain()
 {
+	try {
 	CreateDirectory(L"../../bin", NULL);
 	CreateDirectory(L"../../bin/Fonts", NULL);
 	CreateDirectory(L"../../bin/Images", NULL);
 	CreateDirectory(L"../../bin/Logs", NULL);
 	CreateDirectory(L"../../bin/Saves", NULL);
+	PWSTR p;
+	if (SHGetKnownFolderPath(FOLDERID_RoamingAppData, KF_FLAG_DEFAULT, NULL, &p) != S_OK) throw w_err(L"Couldn't open Aplication Data! Try running as administator"); //the permission isn't needed, but who knows if this doesn't work?
+	ScenarioParser::apath = std::wstring(p) + L"\\Lightine";
+	CoTaskMemFree(p);
 	CreateDirectory(L"../../bin/Scripts", NULL);
-		LoadOptions(); //reading from ini
-		Background_texture.loadFromFile("../../bin/Images/gradient.png");
-		michaupase³ke³_t.loadFromFile("../../bin/Images/margin.png");
-		scenario.next_t.loadFromFile("../../bin/Images/Next.png");
-		font.loadFromFile("../../bin/Fonts/Fontformenu.ttf");
-		font2.loadFromFile("../../bin/Fonts/Fontforgametext.ttf");
-		slider.loadFromFile("../../bin/Images/Slider.png");
-		bar.loadFromFile("../../bin/Images/Bar.png");
-		arrowup_t.loadFromFile("../../bin/Images/ArrowUP.png");
-		arrowdn_t.loadFromFile("../../bin/Images/Arrow.png");
-		reset_t.loadFromFile("../../bin/Images/Reset.png");
-		//textures loaded
-		f14_text.setString("Press Alt + F4 to quit");
-		enternewerror_t.setString("Error: There's already an object with the same name");
-		shwstats_t.loadFromFile("../../bin/Images/Show.png");
-		button_1_text.setString("Lightine");
-		button_2_text.setString("Options");
-		button_3_text.setString("Save Options");
-		ctext.setString("Are you sure?");
-		//strings set
-		scenario.tekst.setFont(font2);
-		button_1_text.setFont(font);
-		button_2_text.setFont(font);
-		button_3_text.setFont(font);
-		resbutton1_text.setFont(font);
-		resbutton2_text.setFont(font);
-		ctext.setFont(font);
-		f14_text.setFont(font);
-		enternewerror_t.setFont(font);
-		//fonts set
-		Background.setTexture(Background_texture);
-		michaupase³ke³.setTexture(michaupase³ke³_t);
-		scenario.next.setTexture(scenario.next_t);
-		sliders.setTexture(slider);
-		bars.setTexture(bar);
-		arrowup.setTexture(arrowup_t);
-		arrowdn.setTexture(arrowdn_t);
-		showstats.setTexture(shwstats_t);
-		resets.setTexture(reset_t);
-		//textures set
-		button_1_text.setFillColor(menucolor);
-		scenario.tekst.setFillColor(textcolor);
-		button_2_text.setFillColor(menucolor);
-		button_3_text.setFillColor(menucolor);
-		resbutton1_text.setFillColor(menuwidthcolor);
-		resbutton2_text.setFillColor(menuheightcolor);
-		ctext.setFillColor(menucolor);
-		f14_text.setFillColor(menuhelpcolor);
-		resbutton1_shape.setFillColor(menuwidthfillcolor);
-		resbutton2_shape.setFillColor(menuheightfillcolor);
-		resbutton1_shape.setOutlineColor(menuwidthoutlinecolor);
-		resbutton2_shape.setOutlineColor(menuheightoutlinecolor);
-		profilesmenu.setFillColor(menuprofilesmenufillcolor);
-		profilesmenu.setOutlineColor(menuprofilesmenuoutlinecolor); 
-		arrowdn.setColor(sf::Color(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(0)));
-		arrowup.setColor(arrowdn.getColor());
-		//colors set
-		scenario.textcolor.reset(&textcolor);
-		sSaveOptions();
-}
-
-Cmain::~Cmain()
-{
-	scenario.textcolor.release();
-	scenario.textchoiceunavaiblecolor.release();
+	CreateDirectory(ScenarioParser::apath.c_str(), NULL);
+	LoadOptions(); //reading from ini
+	scenario.w = &w; scenario.h = &h;
+		if (!Background_texture.loadFromFile("../../bin/Images/gradient.png")) throw w_err(L"Missing file: \"bin/Images/gradient.png\"");
+		if (!michaupase³ke³_t.loadFromFile("../../bin/Images/margin.png")) throw w_err(L"Missing file from directory \"bin/Images/margin.png\"");
+		if (!scenario.next_t.loadFromFile("../../bin/Images/Next.png")) throw w_err(L"Missing file from directory \"bin/Images/Next.png\"");
+		if (!font.loadFromFile("../../bin/Fonts/Fontformenu.ttf")) throw w_err(L"Missing file from directory \"bin/Images/Fontformenu.ttf\"");
+		if (!font2.loadFromFile("../../bin/Fonts/Fontforgametext.ttf")) throw w_err(L"Missing file from directory \"bin/Images/Fontforgametext.ttf\"");
+		if (!slider.loadFromFile("../../bin/Images/Slider.png")) throw w_err(L"Missing file from directory \"bin/Images/Slider.png\"");
+		if (!bar.loadFromFile("../../bin/Images/Bar.png")) throw w_err(L"Missing file from directory \"bin/Images/Bar.png\"");
+		if (!arrowup_t.loadFromFile("../../bin/Images/ArrowUP.png")) throw w_err(L"Missing file from directory \"bin/Images/ArrowUP.png\"");
+		if (!arrowdn_t.loadFromFile("../../bin/Images/Arrow.png")) throw w_err(L"Missing file from directory \"bin/Images/Arrow.png\"");
+		if (!reset_t.loadFromFile("../../bin/Images/Reset.png")) throw w_err(L"Missing file from directory \"bin/Images/Reset.png\"");
+		if (!shwstats_t.loadFromFile("../../bin/Images/Show.png")) throw w_err(L"Missing file from directory \"bin/Images/Show.png\"");
+	//textures loaded
+	scenario.textchoiceunavaiblecolor = &textchoiceunavaiblecolor;
+	f14_text.setString("Press Alt + F4 to quit");
+	enternewerror_t.setString("Error: There's already an object with the same name");
+	button_1_text.setString("Lightine");
+	button_2_text.setString("Options");
+	button_3_text.setString("Save Options");
+	ctext.setString("Are you sure?");
+	//strings set
+	scenario.text.setFont(font2);
+	button_1_text.setFont(font);
+	button_2_text.setFont(font);
+	button_3_text.setFont(font);
+	resbutton1_text.setFont(font);
+	resbutton2_text.setFont(font);
+	ctext.setFont(font);
+	f14_text.setFont(font);
+	enternewerror_t.setFont(font);
+	//fonts set
+	Background.setTexture(Background_texture);
+	michaupase³ke³.setTexture(michaupase³ke³_t);
+	scenario.next.setTexture(scenario.next_t);
+	sliders.setTexture(slider);
+	bars.setTexture(bar);
+	arrowup.setTexture(arrowup_t);
+	arrowdn.setTexture(arrowdn_t);
+	showstats.setTexture(shwstats_t);
+	resets.setTexture(reset_t);
+	//textures set
+	button_1_text.setFillColor(menucolor);
+	scenario.text.setFillColor(textcolor);
+	button_2_text.setFillColor(menucolor);
+	button_3_text.setFillColor(menucolor);
+	resbutton1_text.setFillColor(menuwidthcolor);
+	resbutton2_text.setFillColor(menuheightcolor);
+	ctext.setFillColor(menucolor);
+	f14_text.setFillColor(menuhelpcolor);
+	resbutton1_shape.setFillColor(menuwidthfillcolor);
+	resbutton2_shape.setFillColor(menuheightfillcolor);
+	resbutton1_shape.setOutlineColor(menuwidthoutlinecolor);
+	resbutton2_shape.setOutlineColor(menuheightoutlinecolor);
+	profilesmenu.setFillColor(menuprofilesmenufillcolor);
+	profilesmenu.setOutlineColor(menuprofilesmenuoutlinecolor); 
+	arrowdn.setColor(sf::Color(static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(255), static_cast<sf::Uint8>(0)));
+	arrowup.setColor(arrowdn.getColor());
+	//colors set
+	sSaveOptions();
+	}
+	catch (w_err err)
+	{
+		quit = true;
+		MessageBox(NULL, err.msg.c_str(), NULL, MB_ICONERROR);
+		return;
+	}
+	catch (...)
+	{
+		quit = true;
+		MessageBox(NULL, L"Unknown critical error", NULL, MB_ICONERROR);
+		return;
+	}
 }
 
 void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's not necessary, just add something at the end of it; read its comment
 {
-	fullone = std::to_string(w);	//resbutton1's string
+ 	fullone = std::to_string(w);	//resbutton1's string
 	fulltwo = std::to_string(h);	//resbutton2's string
 	cfullone = fullone;
 	cfulltwo = fulltwo;
 	cfullscreen = fullscreen;
-	cselectionp = selectionp;
-	cselections = selections;
 	csound = sound;
 	cmusic = music;
 	//control variables set
 	createWindow();
 
-	scenario.owd = w - w / 18;
-	if (w < 1200) scenario.tekst.setCharacterSize(fontsize1);
-	else if (w < 1600) scenario.tekst.setCharacterSize(fontsize2);
-	else scenario.tekst.setCharacterSize(fontsize3);
-	scenario.tekst.setString(L"WMP¥Ê¹êjpgqiL"); //Setting the most wide and long characters
+	if (w < 1200) scenario.text.setCharacterSize(fontsize1);
+	else if (w < 1600) scenario.text.setCharacterSize(fontsize2);
+	else if (w < 2200) scenario.text.setCharacterSize(fontsize3);
+	else scenario.text.setCharacterSize(static_cast<unsigned int>(round(fontsize3 + fontsize1 * (w-2000)/ 800.f)));
 	ctext.setCharacterSize(h / 10 + h / 120);
 	button_1_text.setCharacterSize(h / 10 + h / 120);
 	button_2_text.setCharacterSize(h / 10 + h / 120);
@@ -116,64 +125,69 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	resbutton1_text.setCharacterSize(h / 10 + h / 120);
 	resbutton2_text.setCharacterSize(h / 10 + h / 120);
 	f14_text.setCharacterSize(h / 30);
-	profilesmenu.setOutlineThickness(h / 150);
-	resbutton1_shape.setOutlineThickness(h / 300);
-	resbutton2_shape.setOutlineThickness(h / 300);
+	profilesmenu.setOutlineThickness(static_cast<float>(h / 150));
+	resbutton1_shape.setOutlineThickness(static_cast<float>(h / 300));
+	resbutton2_shape.setOutlineThickness(static_cast<float>(h / 300));
 	help_text = f14_text;
 	help_text.setString("Press Delete to remove");
-	f14_text.setPosition(w - floor(help_text.getGlobalBounds().width + 6.f * w/800.f), h - floor(f14_text.getGlobalBounds().height + 2.f * h/600.f));
-	help_text.setPosition(w - floor(help_text.getGlobalBounds().width + 6.f * w / 800.f), h - floor(f14_text.getGlobalBounds().height + 2.f * h / 600.f));
+	f14_text.setOrigin(0, f14_text.getLocalBounds().top);
+	f14_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * w/800.f), h - round(f14_text.getGlobalBounds().height + 2.f * h/600.f));
+	help_text.setOrigin(0, help_text.getLocalBounds().top);
+	help_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * w / 800.f), h - round(f14_text.getGlobalBounds().height + 2.f * h / 600.f));
 
 	newname = ntext = ctext;
-	newname.setFillColor(menucolor);
+	newname.setFillColor(menuinsertcolor);
 	newname.setString("");
-	newname.setPosition(w / 2 - floor(newname.getGlobalBounds().width / 2), h / 2 - floor(ctext.getGlobalBounds().height *0.6f));
+	newname.setPosition(w / 2 - newname.getGlobalBounds().width / 2, h / 2 - round(ctext.getGlobalBounds().height *0.6f));
 	ntext.setString("Enter name:");
-	ntext.setPosition(w / 2 - floor(ntext.getGlobalBounds().width / 2), h / 2 - floor(ntext.getGlobalBounds().height*2));
+	ntext.setPosition(w / 2 - ntext.getGlobalBounds().width / 2, h / 2 - ntext.getGlobalBounds().height*2);
 	enternewerror_t.setCharacterSize(h / 30);
-	enternewerror_t.setPosition(w / 2 - floor(enternewerror_t.getGlobalBounds().width / 2), h / 2 - floor(ntext.getGlobalBounds().height*2 + enternewerror_t.getGlobalBounds().height * 1.4f));
+	enternewerror_t.setPosition(w / 2 - round(enternewerror_t.getGlobalBounds().width / 2), h / 2 - round(ntext.getGlobalBounds().height*2 + enternewerror_t.getGlobalBounds().height * 1.4f));
 	enternewerror_t.setFillColor(menuerrorcolor);
 
 	std::string	sizer = "0000";	//Like resbuttons were already filled
 	resbutton1_text.setString(sizer);
 	resbutton2_text.setString(sizer);
-	resbutton1_shape.setSize(sf::Vector2f(floor(resbutton1_text.getGlobalBounds().width + 4.f * (w + h) / 1400.f), floor(resbutton1_text.getGlobalBounds().height + 3.f * w / 800.f)));
-	resbutton2_shape.setSize(sf::Vector2f(floor(resbutton2_text.getGlobalBounds().width + 4.f * (w + h) / 1400.f), floor(resbutton2_text.getGlobalBounds().height + 3.f * w / 800.f)));
+	resbutton1_shape.setSize(sf::Vector2f(round(resbutton1_text.getGlobalBounds().width + 4.f * (w + h) / 1400.f), round(resbutton1_text.getGlobalBounds().height + 3.f * w / 800.f)));
+	resbutton2_shape.setSize(sf::Vector2f(round(resbutton2_text.getGlobalBounds().width + 4.f * (w + h) / 1400.f), round(resbutton2_text.getGlobalBounds().height + 3.f * w / 800.f)));
 
 	Background.setScale(1, 1);
 	Background.setScale(w / Background.getGlobalBounds().width, h / Background.getGlobalBounds().height);
 	bars.setScale(w / 800.f, h / 600.f);
 	sliders.setScale(bars.getScale().x, bars.getScale().x);
-	michaupase³ke³.setScale((w + h) / 1400.f, (w + h) / 1400.f);
+	michaupase³ke³.setScale(w / 800.f, (w + h) / 1400.f);
 	arrowup.setScale((w + h) / 12200.f, (w + h) / 11200.f);
 	arrowdn.setScale(arrowup.getScale());
 	scenario.next.setScale(arrowup.getScale().x*2.f, arrowup.getScale().y*2.f);
+	scenario.Bnext = scenario.next.getGlobalBounds();
 	resets.setScale((w + h) / 5600.f, michaupase³ke³.getScale().y/4.f);
 	showstats.setScale(resets.getScale());
 	Background.setPosition(0, 0);
 	michaupase³ke³.setPosition(0, 0);
-	ctext.setPosition(w / 2 - floor(ctext.getGlobalBounds().width / 2), h / 2 - floor(ctext.getGlobalBounds().height*2));
+	ctext.setPosition(w / 2 - ctext.getGlobalBounds().width / 2, h / 2 - ctext.getGlobalBounds().height*2);
 	button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options");
-	button_1_text.setPosition(w / 2 - floor(button_1_text.getGlobalBounds().width / 2), floor(h / 600.f * 35.f));
-	button_2_text.setPosition(w / 2 - floor(button_2_text.getGlobalBounds().width / 2), h / 2 - floor(h / 600.f * 40.f));
-	button_3_text.setPosition(w / 2 - floor(button_3_text.getGlobalBounds().width / 2), h - floor(h / 600.f * 90.f));
-	resbutton1_text.setPosition(w / 2 - floor(w / 800.f * 120.f + resbutton1_shape.getGlobalBounds().width), floor(h / 600.f * 25.f));
-	resbutton1_shape.setPosition(floor(resbutton1_text.getGlobalBounds().left - 4.f * (w + h) / 1400.f), floor(resbutton1_text.getGlobalBounds().top - 2.f * h / 600.f));
-	resbutton2_text.setPosition(w / 2 + floor(w / 800.f * 120.f), floor(h / 600.f * 25.f));
-	resbutton2_shape.setPosition(floor(resbutton2_text.getGlobalBounds().left - 4.f * (w + h) / 1400.f), floor(resbutton2_text.getGlobalBounds().top - 2.f * h / 600.f));
+	button_1_text.setPosition(w / 2 - button_1_text.getGlobalBounds().width / 2, round(h / 600.f * 35.f));
+	button_2_text.setPosition(w / 2 - button_2_text.getGlobalBounds().width / 2, h / 2 - round(h / 600.f * 40.f));
+	button_3_text.setPosition(w / 2 - button_3_text.getGlobalBounds().width / 2, h - round(h / 600.f * 90.f));
+	resbutton1_text.setPosition(w / 2 - round(w / 800.f * 120.f + resbutton1_shape.getGlobalBounds().width), round(h / 600.f * 25.f));
+	resbutton1_shape.setPosition(round(resbutton1_text.getGlobalBounds().left - 4.f * (w + h) / 1400.f), round(resbutton1_text.getGlobalBounds().top - 2.f * h / 600.f));
+	resbutton2_text.setPosition(w / 2 + round(w / 800.f * 120.f), round(h / 600.f * 25.f));
+	resbutton2_shape.setPosition(round(resbutton2_text.getGlobalBounds().left - 4.f * (w + h) / 1400.f), round(resbutton2_text.getGlobalBounds().top - 2.f * h / 600.f));
 	resbutton1_text.setString(fullone);
 	resbutton2_text.setString(fulltwo);
-	profilesmenu.setSize(sf::Vector2f(floor(0.75f * w), round(h * 0.95f - 2 * arrowup.getGlobalBounds().height)));
+	profilesmenu.setSize(sf::Vector2f(round(0.75f * w), round(h * 0.95f - 2 * arrowup.getGlobalBounds().height)));
 	profilesmenu.setPosition(round(w * 0.125f), round((h - profilesmenu.getSize().y)/2));
 	arrowup.setPosition(profilesmenu.getPosition().x + round((profilesmenu.getGlobalBounds().width - arrowup.getGlobalBounds().width)/2.f), profilesmenu.getGlobalBounds().top - round(arrowup.getGlobalBounds().height + 4.f * h / 600.f));
 	arrowdn.setPosition(arrowup.getPosition().x, profilesmenu.getGlobalBounds().top + profilesmenu.getGlobalBounds().height + round(4.f * h / 600.f));
 	bars.setPosition(round(w - bars.getGlobalBounds().width), 0);
-	smaxdown = h - static_cast<int>(h / 600.f * 8.f);
-	sliders.setPosition(round(bars.getPosition().x + floor(w / 800.f * 6.f)), floor(h / 600.f * 11.f));
-	smaxup = static_cast<int>(h / 600.f * 11.f);
-	showstats.setPosition(round(w - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - floor(w / 800.f * 40.f)), 0);
+	scenario.rmargin = static_cast<int>(floor(bars.getPosition().x - 15.f* (w+h)/1400.f));
+	smaxdown = h - static_cast<int>(round(h / 600.f * 8.f));
+	sliders.setPosition(round(bars.getPosition().x + round(w / 800.f * 6.f)), round(h / 600.f * 11.f));
+	smaxup = static_cast<int>(round(h / 600.f * 11.f));
+	lsetPos = ssetPos = static_cast<float>(smaxup);
+	showstats.setPosition(round(w - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - round(w / 800.f * 40.f)), 0);
 	showstats.setColor(sf::Color(255, 255, 255, 0));
-	resets.setPosition(w + floor((showstats.getGlobalBounds().width - resets.getGlobalBounds().width) / 2) - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - floor(w / 800.f * 40.f), 0);
+	resets.setPosition(round(w + (showstats.getGlobalBounds().width - resets.getGlobalBounds().width) / 2 - showstats.getGlobalBounds().width - bars.getGlobalBounds().width - round(w / 800.f * 40.f)), 0);
 	resets.setColor(sf::Color(255,255,255,0));
 	showstats.setColor(resets.getColor());
 	resbutton1 = resbutton1_shape.getGlobalBounds();
@@ -205,14 +219,18 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	pos[16] = static_cast<sf::Vector2i>(resbutton2_shape.getPosition());
 	pos[17] = static_cast<sf::Vector2i>(resets.getPosition());
 	smax = smaxdown - smaxup - static_cast<int>(slidersb.height);
-	scenario.th = static_cast<int>(scenario.tekst.getGlobalBounds().height) * 1.15f;
+	
+	sf::Text t;
+	t.setFont(*scenario.text.getFont());
+	t.setCharacterSize(static_cast<unsigned int>(scenario.text.getCharacterSize() * 0.9f));
+	t.setString("\n");
+	scenario.Tsize = ceil(t.getGlobalBounds().height);
+	
 	getSaveData();
-	//else scenario.mfile << "Error: there are no stories accessible (add some in game's menu)" << std::endl;
-	scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
+	if (!stories.empty()) scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
+	
+	scenario.text.setPosition(round(w / 18.f), floor(h / 12.f));
 	LoadSave();
-	resbutton1_focus = resbutton2_focus = clicked = resetsb = false;
-	pcheck = scheck = true;
-	lsetPos = ssetPos = smaxup;
 }
 
 void Cmain::SaveOptions()
@@ -222,25 +240,24 @@ void Cmain::SaveOptions()
 	cw = w;
 	//duplicates current variables, so 
 	if (fullscreen) w = desktop.x;
-	else w = scenario.stoicheck(fullone, 0);
+	else w = scenario.stoiCheck(fullone, 0);
 	if (w < 800) w = 800;
 	else if (static_cast<unsigned int>(w) > desktop.x) w = desktop.x;
 	if (fullscreen) h = desktop.y;
-	else h = scenario.stoicheck(fulltwo, 0);
+	else h = scenario.stoiCheck(fulltwo, 0);
 	if (h < 600) h = 600;
 	else if (static_cast<unsigned int>(h) > desktop.y) h = desktop.y;
-	scenario.sw = w;
-	scenario.sh = h;
-	scenario.w1 = w / 18;
-	scenario.w2 = w / 12;
+	//scenario.w = w;
+	//scenario.h = h;
+	scenario.w2 = static_cast<float>(w / 12);
 
 	if (cfullscreen != fullscreen || w != cw || h != ch) 
 	{
 		window.close();
-		sSaveOptions();
 		SaveToFile();
+		sSaveOptions();
 	}
-	else if (cselections != selections || cselectionp != selectionp || cmusic != music || csound != sound)
+	else if (cmusic != music || csound != sound)
 		SaveToFile();
 }
 
@@ -257,40 +274,40 @@ void Cmain::Intro()
 {
 	button_1_text.setString("Lightine");
 	button_1_text.setCharacterSize(h / 5);
-	button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(h / 600.f * 35.f))));
+	button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f)))));
 	button_1_text.setFillColor(sf::Color(menuclickcolor.r, menuclickcolor.g, menuclickcolor.b, static_cast<sf::Uint8>(0)));
 	//changes button 1 so it's bigger and somewhere else
 	sf::Text general;
 	general.setFont(font);
-	general.setCharacterSize(round((w + h) / 175.f));
+	general.setCharacterSize(static_cast<unsigned int>(round((w + h) / 175.f)));
 	general.setFillColor(sf::Color(menuclickcolor.r, menuclickcolor.g, menuclickcolor.b, static_cast<sf::Uint8>(0)));
 	std::wstring str = L"Copyright (c) 2016 LightTab2 azorro12@gmail.com";
 	general.setString(str);
-	int gh = general.getGlobalBounds().height * 1.15f, ghe = button_1_text.getGlobalBounds().top + button_1_text.getGlobalBounds().height * 1.25f;
+	int gh = static_cast<int>(round(general.getGlobalBounds().height * 1.15f)), ghe = static_cast<int>(round(button_1_text.getGlobalBounds().top + button_1_text.getGlobalBounds().height * 1.25f));
 	std::vector<sf::Text> cprght;
 	cprght.push_back(general);
 	ghe += gh;
 	str = L"The software is licensed under MIT LICENSE, for more details see LICENSE.TXT";
 	general.setString(str);
-	general.setPosition(round(w * 0.005f), static_cast<float>(ghe)); //ignore warn
+	general.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 	cprght.push_back(general);
 	ghe += gh;
 	str = L"It couldn't be made without SFML";
 	general.setString(str);
-	general.setPosition(round(w * 0.005f), static_cast<float>(ghe)); //ignore warn
+	general.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 	cprght.push_back(general);
 	ghe += 4 * gh;
 	sf::Texture sfml; sfml.loadFromFile("../../bin/Images/sfml-logo-big.png");
 	sf::Sprite sfml_s; sfml_s.setTexture(sfml); sfml_s.setScale((h+w)/5600.f, (h + w)/5600.f);
 	sfml_s.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 	sfml_s.setColor(sf::Color(sf::Uint8(0), sf::Uint8(0), sf::Uint8(0), sf::Uint8(0)));
-	ghe += 5 * gh + sfml_s.getGlobalBounds().height;
+	ghe += 5 * gh + static_cast<int>(sfml_s.getGlobalBounds().height);
 	str = L"Adittionaly I want to thank for resources I used:"; 
 	general.setString(str);
-	general.setPosition(round(w * 0.005f), static_cast<float>(ghe)); //ignore warn
+	general.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 	cprght.push_back(general);
 	ghe += gh;
-	int check2 = w * 0.975f;
+	int check2 = static_cast<int>(round(w * 0.975f));
 	std::wifstream credits(L"../../bin/Credits.txt");
 	while (std::getline(credits, str))
 	{
@@ -303,11 +320,11 @@ void Cmain::Intro()
 			std::size_t pos = 0;
 			for (;;) {
 				if ((pos = str.find(L' ', pos + 1)) == std::wstring::npos) { general.setString(str); if (general.getGlobalBounds().left + general.getGlobalBounds().width > check2) goto skip; general.setPosition(round(w * 0.005f), static_cast<float>(ghe)); cprght.push_back(general); ghe += gh; break; }
-				general.setString(str.substr(0, pos));
+				general.setString(str.substr(0U, pos));
 				if (general.getGlobalBounds().left + general.getGlobalBounds().width > check2)
 				{
-				skip:general.setString(str.substr(0, (pos = str.rfind(L' ', pos - 1) + 1)));
-					str.erase(0, pos);
+				skip:general.setString(str.substr(0U, (pos = str.rfind(L' ', pos - 1U) + 1U)));
+					str.erase(0U, pos);
 					general.setPosition(round(w * 0.005f), static_cast<float>(ghe));
 					cprght.push_back(general);
 					ghe += gh;
@@ -331,7 +348,7 @@ void Cmain::Intro()
 			Sleep(1500);
 			button_1_text.setString("Resume");
 			button_1_text.setCharacterSize(h / 10 + h / 120);
-			button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width / 2), static_cast<int>(h / 600.f * 35.f))));
+			button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f)))));
 			button_1 = button_1_text.getGlobalBounds();
 			return; //go back to previous form
 		}
@@ -342,6 +359,8 @@ void Cmain::getSaveData()
 {
 	std::ifstream file;
 	file.open("../../bin/Stories.txt");
+	file.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+	if (!file) throw w_err(L"Could not open \"../../bin/Stories.txt\"");
 	std::string insert; //Buffer for reading profiles
 	sf::Text insert_text = newname;	
 	insert_text.setFillColor(menustoriescolor);
@@ -352,36 +371,52 @@ void Cmain::getSaveData()
 	profiles.clear();
 	
 	stories.clear();
+	bool first = true;
 	for (;;)
 	{
 		if (!std::getline(file, insert)) break;
+		if (first)
+		{
+			if (insert[0] == 0xFEFF) insert.erase(0U, 1U); //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (insert[0] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf) insert.erase(0U, 3U);
+			first = false;
+		}
 		insert_text.setString(insert);
 		stories.push_back(insert_text);
 	}
-	if (selections >= stories.size()) selections = stories.size() - 1;
+	if (!stories.empty() && selections >= static_cast<int>(stories.size())) selections = static_cast<int>(stories.size()) - 1;
 	insert_text.setFillColor(menuprofilescolor);
 	file.close();
 	file.open("../../bin/Profiles.txt");
+	if (!file) throw w_err(L"Could not open \"../../bin/Profiles.txt\"");
+	first = false;
 	for (;;)
 	{
 		if (!std::getline(file, insert)) break;
+		if (first)
+		{
+			if (insert[0] == 0xFEFF) insert.erase(0U, 1U); //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (insert[0] == 0xef && insert[1U] == 0xbb && insert[2U] == 0xbf) insert.erase(0U, 3U);
+			first = false;
+		}
 		insert_text.setString(insert);
 		profiles.push_back(insert_text);
 	}
-	if (selectionp >= profiles.size()) selectionp = profiles.size() - 1;
-	if (profiles.empty()) scenario.pempty = true;
-	else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-	else scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
-
-	insert_text.setString("1234567890GgpPqQyYWwMmxXzZAaBb");
-	int th = insert_text.getGlobalBounds().height * 1.15f;
-	for (menucapacity = 0U; (profilesmenu.getPosition().y + profilesmenu.getGlobalBounds().height) > (insert_text.getPosition().y + floor(10.f * h / 600.f) + 2 * th); menucapacity += 1U)
+	if (!profiles.empty() && selectionp >= static_cast<int>(profiles.size())) selectionp = static_cast<int>(profiles.size()) - 1;
 	{
-		positions.push_back(sf::Vector2i(profilesmenu.getPosition().x + floor(8.f * w/800.f), profilesmenu.getPosition().y + floor(5.f * h / 600.f) + th * menucapacity));
+		std::wstring temp;
+		temp.reserve(95);
+		for (char x = 32; x < 127; ++x) temp += x;
+		insert_text.setString(temp);
+	}
+	int th = static_cast<int>(round(insert_text.getGlobalBounds().height * 1.15f));
+	for (menucapacity = 0U; (profilesmenu.getPosition().y + profilesmenu.getGlobalBounds().height) > (insert_text.getPosition().y + round(10.f * h / 600.f) + 2 * th); menucapacity += 1U)
+	{
+		positions.emplace_back(static_cast<int>(profilesmenu.getPosition().x + round(8.f * w/800.f)), static_cast<int>(profilesmenu.getPosition().y + round(5.f * h / 600.f)) + th * static_cast<int>(menucapacity));
 		insert_text.setPosition(static_cast<sf::Vector2f>(positions.back()));
 	}
-	arroweds_margin = stories.size() - menucapacity;
-	arrowedp_margin = profiles.size() - menucapacity;
+	arroweds_margin = static_cast<int>(stories.size()) - menucapacity;
+	arrowedp_margin = static_cast<int>(profiles.size()) - menucapacity;
 	if (arroweds_margin < 0) arroweds_margin = 0;
 	if (arrowedp_margin < 0) arrowedp_margin = 0;
 	arrowedp = selectionp - static_cast<int>(menucapacity/2U);
@@ -390,7 +425,6 @@ void Cmain::getSaveData()
 	arroweds = selections - static_cast<int>(menucapacity/2U);
 	if (arroweds < 0) arroweds = 0;
 	else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
-
 }
 
 void Cmain::setupMenu()
@@ -398,7 +432,7 @@ void Cmain::setupMenu()
 	if ((gwhich = (gamestate == 7)))
 	{
 		if (!scheck) return;
-		for (unsigned int repeated = 0U, size = stories.size(); repeated < menucapacity && repeated < size; ++repeated)
+		for (size_t repeated = 0U; repeated != menucapacity && repeated != stories.size(); ++repeated)
 		{
 			stories[arroweds + repeated].setPosition(window.mapPixelToCoords(sf::Vector2i(positions[repeated])));
 			if (selections == arroweds + repeated) stories[arroweds + repeated].setFillColor(menustoriesselectcolor);
@@ -406,14 +440,14 @@ void Cmain::setupMenu()
 		}
 		if (selections == 0) arrowed_up = true;
 		else arrowed_up = false; 
-		if (selections == stories.size() - 1U) arrowed_dn = true;
+		if (stories.empty() || selections == (stories.size() - 1U)) arrowed_dn = true;
 		else arrowed_dn = false;
 		scheck = false;
 	}
 	else
 	{
 		if (!pcheck) return;
-		for (unsigned int repeated = 0U, size = profiles.size(); repeated < menucapacity && repeated < size; ++repeated)
+		for (size_t repeated = 0U; repeated != menucapacity && repeated != profiles.size(); ++repeated)
 		{
 			profiles[arrowedp + repeated].setPosition(window.mapPixelToCoords(sf::Vector2i(positions[repeated])));
 			if (selectionp == arrowedp + repeated) profiles[arrowedp + repeated].setFillColor(menuprofilesselectcolor);
@@ -421,7 +455,7 @@ void Cmain::setupMenu()
 		}
 		if (selectionp == 0U) arrowed_up = true;
 		else arrowed_up = false;
-		if (selectionp == profiles.size() - 1U) arrowed_dn = true;
+		if (profiles.empty() || selectionp == (profiles.size() - 1U)) arrowed_dn = true;
 		else arrowed_dn = false;
 		pcheck = false;
 	}
@@ -445,21 +479,22 @@ void Cmain::setupMenu()
 
 void Cmain::CreateNew()
 {
-	std::string name; //name of new profile/story (all characters are lower)
-	for (char &c : newname.getString().toAnsiString()) name.push_back(tolower(c)); //getting all chars to lower(can't create 2 files with the same name in Windows)
+	std::wstring name; //name of new profile/story (all characters are lower)
+	for (const wchar_t &c : newname.getString().toWideString()) name.push_back(tolower(c)); //getting all chars to lower(can't create 2 files with the same name in Windows)
 	enternewerror = false;
 	if (!name.empty())
 	{
 		if (gwhich)
 		{
-			std::ofstream sfile("../../bin/Stories.txt", std::ios::trunc);
-			std::string oldname;
+			std::wofstream sfile(L"../../bin/Stories.txt", std::ios::trunc);
+			sfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+			std::wstring oldname;
 			for (auto &s : stories)
 			{
-				oldname.clear();
-				sfile << s.getString().toAnsiString() << std::endl;
-				for (char &c : s.getString().toAnsiString()) oldname.push_back(tolower(c)); //getting all chars to lower
+				sfile << s.getString().toWideString() << std::endl;
+				for (const wchar_t &c : s.getString().toWideString()) oldname.push_back(tolower(c)); //getting all chars to lower
 				if (oldname == name) enternewerror = true;
+				oldname.clear();
 			}
 			if (enternewerror)
 			{
@@ -468,10 +503,12 @@ void Cmain::CreateNew()
 				return;
 			}
 			stories.push_back(newname);
+			sfile << stories.back().getString().toWideString() << std::endl;
 			newname.setString("");
 			for (auto &s : profiles)
 			{
-				std::ofstream file("../../bin/Saves/" + s.getString().toAnsiString() + "_" + stories.back().getString().toAnsiString() + ".txt");
+				std::wifstream temp(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt"); //check if there's already a save
+				if (!temp) std::wofstream file(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt");
 			}
 			if (stories.size() > menucapacity) {
 				arroweds += 1;
@@ -482,13 +519,14 @@ void Cmain::CreateNew()
 		}
 		else
 		{
-			std::ofstream pfile("../../bin/Profiles.txt", std::ios::trunc);
-			std::string oldname;
+			std::wofstream pfile(L"../../bin/Profiles.txt", std::ios::trunc);
+			pfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+			std::wstring oldname;
 			for (auto &p : profiles) //checking if there's already a profile with the same name
 			{
 				oldname.clear();
-				pfile << p.getString().toAnsiString() << std::endl;
-				for (char &c : p.getString().toAnsiString()) oldname.push_back(tolower(c)); //getting all chars to lower
+				pfile << p.getString().toWideString() << std::endl;
+				for (const wchar_t &c : p.getString().toWideString()) oldname.push_back(tolower(c)); //getting all chars to lower
 				if (oldname == name) enternewerror = true;
 			}
 			if (enternewerror)
@@ -498,10 +536,12 @@ void Cmain::CreateNew()
 				return;
 			}
 			profiles.push_back(newname);
+			pfile << profiles.back().getString().toWideString() << std::endl;
 			newname.setString("");
 			for (auto &s : stories)
 			{
-				std::ofstream file("../../bin/Saves/" + profiles.back().getString().toAnsiString() + "_" + s.getString().toAnsiString() + ".txt");
+				std::wifstream temp(L"../../bin/Saves/" + s.getString().toWideString() + L"_" + stories.back().getString().toWideString() + L".txt"); //check if there's already a save
+				if (!temp) std::wofstream file(L"../../bin/Saves/" + profiles.back().getString().toWideString() + L"_" + s.getString().toWideString() + L".txt");
 			}
 			if (profiles.size() > menucapacity) {
 				arrowedp += 1;
@@ -510,379 +550,419 @@ void Cmain::CreateNew()
 			pcheck = true;
 			enternew = false;
 		}
-		if (profiles.empty()) scenario.pempty = true;
-		else if (stories.empty()) { scenario.pempty = false; scenario.sempty = true; }
-		else
-		{
-			scenario.pempty = scenario.sempty = false;
-			scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
-			LoadSave();
-		}
+		//if (scenario.pempty || scenario.sempty) LoadSave();
 	}
+}	
+void scut(std::string& to_cut, size_t pos, std::string& to_insert)
+{
+	if (pos <= to_cut.size()) to_insert = to_cut.substr(pos);
+	else to_insert = "invalid";
 }
-
 void Cmain::LoadOptions()
 {
 	std::ifstream reader("../../bin/Options.ini");
-	std::string buffer;
+	if (!reader)
+	{
+		std::ofstream myfile("../../bin/Options.ini", std::ios::trunc);
+		warn(L"Could not load \"Options.ini\", retrying");
+		LoadOptions();
+		return;
+	}
+	std::string name, buffer;
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 13U);
-	fullscreen = scenario.stoicheck(buffer);
+	std::getline(reader, name);
+	scut(name, 13U, buffer);
+	fullscreen = static_cast<bool>(scenario.stoiCheck(buffer));
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 8U);
-	if (!fullscreen) w = scenario.stoicheck(buffer, 800);
+	std::getline(reader, name);
+	scut(name, 8U, buffer);
+	if (!fullscreen) w = scenario.stoiCheck(buffer, 800);
 	else w = desktop.x;
 	if (w < 800) w = 800;
 	else if (static_cast<unsigned int>(w) > desktop.x) w = desktop.x;
+	fullone = std::to_string(w);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 9U);
-	if (!fullscreen) h = scenario.stoicheck(buffer, 600);
+	std::getline(reader, name);
+	scut(name, 9U, buffer);
+	if (!fullscreen) h = scenario.stoiCheck(buffer, 600);
 	else h = desktop.y;
 	if (h < 600) h = 600;
 	else if (static_cast<unsigned int>(h) > desktop.y) h = desktop.y;
+	fulltwo = std::to_string(h);
 
-	scenario.sw = w;
-	scenario.sh = h;
-	scenario.w1 = w / 18;
-	scenario.w2 = w / 12;
+	//scenario.w = w;
+	//scenario.h = h;
+	scenario.w2 = round(w / 12.f);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 8U);
-	music = scenario.stoicheck(buffer, 1);
+	std::getline(reader, name);
+	scut(name, 8U, buffer);
+	music = scenario.stoiCheck(buffer, 1);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 8U);
-	sound = scenario.stoicheck(buffer, 1);
+	std::getline(reader, name);
+	scut(name, 8U, buffer);
+	sound = scenario.stoiCheck(buffer, 1);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 12U);
-	fontsize1 = scenario.stoicheck(buffer, 44);
+	std::getline(reader, name);
+	scut(name, 12U, buffer);
+	fontsize1 = scenario.stoiCheck(buffer, 44);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 12U);
-	fontsize2 = scenario.stoicheck(buffer, 58);
+	std::getline(reader, name);
+	scut(name, 12U, buffer);
+	fontsize2 = scenario.stoiCheck(buffer, 58);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 12U);
-	fontsize3 = scenario.stoicheck(buffer, 76);
+	std::getline(reader, name);
+	scut(name, 12U, buffer);
+	fontsize3 = scenario.stoiCheck(buffer, 76);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 18U);
-	selectionp = scenario.stoicheck(buffer);
+	std::getline(reader, name);
+	scut(name, 18U, buffer);
+	selectionp = scenario.stoiCheck(buffer);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 16U);
-	selections = scenario.stoicheck(buffer);
+	std::getline(reader, name);
+	scut(name, 16U, buffer);
+	selections = scenario.stoiCheck(buffer);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 15U);
-	antialias = scenario.stoicheck(buffer, 4);
+	std::getline(reader, name);
+	scut(name, 15U, buffer);
+	antialias = scenario.stoiCheck(buffer, 4);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 17U);
-	framelimit = scenario.stoicheck(buffer, 300);
+	std::getline(reader, name);
+	scut(name, 17U, buffer);
+	framelimit = scenario.stoiCheck(buffer, 300);
 
-	std::getline(reader, buffer);
-	buffer.erase(0U, 13U);
-	priorlimit = scenario.stoicheck(buffer, 5);
-
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	textcolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	textcolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	textcolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	textcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	textcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	textcolor.b = scenario.stoiCheck(buffer, 0);
 	textcolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	menucolor.r = scenario.stoicheck(buffer, 188);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	menucolor.g = scenario.stoicheck(buffer, 188);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	menucolor.b = scenario.stoicheck(buffer, 228);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	menucolor.r = scenario.stoiCheck(buffer, 188);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	menucolor.g = scenario.stoiCheck(buffer, 188);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	menucolor.b = scenario.stoiCheck(buffer, 228);
 
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menuselectcolor.r = scenario.stoicheck(buffer, 129);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menuselectcolor.g = scenario.stoicheck(buffer, 129);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menuselectcolor.b = scenario.stoicheck(buffer, 239);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuinsertcolor.r = scenario.stoiCheck(buffer, 202);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuinsertcolor.g = scenario.stoiCheck(buffer, 122);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuinsertcolor.b = scenario.stoiCheck(buffer, 128);
 
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuclickcolor.r = scenario.stoicheck(buffer, 67);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuclickcolor.g = scenario.stoicheck(buffer, 67);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuclickcolor.b = scenario.stoicheck(buffer, 249);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuselectcolor.r = scenario.stoiCheck(buffer, 129);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuselectcolor.g = scenario.stoiCheck(buffer, 129);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuselectcolor.b = scenario.stoiCheck(buffer, 239);
 
-	std::getline(reader, buffer); buffer.erase(0U, 16U);
-	menuoncolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 16U);
-	menuoncolor.g = scenario.stoicheck(buffer, 195);
-	std::getline(reader, buffer); buffer.erase(0U, 16U);
-	menuoncolor.b = scenario.stoicheck(buffer, 120);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuclickcolor.r = scenario.stoiCheck(buffer, 67);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuclickcolor.g = scenario.stoiCheck(buffer, 67);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuclickcolor.b = scenario.stoiCheck(buffer, 249);
 
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonselectcolor.r = scenario.stoicheck(buffer, 81);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonselectcolor.g = scenario.stoicheck(buffer, 225);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonselectcolor.b = scenario.stoicheck(buffer, 70);
+	std::getline(reader, name); scut(name, 16U, buffer);
+	menuoncolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 16U, buffer);
+	menuoncolor.g = scenario.stoiCheck(buffer, 195);
+	std::getline(reader, name); scut(name, 16U, buffer);
+	menuoncolor.b = scenario.stoiCheck(buffer, 120);
 
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonclickcolor.r = scenario.stoicheck(buffer, 34);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonclickcolor.g = scenario.stoicheck(buffer, 255);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuonclickcolor.b = scenario.stoicheck(buffer, 38);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuonselectcolor.r = scenario.stoiCheck(buffer, 81);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuonselectcolor.g = scenario.stoiCheck(buffer, 225);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuonselectcolor.b = scenario.stoiCheck(buffer, 70);
 
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menudangercolor.r = scenario.stoicheck(buffer, 225);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menudangercolor.g = scenario.stoicheck(buffer, 141);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	menudangercolor.b = scenario.stoicheck(buffer, 150);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menuonclickcolor.r = scenario.stoiCheck(buffer, 34);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menuonclickcolor.g = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menuonclickcolor.b = scenario.stoiCheck(buffer, 38);
 
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menudangerselectcolor.r = scenario.stoicheck(buffer, 236);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menudangerselectcolor.g = scenario.stoicheck(buffer, 91);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menudangerselectcolor.b = scenario.stoicheck(buffer, 100);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menudangercolor.r = scenario.stoiCheck(buffer, 225);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menudangercolor.g = scenario.stoiCheck(buffer, 141);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menudangercolor.b = scenario.stoiCheck(buffer, 150);
 
-	std::getline(reader, buffer); buffer.erase(0U, 25U);
-	menudangerclickcolor.r = scenario.stoicheck(buffer, 255);
-	std::getline(reader, buffer); buffer.erase(0U, 25U);
-	menudangerclickcolor.g = scenario.stoicheck(buffer, 41);
-	std::getline(reader, buffer); buffer.erase(0U, 25U);
-	menudangerclickcolor.b = scenario.stoicheck(buffer, 51);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menudangerselectcolor.r = scenario.stoiCheck(buffer, 236);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menudangerselectcolor.g = scenario.stoiCheck(buffer, 91);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menudangerselectcolor.b = scenario.stoiCheck(buffer, 100);
 
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menunodangercolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menunodangercolor.g = scenario.stoicheck(buffer, 195);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menunodangercolor.b = scenario.stoicheck(buffer, 120);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menudangerclickcolor.r = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menudangerclickcolor.g = scenario.stoiCheck(buffer, 41);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menudangerclickcolor.b = scenario.stoiCheck(buffer, 51);
 
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menunodangerselectcolor.r = scenario.stoicheck(buffer, 81);
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menunodangerselectcolor.g = scenario.stoicheck(buffer, 225);
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menunodangerselectcolor.b = scenario.stoicheck(buffer, 70);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menunodangercolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menunodangercolor.g = scenario.stoiCheck(buffer, 195);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menunodangercolor.b = scenario.stoiCheck(buffer, 120);
 
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menunodangerclickcolor.r = scenario.stoicheck(buffer, 34);
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menunodangerclickcolor.g = scenario.stoicheck(buffer, 255);
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menunodangerclickcolor.b = scenario.stoicheck(buffer, 38);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menunodangerselectcolor.r = scenario.stoiCheck(buffer, 81);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menunodangerselectcolor.g = scenario.stoiCheck(buffer, 225);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menunodangerselectcolor.b = scenario.stoiCheck(buffer, 70);
 
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuwidthcolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuwidthcolor.g = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuwidthcolor.b = scenario.stoicheck(buffer, 235);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menunodangerclickcolor.r = scenario.stoiCheck(buffer, 34);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menunodangerclickcolor.g = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menunodangerclickcolor.b = scenario.stoiCheck(buffer, 38);
 
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuwidthoutlinecolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuwidthoutlinecolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuwidthoutlinecolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuwidthcolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuwidthcolor.g = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuwidthcolor.b = scenario.stoiCheck(buffer, 235);
 
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuwidthfillcolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuwidthfillcolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuwidthfillcolor.b = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuwidthfillcolor.a = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menuwidthoutlinecolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menuwidthoutlinecolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 26U, buffer);
+	menuwidthoutlinecolor.b = scenario.stoiCheck(buffer, 0);
 
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthsfillcolor.r = scenario.stoicheck(buffer, 50);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthsfillcolor.g = scenario.stoicheck(buffer, 50);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthsfillcolor.b = scenario.stoicheck(buffer, 100);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthsfillcolor.a = scenario.stoicheck(buffer, 100);
+	std::getline(reader, name); scut(name, 23U, buffer);
+	menuwidthfillcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 23U, buffer);
+	menuwidthfillcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 23U, buffer);
+	menuwidthfillcolor.b = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 23U, buffer);
+	menuwidthfillcolor.a = scenario.stoiCheck(buffer, 0);
 
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthffillcolor.r = scenario.stoicheck(buffer, 205);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthffillcolor.g = scenario.stoicheck(buffer, 30);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthffillcolor.b = scenario.stoicheck(buffer, 70);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuwidthffillcolor.a = scenario.stoicheck(buffer, 125);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthsfillcolor.r = scenario.stoiCheck(buffer, 50);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthsfillcolor.g = scenario.stoiCheck(buffer, 50);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthsfillcolor.b = scenario.stoiCheck(buffer, 100);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthsfillcolor.a = scenario.stoiCheck(buffer, 100);
 
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuheightcolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuheightcolor.g = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuheightcolor.b = scenario.stoicheck(buffer, 235);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthffillcolor.r = scenario.stoiCheck(buffer, 205);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthffillcolor.g = scenario.stoiCheck(buffer, 30);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthffillcolor.b = scenario.stoiCheck(buffer, 70);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuwidthffillcolor.a = scenario.stoiCheck(buffer, 125);
 
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuheightoutlinecolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuheightoutlinecolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 26U);
-	menuheightoutlinecolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuheightcolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuheightcolor.g = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	menuheightcolor.b = scenario.stoiCheck(buffer, 235);
 
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuheightfillcolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuheightfillcolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuheightfillcolor.b = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	menuheightfillcolor.a = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menuheightoutlinecolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menuheightoutlinecolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menuheightoutlinecolor.b = scenario.stoiCheck(buffer, 0);
 
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightsfillcolor.r = scenario.stoicheck(buffer, 50);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightsfillcolor.g = scenario.stoicheck(buffer, 50);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightsfillcolor.b = scenario.stoicheck(buffer, 100);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightsfillcolor.a = scenario.stoicheck(buffer, 100);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuheightfillcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuheightfillcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuheightfillcolor.b = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	menuheightfillcolor.a = scenario.stoiCheck(buffer, 0);
 
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightffillcolor.r = scenario.stoicheck(buffer, 205);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightffillcolor.g = scenario.stoicheck(buffer, 30);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightffillcolor.b = scenario.stoicheck(buffer, 70);
-	std::getline(reader, buffer); buffer.erase(0U, 24U);
-	menuheightffillcolor.a = scenario.stoicheck(buffer, 125);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightsfillcolor.r = scenario.stoiCheck(buffer, 50);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightsfillcolor.g = scenario.stoiCheck(buffer, 50);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightsfillcolor.b = scenario.stoiCheck(buffer, 100);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightsfillcolor.a = scenario.stoiCheck(buffer, 100);
 
-	std::getline(reader, buffer); buffer.erase(0U, 33U);
-	menuprofilesmenuoutlinecolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 33U);
-	menuprofilesmenuoutlinecolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 33U);
-	menuprofilesmenuoutlinecolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightffillcolor.r = scenario.stoiCheck(buffer, 205);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightffillcolor.g = scenario.stoiCheck(buffer, 30);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightffillcolor.b = scenario.stoiCheck(buffer, 70);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	menuheightffillcolor.a = scenario.stoiCheck(buffer, 125);
+
+	std::getline(reader, name); scut(name, 33U, buffer);
+	menuprofilesmenuoutlinecolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 33U, buffer);
+	menuprofilesmenuoutlinecolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 33U, buffer);
+	menuprofilesmenuoutlinecolor.b = scenario.stoiCheck(buffer, 0);
 	menuprofilesmenuoutlinecolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 30U);
-	menuprofilesmenufillcolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 30U);
-	menuprofilesmenufillcolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 30U);
-	menuprofilesmenufillcolor.b = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 30U);
+	std::getline(reader, name); scut(name, 30U, buffer);
+	menuprofilesmenufillcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 30U, buffer);
+	menuprofilesmenufillcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 30U, buffer);
+	menuprofilesmenufillcolor.b = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 30U, buffer);
 	menuprofilesmenufillcolor.a = 0;
-	profilesmenufillfactor = scenario.stoicheck(buffer, 0) / 255.f;
+	profilesmenufillfactor = scenario.stoiCheck(buffer, 0) / 255.f;
 
-
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuprofilescolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuprofilescolor.g = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 22U);
-	menuprofilescolor.b = scenario.stoicheck(buffer, 235);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuprofilescolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuprofilescolor.g = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	menuprofilescolor.b = scenario.stoiCheck(buffer, 235);
 	menuprofilescolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menuprofilesselectcolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menuprofilesselectcolor.g = scenario.stoicheck(buffer, 235);
-	std::getline(reader, buffer); buffer.erase(0U, 28U);
-	menuprofilesselectcolor.b = scenario.stoicheck(buffer, 121);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menuprofilesselectcolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menuprofilesselectcolor.g = scenario.stoiCheck(buffer, 235);
+	std::getline(reader, name); scut(name, 28U, buffer);
+	menuprofilesselectcolor.b = scenario.stoiCheck(buffer, 121);
 	menuprofilesselectcolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 21U);
-	menustoriescolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 21U);
-	menustoriescolor.g = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 21U);
-	menustoriescolor.b = scenario.stoicheck(buffer, 235);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menustoriescolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menustoriescolor.g = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	menustoriescolor.b = scenario.stoiCheck(buffer, 235);
 	menustoriescolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menustoriesselectcolor.r = scenario.stoicheck(buffer, 121);
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menustoriesselectcolor.g = scenario.stoicheck(buffer, 235);
-	std::getline(reader, buffer); buffer.erase(0U, 27U);
-	menustoriesselectcolor.b = scenario.stoicheck(buffer, 121);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menustoriesselectcolor.r = scenario.stoiCheck(buffer, 121);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menustoriesselectcolor.g = scenario.stoiCheck(buffer, 235);
+	std::getline(reader, name); scut(name, 27U, buffer);
+	menustoriesselectcolor.b = scenario.stoiCheck(buffer, 121);
 	menustoriesselectcolor.a = 0;
 
-	//std::getline(reader, buffer); buffer.erase(0U, 22U);
-	//menusoutlinecolor.r = scenario.stoicheck(buffer, 0);
-	//std::getline(reader, buffer); buffer.erase(0U, 22U);
-	//menusoutlinecolor.g = scenario.stoicheck(buffer, 0);
-	//std::getline(reader, buffer); buffer.erase(0U, 22U);
-	//menusoutlinecolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuerrorcolor.r = scenario.stoiCheck(buffer, 221);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuerrorcolor.g = scenario.stoiCheck(buffer, 21);
+	std::getline(reader, name); scut(name, 19U, buffer);
+	menuerrorcolor.b = scenario.stoiCheck(buffer, 125);
 
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuerrorcolor.r = scenario.stoicheck(buffer, 221);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuerrorcolor.g = scenario.stoicheck(buffer, 21);
-	std::getline(reader, buffer); buffer.erase(0U, 19U);
-	menuerrorcolor.b = scenario.stoicheck(buffer, 125);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	scenario.statcolor.r = scenario.stoiCheck(buffer, 235);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	scenario.statcolor.g = scenario.stoiCheck(buffer, 239);
+	std::getline(reader, name); scut(name, 14U, buffer);
+	scenario.statcolor.b = scenario.stoiCheck(buffer, 240);
+	scenario.statcolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	statcolor.r = scenario.stoicheck(buffer, 235);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	statcolor.g = scenario.stoicheck(buffer, 239);
-	std::getline(reader, buffer); buffer.erase(0U, 14U);
-	statcolor.b = scenario.stoicheck(buffer, 240);
-	statcolor.a = 0;
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statgaincolor.r = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statgaincolor.g = scenario.stoiCheck(buffer, 82);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statgaincolor.b = scenario.stoiCheck(buffer, 88);
 
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statgaincolor.r = scenario.stoicheck(buffer, 255);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statgaincolor.g = scenario.stoicheck(buffer, 82);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statgaincolor.b = scenario.stoicheck(buffer, 88);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statlosscolor.r = scenario.stoiCheck(buffer, 147);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statlosscolor.g = scenario.stoiCheck(buffer, 146);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	scenario.statlosscolor.b = scenario.stoiCheck(buffer, 146);
 
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statlosscolor.r = scenario.stoicheck(buffer, 147);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statlosscolor.g = scenario.stoicheck(buffer, 146);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	statlosscolor.b = scenario.stoicheck(buffer, 146);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.statoppositecolor.r = scenario.stoiCheck(buffer, 47);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.statoppositecolor.g = scenario.stoiCheck(buffer, 96);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.statoppositecolor.b = scenario.stoiCheck(buffer, 236);
 
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	textchoicecolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	textchoicecolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 20U);
-	textchoicecolor.b = scenario.stoicheck(buffer, 0);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	textchoicecolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	textchoicecolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 20U, buffer);
+	textchoicecolor.b = scenario.stoiCheck(buffer, 0);
 	textchoicecolor.a = 0;
 
-	std::getline(reader, buffer); buffer.erase(0U, 29U);
-	textchoiceunavaiblecolor.r = scenario.stoicheck(buffer, 100);
-	std::getline(reader, buffer); buffer.erase(0U, 29U);
-	textchoiceunavaiblecolor.g = scenario.stoicheck(buffer, 100);
-	std::getline(reader, buffer); buffer.erase(0U, 29U);
-	textchoiceunavaiblecolor.b = scenario.stoicheck(buffer, 100);
+	std::getline(reader, name); scut(name, 29U, buffer);
+	textchoiceunavaiblecolor.r = scenario.stoiCheck(buffer, 100);
+	std::getline(reader, name); scut(name, 29U, buffer);
+	textchoiceunavaiblecolor.g = scenario.stoiCheck(buffer, 100);
+	std::getline(reader, name); scut(name, 29U, buffer);
+	textchoiceunavaiblecolor.b = scenario.stoiCheck(buffer, 100);
 	textchoiceunavaiblecolor.a = 0;
-	scenario.textchoiceunavaiblecolor.reset(&textchoiceunavaiblecolor);
 
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	textchoicefillcolor.r = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	textchoicefillcolor.g = scenario.stoicheck(buffer, 0);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
-	textchoicefillcolor.b = scenario.stoicheck(buffer, 255);
-	std::getline(reader, buffer); buffer.erase(0U, 23U);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	textchoicefillcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	textchoicefillcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 24U, buffer);
+	textchoicefillcolor.b = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 24U, buffer);
 	textchoicefillcolor.a = 0;
-	choicefactor = scenario.stoicheck(buffer, 125) / 255.f;
+	choicefactor = scenario.stoiCheck(buffer, 125) / 255.f;
 
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	menuhelpcolor.r = scenario.stoicheck(buffer, 120);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	menuhelpcolor.g = scenario.stoicheck(buffer, 101);
-	std::getline(reader, buffer); buffer.erase(0U, 18U);
-	menuhelpcolor.b = scenario.stoicheck(buffer, 238);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	menuhelpcolor.r = scenario.stoiCheck(buffer, 120);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	menuhelpcolor.g = scenario.stoiCheck(buffer, 101);
+	std::getline(reader, name); scut(name, 18U, buffer);
+	menuhelpcolor.b = scenario.stoiCheck(buffer, 238);
+
+	std::getline(reader, name); scut(name, 21U, buffer);
+	scenario.typeboxcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	scenario.typeboxcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 21U, buffer);
+	scenario.typeboxcolor.b = scenario.stoiCheck(buffer, 0);
+	scenario.typeboxcolor.a = 0;
+
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxtextcolor.b = scenario.stoiCheck(buffer, 0);
+	scenario.typeboxtextcolor.a = 0;
+
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxfillcolor.r = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxfillcolor.g = scenario.stoiCheck(buffer, 0);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxfillcolor.b = scenario.stoiCheck(buffer, 255);
+	std::getline(reader, name); scut(name, 25U, buffer);
+	scenario.typeboxfillcolor.a = 0;
+	typeboxfactor = scenario.stoiCheck(buffer, 125) / 255.f;
+
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.gaintextcolor.r = scenario.stoiCheck(buffer, 70);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.gaintextcolor.g = scenario.stoiCheck(buffer, 70);
+	std::getline(reader, name); scut(name, 22U, buffer);
+	scenario.gaintextcolor.b = scenario.stoiCheck(buffer, 70);
+	scenario.gaintextcolor.a = 0;
 }
 
 void Cmain::SaveToFile()
@@ -900,13 +980,15 @@ void Cmain::SaveToFile()
 		<< "\nCurrent Story = " << selections
 		<< "\nAntialiasing = " << antialias
 		<< "\nFramerateLimit = " << framelimit
-		<< "\nPriorLimit = " << priorlimit
 		<< "\ntextcolor.r = " << static_cast<int>(textcolor.r)
 		<< "\ntextcolor.g = " << static_cast<int>(textcolor.g)
 		<< "\ntextcolor.b = " << static_cast<int>(textcolor.b)
 		<< "\nmenucolor.r = " << static_cast<int>(menucolor.r)
 		<< "\nmenucolor.g = " << static_cast<int>(menucolor.g)
 		<< "\nmenucolor.b = " << static_cast<int>(menucolor.b)
+		<< "\nmenuinsertcolor.r = " << static_cast<int>(menuinsertcolor.r)
+		<< "\nmenuinsertcolor.g = " << static_cast<int>(menuinsertcolor.g)
+		<< "\nmenuinsertcolor.b = " << static_cast<int>(menuinsertcolor.b)
 		<< "\nmenuselectcolor.r = " << static_cast<int>(menuselectcolor.r)
 		<< "\nmenuselectcolor.g = " << static_cast<int>(menuselectcolor.g)
 		<< "\nmenuselectcolor.b = " << static_cast<int>(menuselectcolor.b)
@@ -995,21 +1077,21 @@ void Cmain::SaveToFile()
 		<< "\nmenustoriesselectcolor.r = " << static_cast<int>(menustoriesselectcolor.r)
 		<< "\nmenustoriesselectcolor.g = " << static_cast<int>(menustoriesselectcolor.g)
 		<< "\nmenustoriesselectcolor.b = " << static_cast<int>(menustoriesselectcolor.b)
-		//<< "\nmenusoutlinecolor.r = " << static_cast<int>(menusoutlinecolor.r)
-		//<< "\nmenusoutlinecolor.g = " << static_cast<int>(menusoutlinecolor.g)
-		//<< "\nmenusoutlinecolor.b = " << static_cast<int>(menusoutlinecolor.b)
 		<< "\nmenuerrorcolor.r = " << static_cast<int>(menuerrorcolor.r)
 		<< "\nmenuerrorcolor.g = " << static_cast<int>(menuerrorcolor.g)
 		<< "\nmenuerrorcolor.b = " << static_cast<int>(menuerrorcolor.b)
-		<< "\nstatcolor.r = " << static_cast<int>(statcolor.r)
-		<< "\nstatcolor.g = " << static_cast<int>(statcolor.g)
-		<< "\nstatcolor.b = " << static_cast<int>(statcolor.b)
-		<< "\nstatgaincolor.r = " << static_cast<int>(statgaincolor.r)
-		<< "\nstatgaincolor.g = " << static_cast<int>(statgaincolor.g)
-		<< "\nstatgaincolor.b = " << static_cast<int>(statgaincolor.b)
-		<< "\nstatlosscolor.r = " << static_cast<int>(statlosscolor.r)
-		<< "\nstatlosscolor.g = " << static_cast<int>(statlosscolor.g)
-		<< "\nstatlosscolor.b = " << static_cast<int>(statlosscolor.b)
+		<< "\nstatcolor.r = " << static_cast<int>(scenario.statcolor.r)
+		<< "\nstatcolor.g = " << static_cast<int>(scenario.statcolor.g)
+		<< "\nstatcolor.b = " << static_cast<int>(scenario.statcolor.b)
+		<< "\nstatgaincolor.r = " << static_cast<int>(scenario.statgaincolor.r)
+		<< "\nstatgaincolor.g = " << static_cast<int>(scenario.statgaincolor.g)
+		<< "\nstatgaincolor.b = " << static_cast<int>(scenario.statgaincolor.b)
+		<< "\nstatlosscolor.r = " << static_cast<int>(scenario.statlosscolor.r)
+		<< "\nstatlosscolor.g = " << static_cast<int>(scenario.statlosscolor.g)
+		<< "\nstatlosscolor.b = " << static_cast<int>(scenario.statlosscolor.b)
+		<< "\nstatoppositecolor.r = " << static_cast<int>(scenario.statoppositecolor.r)
+		<< "\nstatoppositecolor.g = " << static_cast<int>(scenario.statoppositecolor.g)
+		<< "\nstatoppositecolor.b = " << static_cast<int>(scenario.statoppositecolor.b)
 		<< "\ntextchoicecolor.r = " << static_cast<int>(textchoicecolor.r)
 		<< "\ntextchoicecolor.g = " << static_cast<int>(textchoicecolor.g)
 		<< "\ntextchoicecolor.b = " << static_cast<int>(textchoicecolor.b)
@@ -1023,6 +1105,19 @@ void Cmain::SaveToFile()
 		<< "\nmenuhelpcolor.r = " << static_cast<int>(menuhelpcolor.r)
 		<< "\nmenuhelpcolor.g = " << static_cast<int>(menuhelpcolor.g)
 		<< "\nmenuhelpcolor.b = " << static_cast<int>(menuhelpcolor.b)
+		<< "\ntexttypeboxcolor.r = " << static_cast<int>(scenario.typeboxcolor.r)
+		<< "\ntexttypeboxcolor.g = " << static_cast<int>(scenario.typeboxcolor.g)
+		<< "\ntexttypeboxcolor.b = " << static_cast<int>(scenario.typeboxcolor.b)
+		<< "\ntexttypeboxtextcolor.r = " << static_cast<int>(scenario.typeboxtextcolor.r)
+		<< "\ntexttypeboxtextcolor.g = " << static_cast<int>(scenario.typeboxtextcolor.g)
+		<< "\ntexttypeboxtextcolor.b = " << static_cast<int>(scenario.typeboxtextcolor.b)
+		<< "\ntexttypeboxfillcolor.r = " << static_cast<int>(scenario.typeboxfillcolor.r)
+		<< "\ntexttypeboxfillcolor.g = " << static_cast<int>(scenario.typeboxfillcolor.g)
+		<< "\ntexttypeboxfillcolor.b = " << static_cast<int>(scenario.typeboxfillcolor.b)
+		<< "\ntexttypeboxfillcolor.a = " << static_cast<int>(round(typeboxfactor * 255.f))
+		<< "\ntextgaintextcolor.r = " << static_cast<int>(scenario.gaintextcolor.r)
+		<< "\ntextgaintextcolor.g = " << static_cast<int>(scenario.gaintextcolor.g)
+		<< "\ntextgaintextcolor.b = " << static_cast<int>(scenario.gaintextcolor.b)
 		<< std::endl;
 	myfile.close();
 }

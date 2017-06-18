@@ -1,48 +1,100 @@
-You can use not visible comments by writing "//" (customizable later)
-You can change text splitting format by writing `/` (customizable later) in one line, by default format style is following:
-text is merged until a command or empty line is found(if you want a mergable empty line leave it with "`" [customizable later])
-example:
-This is a story about wolf.
-It began in a long forgotten forest.
+Rules might change in future and because of this I won't upload rules that can vary in next days/weeks.
 
+You can use not visible comments by writing "//" (customizable later)
+You can change text splitting format by writing "`/`" (customizable later) that takes one line, by default format style is following:
+Text is taken to be merged, until a command or empty line is found(if you want a mergable empty line leave it with "`" [customizable later])
+
+example:
+This is the story about Wolf.
+It began in a long forgotten forest.
+`
 The wolf was hungry.
+
+Woof!
 --------------------
 would look like:
-This is a story about wolf. It began in a long forgotten forest. //this line could be splitted if it doesnt fit on the screen
-
+This is the story about Wolf. It began in a long forgotten forest. //this line could be splitted if it doesnt fit on the screen
 The wolf was hungry.
+
+Woof!
 ---------------------
-Second formating mode checks only if a line is too long and eventually splits it, that means lines aren't merged (high resolution monitors will have less text to show and it might be annoying for someone)
+Second formating mode checks only if a line is too long and eventually splits it. This means lines aren't merged (high resolution monitors will have less text to show and it might be annoying for someone thus it wasn't completly tested and implemented in all functions, besides unrecommended)
 
 Current commands:
-#choice
-name //can be on many lines
+#choice or #choice(num) //second version calls #t
+parameters:	 //here you use one or more of these additonal parameters[order isn't important]
+#if(name>value) 
+#if(name<value) 
+#if(name>=value) 
+#if(name<=value) 
+#if(name==value) 
+#if(name!=value) 
+		 //these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
+		 //choice is only avaible when all conditions in "#if" are met
+#hidden no/yes 	 //default:no; if yes - it will hide choice when unavaible
+name		 //can be on many lines, formated like the main text
 {
-story //if you choose this choice you'll be directed inside this block
+story 		 //if you choose this choice you'll be directed inside this block, which can contain more choices
 }
-parameters: //here you use one or more of these parameters below[order isn't important]
-#if(name>value) //choice is only avaible when all conditions in "#if" are met
-#if(name<value) //choice is only avaible when all conditions in "#if" are met
-#if(name>=value) //choice is only avaible when all conditions in "#if" are met
-#if(name<=value) //choice is only avaible when all conditions in "#if" are met
-#if(name==value) //choice is only avaible when all conditions in "#if" are met
-#if(name!=value) //choice is only avaible when all conditions in "#if" are met
-//these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
-#hidden no/yes //default:no; if yes - it will hide choice when unavaible
+example:
 
-#next //displays next button that allows to choose one of choices(if exist) and continue game
-#end //end the story, statistics will be displayed (not currently developed)
-#goto(line) //moves game to given line in textfile
-#IntStatOpposite //info and params later
-#IntStat //info and params later
-#StringStat //info and params later
-#Int //info and params later
+	#choice
+	#if(Agility>=Rabbit'sAgility) //Using variables, rabbit isn't an object(maybe in an RPG game would be, but not in a text novel)
+	#hidden yes
+	Hunt a rabit
+	{
+	You gained some meat. Mmmm...
+	#set(Hunger-=30)
+		#choice
+		do something
+		{
+		...
+		}
+	}
 
-Almost done:
-#set(name, value, changemaxvalue[optional], changeminvalue[optional] ) //changes Stat with given name
-#hide(name) //makes hidden Stat visible, visible becomes hidden
-#priorlimit(number) //hardly connected with Stats, info and mechanism reveal soon
+#next			//displays next button that allows to choose one of choices(if exist) and continue game
+#end			//end the story, statistics will be displayed (not currently developed)
+#goto(line)		//moves game to given line in textfile
+#debug 			//file is being scanned before usage. It searchs for bugs and unintended behaviour and if one of these exists - throws a warning or an error respectively
+#t(number)		//given number of tabs will be ignored in every line of text
+
+#IntStatOpposite()//info and params later
+#IntStat()		//info and params later
+#StringStat()	//info and params later
+#Int()			//info and params later
+#Stc()			//info and params later
+#set(name, value, changeMinvalue[optional, not avaible for string-based Stats], changemaxvalue[optional, not avaible for string-based Stats], threshold[optional, IntOppositeStat only]) //changes Stat with given name
+#hide(name)		//makes hidden Stat visible, visible becomes hidden
+#vide(name)		//makes StringStat's value visible or hidden
+#priorlimit(number)	//hardly connected with Stats, sets prior limit. More info at the end of the file
+#prior(Stat, number) //sets priority of the given non-static Stat, saving inside its memory
+#enter(string-based Stat, maxchars) //gives ability to change value of a Stat ingame. The text cannot be empty
+#erase(name) //deletes given Stat by its name
 
 Planned commands (I'll add more later):
-#file(filename) //switches to another file, was already done, but rewrite needs to design it again (very simple)
-#showstats //displays all stats on the screen
+#file(filename)		//switches to another file, was already done, but rewrite needs to design it again (very simple)
+#showstats		//displays all stats on the screen
+#end(showhidden?)	//displays all stats on the screen, can show hidden Stats, cannot continiue game afterwards
+#music(path, loop?)
+#sound(path, timestorepeat)
+#achievement(name, description, condition, hidden) //not so soon...
+#gt //gaintext - modifable by user, main purpose to inform player if they gained/losed any Stat, but you can consider to use it to format even your entire story or specific dialogues.
+
+You cannot use these characters in your story, unless it is part of the command: '#'(ab;ignoring tabs), '{', '}', '`'(ab).  
+
+'ab' means you cannot use these only at the beginning of a line.
+You are free to use tabs inside text, but not inside commands, since it changes its structure. 
+Exception is when you pass a parameter to read or modify Stat value, which contains a tab in its name.
+You can use tabs before commands. 
+You can use tabs that won't show before text if you've set #t(NumberOfTabsToIgnore) command before.
+
+Prior mechanism:
+Before Stats are being rendered, they're firstly ordered by their priority.
+You can think about priority as it it've been some kind of layers.
+
+First rendered Stats are these with the highest priority in following order:
+-StringStats(sorted alphabetically by the name),
+-IntStatOpposite(sorted alphabetically by the name),
+-IntStatStringStats(sorted alphabetically by the name),
+-Ints(sorted alphabetically by the name).
+Then displayed are Stats with lower priority in the same order, until lowest priority is reached - priority 0.
