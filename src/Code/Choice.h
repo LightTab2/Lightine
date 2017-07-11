@@ -21,4 +21,5 @@ struct Choice																//Essential element of the game, by this player mak
 	sf::CircleShape cs;														//The circle that is filled with *textchoicefillcolor* when conditions are met.
 	sf::ConvexShape c;														//The rounded rectangle
 	unsigned int gto = 0, dgto = 0;											//Moves file position indicator to value's line
+	unsigned int ttignore = 0;												//The tabsignore inside 
 };

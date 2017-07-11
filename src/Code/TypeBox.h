@@ -3,14 +3,14 @@
 
 struct TypeBox
 {
-	TypeBox(std::wstring *s, std::pair<unsigned, unsigned> limits) : s(s), limits(limits)  { t.setString(*s); }
+	TypeBox(std::wstring *s, std::pair<unsigned, unsigned> limits, int minchars) : s(s), limits(limits), minchars(minchars)  { t.setString(*s); }
 	sf::RectangleShape rt;
 	std::wstring *s;
 	sf::Text t;
 	std::pair<unsigned, unsigned> limits;
+	int minchars = 0;
 	bool InsertChar(wchar_t c)
 	{
-		if ((limits.first != 0U && s->size() >= limits.first) || !(c > 31U && c < 127U)) return false;
 		s->push_back(c);
 		t.setString(*s);
 		if ((t.getGlobalBounds().left + t.getLocalBounds().left + t.getGlobalBounds().width) > (rt.getGlobalBounds().left + rt.getGlobalBounds().width - rt.getOutlineThickness()))
@@ -28,7 +28,7 @@ struct TypeBox
 			}
 		}
 		return false;
-	};
+	}
 	bool DeleteChar()
 	{
 		if (s->size() != 0U)
@@ -42,5 +42,5 @@ struct TypeBox
 			t.setString(*s);
 		}
 		return false;
-	};
+	}
 };

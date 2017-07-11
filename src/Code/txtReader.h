@@ -30,12 +30,12 @@ private:
 	                     int &ReturnInt,
 	                     int Default = 0);										
 																		//Prevents crash and does std::stoi; if failure: ReturnUInt is set to Default and returns false
-	const bool stoiCheck(std::wstring &NumberInText,
-		unsigned int &ReturnUInt,
-		const int Default = 0);
+	const bool stoiCheck(
+		const std::wstring& checked,
+		unsigned& number, const int def = 0);
 																		//Prevents crash and returns std::stoi; if failure: returns Default
-	const int stoiCheck(std::string &NumberInText, 
-		const int Default = 0); 
+	const int stoiCheck(
+		const std::string& checked, const int def = 0); 
 																		//Checks if there's already an object with the same name
 	bool checkName(const std::wstring &NameToFind, 
 		bool ThrowError = false);
@@ -57,7 +57,7 @@ private:
 	int dgoto = 0;														//Stops parsing when sgoto hits dgoto's value	
 	int	choicesel = -1;													//Currently selected Choice
 	int	typesel = -1;													//Which TypeBox is selected, it also indicates if player is focused on typing anything to any typebox
-	int ttignore = 0;													//number of Tabs to being ignored
+	int ttignore = 0;													//Number of Tabs to being ignored
 	bool slideratv = false;												//Is slider active(rendered and able to be pushed)
 	bool loadtextonly = false;											//Read only text, do not execute any commands if true
 	bool choiceneed = false;											//So you can't click Next when no choice is selected if it is true
@@ -79,10 +79,10 @@ private:
 	sf::Sprite next;													//"Next" button
 	sf::FloatRect Bnext;												//Boundaries of scenario.next
 	std::wstring savefile;												//Path to current save file
-	sf::Color *textchoiceunavaiblecolor;								//Pointer to cmain's choiceunavaiblecolor
+	sf::Color *textchoiceunavailablecolor;								//Pointer to cmain's choiceunavailablecolor
 	std::wstring path;													//Path to current story file
 	sf::Color statcolor, statgaincolor, statlosscolor, statoppositecolor,
-		typeboxcolor, typeboxfillcolor, typeboxtextcolor,
+		typeboxcolor, typeboxfillcolor, typeboxfillselcolor, typeboxtextcolor, typeboxunavailablefillcolor, typeboxunavailablefillselcolor,
 		gaintextcolor;													//Colors needed by ScenarioParser
 	static std::wstring apath;											//For static stats, path to %APPDATA%
 	//std::wstring *type;												//So you can enter some text and make StringStat out of it
@@ -96,13 +96,15 @@ private:
 	void GotoLine(const int Line);
 																		//Executes various commands return;
 	void ExecuteCommand(std::wstring &Command);
-																		//Splits text if it's too long; State = true: prasing for choice, otherwise for main text
+	sf::Text& Split(sf::Text& tekst, bool newline, float margin);										//Function extracted from SplitText, because it is usefull in f.e. gaintext formatting or Stat's text cutting. As name says it splits text, so it can fit on screen (position + size is lesser than rmagin)
+	//Splits text if it's too long; State = true: prasing for choice, otherwise for main text
 	void SplitText(const bool State, std::wstring &AddReturnTo);
 																		//tinsr and text becames one
 	void MergeText();
 																		//Checks if in the line is a comment
 	const bool CommentCheck(std::wstring &TextToBeChecked);
-																		//Very thingy thing that actually does some things - used to create Stats; arg - informs which Stat is about to be created
+	void FindRange(int start = 1);
+	//Very thingy thing that actually does some things - used to create Stats; arg - informs which Stat is about to be created
 	void Thingy(const int arg, std::wstring &Command);
 																		//Rounded rectangle around choice's text
 	void RoundRect();
@@ -157,7 +159,8 @@ StcString* FindStcS(const std::wstring &name);
 	void LoadSave();
 																		//Probably part of LoadSave()
 	void LoadStatics();
-																		//Part of IfCheck();
+	void ValueCheck(std::wstring& insr);
+	//Part of IfCheck();
 	void elsecheck(bool IFb);
 	//inline void TabFind(std::wstring &preinsr);
 	std::wstring insr;													//Contains text that will be splitted into tinsr

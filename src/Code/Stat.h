@@ -92,7 +92,7 @@ private:
 	sf::Texture tx;
 };
 
-struct Int : public Stat, public IStat
+struct Int : Stat, IStat
 {
 	Int(std::wstring &name, const int value, const bool hidden)
 		: Stat(name, hidden), IStat(value) {}
@@ -100,7 +100,7 @@ struct Int : public Stat, public IStat
 	sf::Text t;																//This is displayed in show_stats
 };
 
-struct StringStat : public Stat, public SStat								//Stat that's value is a string, eg. pseudonim of the hero
+struct StringStat : Stat, SStat								//Stat that's value is a string, eg. pseudonim of the hero
 {
 	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden)
 		: Stat(name, namehidden), SStat(value), vhidden(valuehidden) {}
@@ -109,13 +109,13 @@ struct StringStat : public Stat, public SStat								//Stat that's value is a st
 	sf::Text t;
 };
 
-struct StcString : public SStat
+struct StcString : SStat
 {
 	StcString(std::wstring &name, std::wstring &value) : name(name), SStat(value) {}
 	std::wstring name;
 };
 
-struct StcInt : public IStat
+struct StcInt : IStat
 {
 	StcInt(std::wstring &name, const int value) : name(name), IStat(value) {}
 	std::wstring name;

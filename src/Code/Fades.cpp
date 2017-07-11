@@ -10,9 +10,9 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "Cmain.h"
-sf::Color color1(255, 255, 255, 0);
-sf::Color color67(255, 255, 255, 0);
-sf::Color colorminus1(255, 255, 255, 0);
+sf::Color color1(255U, 255U, 255U, 0U);
+sf::Color color67(255U, 255U, 255U, 0U);
+sf::Color colorminus1(255U, 255U, 255U, 0U);
 
 void Cmain::Reset() //this function is here, because it needs to change colorminus1
 {
@@ -51,30 +51,14 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	*/
 }
 
-inline void Cmain::Manage67(const bool add) //this code could've been better in aspect of transparency, but performance is the prior here
+void Cmain::Manage67() //this code could've been better in aspect of transparency, but performance is the prior here
 {
-	if (add)
-	{
-		Draw67();
-		if (visible) return;
-		if (color67.a > static_cast<sf::Uint8>(253)) color67.a = static_cast<sf::Uint8>(255);
-		else
-			color67.a += 2;
-	}
-	else
-	{
-		if (visible) return;
-		Draw67();
-		if (color67.a < static_cast<sf::Uint8>(3)) color67.a = static_cast<sf::Uint8>(0);
-		else
-			color67.a -= 2;
-	}
 	menuprofilesmenuoutlinecolor.a = color67.a;
 	menuprofilesmenufillcolor.a = static_cast<sf::Uint8>(color67.a * profilesmenufillfactor);
 	if (gwhich)
 	{
 		menustoriescolor.a = menustoriesselectcolor.a = color67.a;
-		for (size_t index = 0U ; index != stories.size(); ++index) {
+		for (size_t index = 0U; index != stories.size(); ++index) {
 			if (selections == index) stories[index].setFillColor(menustoriesselectcolor);
 			else stories[index].setFillColor(menustoriescolor);
 		}
@@ -89,30 +73,18 @@ inline void Cmain::Manage67(const bool add) //this code could've been better in 
 	}
 	profilesmenu.setOutlineColor(menuprofilesmenuoutlinecolor);
 	profilesmenu.setFillColor(menuprofilesmenufillcolor);
-	arrowdn.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(color67.a * (arrowed_dn ? 0.35 : 1))));
-	arrowup.setColor(sf::Color(255, 255, 255, static_cast<sf::Uint8>(color67.a * (arrowed_up ? 0.35 : 1))));
+	arrowdn.setColor(std::move(sf::Color(255U, 255U, 255U, static_cast<sf::Uint8>(color67.a * (arrowed_dn ? 0.35 : 1U)))));
+	arrowup.setColor(std::move(sf::Color(255U, 255U, 255U, static_cast<sf::Uint8>(color67.a * (arrowed_up ? 0.35 : 1U)))));
 }
 
-inline void Cmain::Manage1(const bool add)
+void Cmain::Manage1()
 {
-	if (add)
-	{
-		Draw1();
-		if (visible) return;
-		if (color1.a > static_cast<sf::Uint8>(253))
-			color1.a = static_cast<sf::Uint8>(255);
-		else color1.a += 2;
-	}
-	else
-	{
-		if (visible) return;
-		Draw1();
-		if (color1.a < static_cast<sf::Uint8>(3)) color1.a = static_cast<sf::Uint8>(0);
-		else color1.a -= 2;
-	}
-	textcolor.a = textchoicecolor.a = textchoiceunavaiblecolor.a = scenario.typeboxcolor.a = scenario.typeboxtextcolor.a = scenario.gaintextcolor.a = color1.a;
+	textcolor.a = textchoicecolor.a = textchoiceunavailablecolor.a = scenario.typeboxcolor.a = scenario.typeboxtextcolor.a = scenario.gaintextcolor.a = color1.a;
 	textchoicefillcolor.a = static_cast<sf::Uint8>(choicefactor * color1.a);
 	scenario.typeboxfillcolor.a = static_cast<sf::Uint8>(typeboxfactor * color1.a);
+	scenario.typeboxfillselcolor.a = static_cast<sf::Uint8>(typeboxfactor2 * color1.a);
+	scenario.typeboxunavailablefillcolor.a = static_cast<sf::Uint8>(typeboxunavailablefactor * color1.a);
+	scenario.typeboxunavailablefillselcolor.a = static_cast<sf::Uint8>(typeboxunavailablefactor2 * color1.a);
 	showstats.setColor(color1);
 	sliders.setColor(color1);
 	bars.setColor(color1);
@@ -129,50 +101,39 @@ inline void Cmain::Manage1(const bool add)
 		}
 		else
 		{
-			c.cs.setOutlineColor(textchoiceunavaiblecolor);
-			c.c.setOutlineColor(textchoiceunavaiblecolor);
-			c.text.setFillColor(textchoiceunavaiblecolor);
+			c.cs.setOutlineColor(textchoiceunavailablecolor);
+			c.c.setOutlineColor(textchoiceunavailablecolor);
+			c.text.setFillColor(textchoiceunavailablecolor);
 		}
 	}
 	for (size_t index = 0U; index != scenario.typeboxes.size(); ++index)
 	{
 		TypeBox &t = scenario.typeboxes[index];
-		if (index == scenario.typesel) t.rt.setFillColor(scenario.typeboxfillcolor);
-		else t.rt.setFillColor(sf::Color::Transparent);
+		if (index == scenario.typesel)
+		{
+			if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
+			else t.rt.setFillColor(scenario.typeboxunavailablefillselcolor);
+		}
+		else {
+			if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillcolor);
+			else t.rt.setFillColor(scenario.typeboxunavailablefillcolor);
+		}
 		t.t.setFillColor(scenario.typeboxtextcolor);
 		t.rt.setOutlineColor(scenario.typeboxcolor);
 	}
 	scenario.next.setColor(color1);
 	scenario.text.setFillColor(textcolor);
 	//gaintext
-	for (auto &g : scenario.gaintext)
+	for (auto &ft : scenario.gaintext)
 	{
-		sf::Color color = g.getFillColor();
+		sf::Color color = ft.getFillColor();
 		color.a = scenario.gaintextcolor.a;
-		g.setFillColor(color);
+		ft.setFillColor(color);
 	}
 }
 
-inline void Cmain::Manageminus1(const bool add)
+inline void Cmain::Manageminus1()
 {
-	if (add)
-	{
-		Drawminus1();
-		if (visible) return;
-		if (colorminus1.a > static_cast<sf::Uint8>(253))
-			colorminus1.a = static_cast<sf::Uint8>(255);
-		else
-			colorminus1.a += 2;
-	}
-	else
-	{
-		if (visible) return;
-		Drawminus1();
-		if (colorminus1.a < static_cast<sf::Uint8>(3))
-			colorminus1.a = static_cast<sf::Uint8>(0);
-		else
-			colorminus1.a -= 2;
-	}
 	resets.setColor(colorminus1);
 	sf::Color c = textcolor;
 	c.a = colorminus1.a;
@@ -241,7 +202,7 @@ inline void Cmain::Draw1()
 		window.draw(bars);
 		window.draw(sliders);
 	}
-	for (const auto &g : scenario.gaintext) window.draw(g);
+	for (const auto &ft : scenario.gaintext) window.draw(ft);
 }
 
 inline void Cmain::Drawminus1()
@@ -280,26 +241,84 @@ inline void Cmain::Drawminus1()
 
 void Cmain::PrepareMenu()
 {
-	switch (gamestate)
-	{
-	case -1:
-		Manage1(false);
-		Manage67(false);
-		Manageminus1(true);
-		if (!visible) visible = (color1.a == static_cast<sf::Uint8>(0) && color67.a == static_cast<sf::Uint8>(0) && colorminus1.a == static_cast<sf::Uint8>(255));
-		break;
-	case 1:
-		Manage67(false);
-		Manage1(true);
-		Manageminus1(false);
-		if (!visible) visible = (color1.a == static_cast<sf::Uint8>(255) && color67.a == static_cast<sf::Uint8>(0) && colorminus1.a == static_cast<sf::Uint8>(0));
-		break;
-	default:
-		if (gamestate == 6 || gamestate == 7) {
+	sf::Clock timer; timer.restart();
+	if (gamestate == -1) {
+			if (color1.a) {
+				if (color1.a < 3U) color1.a = 0U;
+				else color1.a -= 2U;
+				Manage1();
+			}
+
+			if (color67.a) {
+				Draw67();
+				if (color67.a < 3U) color67.a = 0U;
+				else  color67.a -= 2U;
+				Manage67();
+			}
+
+			if (colorminus1.a < 255U) {
+				if (colorminus1.a > 253U) colorminus1.a = 255U;
+				else colorminus1.a += 2U;
+				Manageminus1();
+			}
+
+			visible = (color1.a == 0U && color67.a == 0U && colorminus1.a == 255U);
+		if (color1.a) Draw1();
+		if (color67.a) Draw67();
+		Drawminus1();
+	}
+	else if (gamestate == 1) {
+		if (!visible) {
+				if (color67.a) {
+					if (color67.a < 3U) color67.a = 0U;
+					else color67.a -= 2U;
+					Manage67();
+				}
+
+				if (color1.a < 255U) {
+					if (color1.a > 253U) color1.a = 255U;
+					else color1.a += 2U;
+					Manage1();
+				}
+
+				if (colorminus1.a) {
+					if (colorminus1.a < 3U) colorminus1.a = 0U;
+					else colorminus1.a -= 2U;
+					Manageminus1();
+				}
+
+				visible = (color1.a == 255U && color67.a == 0U && colorminus1.a == 0U);
+			if (color67.a) Draw67();
+			if (colorminus1.a) Drawminus1(); 
+		}
+		Draw1();
+	}
+	else if (gamestate == 6 || gamestate == 7) {
 			setupMenu();
-			Manage1(false);
-			Manageminus1(false);
-			Manage67(true);
+			if (!visible) {
+					if (color1.a) {
+						if (color1.a < 3U) color1.a = 0U;
+						else color1.a -= 2U;
+						Manage1();
+					}
+
+					if (color67.a < 255U) {
+						if (color67.a > 253U) color67.a = 255U;
+						else color67.a += 2U;
+						Manage67();
+					}
+
+					if (colorminus1.a) {
+						if (colorminus1.a < 3U) colorminus1.a = 0U;
+						else colorminus1.a -= 2U;
+						Manageminus1();
+					}
+
+					visible = (!color1.a && color67.a == 255U && !colorminus1.a);
+				if (color1.a) Draw1();
+				if (colorminus1.a) Drawminus1();
+			}
+			Draw67();
 			if (!enternew) {
 				if (k_delete) window.draw(ctext);
 				else window.draw(help_text);
@@ -324,12 +343,34 @@ void Cmain::PrepareMenu()
 			}
 			window.draw(button_2_text);
 			window.draw(button_3_text);
-			if (!visible) visible = (color1.a == static_cast<sf::Uint8>(0) && color67.a == static_cast<sf::Uint8>(255) && colorminus1.a == static_cast<sf::Uint8>(0));
-			return;
 		}
-		Manage1(false);
-		Manage67(false);
-		Manageminus1(false);
+	else
+	{
+		if (!visible) {
+				if (color1.a) {
+					if (color1.a < 3U) color1.a = 0U;
+					else color1.a -= 2U;
+					Manage1();
+				}
+
+				if (color67.a) {
+					if (color67.a < 3U) color67.a = 0U;
+					else color67.a -= 2U;
+					Manage67();
+				}
+
+				if (colorminus1.a) {
+					Drawminus1();
+					if (colorminus1.a < 3U) colorminus1.a = 0U;
+					else colorminus1.a -= 2U;
+					Manageminus1();
+				}
+
+				visible = (!color1.a && !color67.a && !colorminus1.a);
+			if (color1.a) Draw1();
+			if (color67.a) Draw67();
+			if (colorminus1.a) Drawminus1();
+		}
 		window.draw(f14_text);
 		if (gamestate != 3) {
 			window.draw(button_1_text);
@@ -342,15 +383,14 @@ void Cmain::PrepareMenu()
 				resbutton2_shape.setFillColor(menuheightffillcolor);
 			}
 			else {
-				if (resbutton1_focus) resbutton1_shape.setFillColor(menuwidthsfillcolor);
+				if (resbutton1_focus) resbutton1_shape.setFillColor(menuwidthselfillcolor);
 				else resbutton1_shape.setFillColor(menuwidthfillcolor);
-				if (resbutton2_focus) resbutton2_shape.setFillColor(menuheightsfillcolor);
+				if (resbutton2_focus) resbutton2_shape.setFillColor(menuheightselfillcolor);
 				else resbutton2_shape.setFillColor(menuheightfillcolor);
 			}
 		}
 		window.draw(button_2_text);
 		window.draw(button_3_text);
-		if (!visible) visible = (color1.a == static_cast<sf::Uint8>(0) && color67.a == static_cast<sf::Uint8>(0) && colorminus1.a == static_cast<sf::Uint8>(0));
-		break;
 	}
+	if (timer.getElapsedTime().asMicroseconds() < 825) std::this_thread::sleep_for(std::chrono::microseconds(825 - timer.getElapsedTime().asMicroseconds()));
 }

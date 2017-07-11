@@ -101,15 +101,26 @@ void ScenarioParser::Save()
 		save << ((fcgoto == 0) ? cgoto : fcgoto) << std::endl;
 		save << dgoto << std::endl;
 		save << (fpath.empty() ? path : fpath) << std::endl;
+		save << ttignore << std::endl;
 		save << '}' << std::endl;
 
 		for (auto &x : io_stats) save << x.second.name << ',' << x.second.value << ',' << x.second.max << ',' << x.second.min << ',' << x.second.threshold << ',' << x.second.hidden << ',' << x.first << ',' << x.second.opposite << std::endl;
 		save << '}' << std::endl;
 
-		for (auto &x : i_stats) save << x.second.name << ',' << x.second.value << ',' << x.second.max << ',' << x.second.min << ',' << x.second.hidden << ',' << x.first << std::endl;
+		for (auto &x : i_stats)
+		{
+			std::wstring value = std::to_wstring(x.second.value);
+			while (value.find(L'\n') != std::wstring::npos) value.erase(value.find(L'\n'), 1U);
+			save << x.second.name << ',' << value << ',' << x.second.max << ',' << x.second.min << ',' << x.second.hidden << ',' << x.first << std::endl;
+		}
 		save << '}' << std::endl;
 
-		for (auto &x : s_stats) save << x.second.name << ',' << x.second.value << ',' << x.second.hidden << ',' << x.second.vhidden << ',' << x.first << std::endl;
+		for (auto &x : s_stats)
+		{
+			std::wstring value = x.second.value;
+			while (value.find(L'\n') != std::wstring::npos) value.erase(value.find(L'\n'), 1U);
+			save << x.second.name << ',' << value << ',' << x.second.hidden << ',' << x.second.vhidden << ',' << x.first << std::endl;
+		}
 		save << '}' << std::endl;
 
 		for (auto &x : Ints) save << x.second.name << ',' << x.second.value << ',' << x.second.hidden << ',' << x.first << std::endl;
@@ -147,32 +158,45 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	};
 	if (insrtttt.find(L"#choice") == 0U)
 	{
+		const int ctig = ttignore;
 		if (insrtttt.size() > 7U)
-		{
-			std::wstring arg = insrtttt.substr(8U, insrtttt.size()-9U);
-			if (!stoiCheck(arg, ttignore) && Debug) throw w_err(L"Fatal stoicheck failure in command \"#choice\"(setting TabsToIgnore) in \"" + arg + L"\"[" + std::to_wstring(sgoto) + L']');
-		}
+			if (!stoiCheck(std::move(insrtttt.substr(8U, insrtttt.size() - 9U)), ttignore) && Debug) 
+				throw w_err(L"Fatal stoicheck failure in command \"#choice\"(setting TabsToIgnore) in \""
+					+ std::move(insrtttt.substr(8U, insrtttt.size() - 9U)) + L"\"[" + std::to_wstring(sgoto) + L']');
 		if (!Debug)
 		{
 			SplitText(false, insr);
 			MergeText();
 			CreateChoice();
+			ttignore = ctig;
 		}
 	}
 	else if (CCommand(L"#enter("))
 	{
-		std::wstring name = insrtttt.substr(0U, insrtttt.find(L','));
-		insrtttt.erase(0U, insrtttt.find(L',') + 1U);
+		std::wstring name = insrtttt.substr(0U, insrtttt.find(L',')),
+					 *type = &FindSStat(name)->value;
 		std::pair<unsigned, unsigned> limits; 
-		stoiCheck(insrtttt.substr(0U, insrtttt.find(L',')), limits.first);
-		stoiCheck(insrtttt.substr(insrtttt.find(L',') + 1), limits.second);
-		std::wstring *type = &FindSStat(name)->value;
+		std::wstring::size_type pos[3];
+		pos[0] = insrtttt.find(L',');
+		pos[1] = insrtttt.find(L',', pos[0] + 1);
+		pos[2] = insrtttt.find(L',', pos[1] + 1);
+		if (pos[0] == std::wstring::npos || pos[1] == std::wstring::npos) throw w_err(L"Error! \"#enter(\" command has too few arguments! [" + std::to_wstring(sgoto) + L']');
+		unsigned int minchars;
+		stoiCheck(std::move(insrtttt.substr(pos[0]+1, pos[1] - pos[0] - 1)), limits.first);
+		if (pos[2] == std::wstring::npos) {
+			stoiCheck(std::move(insrtttt.substr(pos[1] + 1)), limits.second);
+			minchars = 0;
+		}
+		else {
+			stoiCheck(std::move(insrtttt.substr(pos[1] + 1, pos[2] - pos[1] - 1)), limits.second);
+			stoiCheck(std::move(insrtttt.substr(pos[2] + 1)), minchars);
+		}
 		if (!FindSStat(name)) {
 			if (Debug) warn(L"Error! TypeBox hasn't been created. There's no such a Stat(atm) with name \"" + insrtttt + L"\" [" + std::to_wstring(sgoto) + L']');
 		}
 		else
 		{
-			typeboxes.push_back(TypeBox(type, limits));
+			typeboxes.emplace_back(type, limits, minchars);
 			if (!Debug) {
 				SplitText(false, insr);
 				MergeText();
@@ -180,9 +204,40 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			}
 		}
 	}
-	else if (CCommand(L"#gt("))
+	else if (CCommand(L"#ft"))
 	{
-		if (!Debug) CreateGainText();
+		if (Debug) return;
+			sf::Text t = text;
+			std::wstring::size_type pos = insrtttt.find(L'(');
+			if (!pos) {
+				insrtttt.erase(0U,1U);
+				pos = insrtttt.find(L',');
+			}
+			if (pos == std::wstring::npos) t.setFillColor(gaintextcolor);
+			else
+			{
+				int b[4];
+				for (unsigned int x = 0U; x != 2U; ++x) //test
+				{
+					if ((pos = insrtttt.find(L',')) == std::wstring::npos) throw w_err(L"Could not find enough arguments for GainText(formated text)'s color in \"" + insrtttt + L"\" [" + std::to_wstring(sgoto) + L']');
+					if (!stoiCheck(std::move(insrtttt.substr(0, pos)), b[x])) throw w_err(L"Fatal stoiCheck failure in \"#ft\" command in \"" + insrtttt.substr(0, pos) + L"\" [" + std::to_wstring(sgoto) + L']');
+					insrtttt.erase(0U, pos + 1U);
+				}
+				if (!stoiCheck(std::move(insrtttt.substr(0, pos)), b[2])) throw w_err(L"Fatal stoiCheck failure in \"#ft\" command in \"" + insrtttt.substr(0, pos) + L"\" [" + std::to_wstring(sgoto) + L']');
+				if ((pos = insrtttt.find(L',')) == std::wstring::npos) t.setFillColor(sf::Color(b[0], b[1], b[2], 255));
+				else
+				{
+					if (!stoiCheck(std::move(insrtttt.substr(0, pos)), b[3])) throw w_err(L"Fatal stoiCheck failure in \"#ft\" command in \"" + insrtttt.substr(0, pos) + L"\" [" + std::to_wstring(sgoto) + L']');
+					if ((pos = insrtttt.find(L',')) == std::wstring::npos) t.setFillColor(sf::Color(b[0], b[1], b[2], b[3]));
+				}
+			}
+			std::wstring str;
+			
+			auto cchoiceneed = choiceneed; choiceneed = false;
+			FindRange();
+			insr.clear();
+			choiceneed = cchoiceneed;
+			gaintext.push_back(t);
 	}
 	else if (CCommand(L"#file("))
 	{
@@ -288,10 +343,10 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 				x->t[2].setString(std::to_wstring(x->value));
 				x->t[2].setOrigin(2.f, h);
 
-				if (h < static_cast<int>(round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f))) h = static_cast<int>(round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f));
-				if (h < static_cast<int>(round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f))) h = static_cast<int>(round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f));
+				if (h < round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f)) h = round(x->t[1].getLocalBounds().top + x->t[1].getLocalBounds().height / 2.f);
+				if (h < round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f)) h = round(x->t[2].getLocalBounds().top + x->t[2].getLocalBounds().height / 2.f);
 
-				x->setSprite(IOStatspecial(static_cast<int>(round(*w / 1.45f)), h, x->value, x->min, x->max, x->threshold));
+				x->setSprite(IOStatspecial(static_cast<const int>(round(*w / 1.45f)), static_cast<const int>(h), x->value, x->min, x->max, x->threshold));
 				x->t[2].setPosition(static_cast<sf::Vector2f>(x->pos[2]));
 			}
 			else if (auto x = FindIStat(name))
@@ -319,7 +374,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 				else if (arg[0] > arg[2]) arg[0] = arg[2];
 				x->t.setString(x->name + L": " + std::to_wstring(static_cast<int>(round(arg[0] * 100.f / arg[2]))) + L"%"); //this line of code is reason why argument-based calculation happens here, instead of IntSpecial()
 				x->t.setOrigin(0, round(x->t.getLocalBounds().top + x->t.getLocalBounds().height / 2.f));
-				x->setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), x->s.getGlobalBounds().height, arg[0], arg[1], arg[2]));
+				x->setSprite(IntSpecial(static_cast<int>(round(*w / 1.45f)), static_cast<const int>(x->s.getGlobalBounds().height), arg[0], arg[1], arg[2]));
 				x->t.setPosition(static_cast<sf::Vector2f>(x->pos[0]));
 			}
 			else if (auto x = FindInt(name))
@@ -371,7 +426,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 			std::wstring name = insrtttt.substr(0U, n);
 			insrtttt.erase(0U, n);
 			int val;
-			if (!stoiCheck(insrtttt.substr(n), val) || val < 0) throw w_err(L"FATAL stoicheck failure or value is below 0 while exectuing \"#prior\" command in \"" + insrtttt.substr(n) + L"\"[" + std::to_wstring(sgoto) + L']');
+			if (!stoiCheck(std::move(insrtttt.substr(n)), val) || val < 0) throw w_err(L"FATAL stoicheck failure or value is below 0 while exectuing \"#prior\" command in \"" + insrtttt.substr(n) + L"\"[" + std::to_wstring(sgoto) + L']');
 			for (auto x = i_stats.begin(); x != i_stats.end(); ++x)
 				if (insrtttt == x->second.name)
 				{
@@ -473,30 +528,24 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	}
 }
 
-void ScenarioParser::SplitText(const bool w, std::wstring &insrt)
+sf::Text& ScenarioParser::Split(sf::Text& tekst, bool newline = true, float margin = 0.f)
 {
-	if (insrt.empty() || Debug) return;
-	size_t d;
-	std::wstring str;
-	while ((d = insrt.find(L'\n', 1U)) != std::wstring::npos)
-	{
-		if (d == insr.size() - 2U) break;
-		if (!insrt.substr(0U, d).empty()) SplitText(w, insrt.substr(0U, d));
-		insrt.erase(0U, d+1);
-	}
-	sf::Text tekst = w ? choice.back().text : text;
-	tekst.setString(insrt);
-	if ((tekst.getLocalBounds().left + tekst.getGlobalBounds().left + tekst.getGlobalBounds().width) < static_cast<float>(rmargin) || insrt.find(L' ') == std::wstring::npos) str = insrt + L'\n';
+	if (!margin) margin = rmargin;
+	sf::String str;
+	std::wstring insrt = tekst.getString().toWideString();
+	auto boundaries = tekst.getGlobalBounds();
+	if ((tekst.getLocalBounds().left + boundaries.left + boundaries.width) < margin || insrt.find(L' ') == std::wstring::npos) { str = insrt; if (newline) str+= L'\n'; }
 	else
 	{
 		for (size_t pos = 0U;;) {
 			pos = insrt.find(L' ', pos + 1U);
 			tekst.setString(insrt.substr(0U, pos));
-			if ((tekst.getLocalBounds().left + tekst.getGlobalBounds().left + tekst.getGlobalBounds().width) > rmargin)
+			boundaries = tekst.getGlobalBounds();
+			if ((tekst.getLocalBounds().left + boundaries.left + boundaries.width) > margin)
 			{
 				size_t cpos;
-				if ((cpos = insrt.rfind(L' ', pos - 1U)) == std::wstring::npos) cpos = pos;
-				else { //single characters
+				if ((cpos = insrt.rfind(L' ', pos - 1U)) == std::wstring::npos) cpos = pos-1;
+				else { //elminating blank spaces
 					while (cpos - insrt.rfind(L' ', cpos - 1U) < 3) {
 						if ((cpos = insrt.rfind(L' ', cpos - 1U)) == std::wstring::npos) {
 							cpos = insrt.rfind(L' ', pos - 1U);
@@ -506,17 +555,34 @@ void ScenarioParser::SplitText(const bool w, std::wstring &insrt)
 				}
 				str += insrt.substr(0U, cpos);
 				str += L'\n';
-				insrt.erase(0U, cpos + 1U);
+				insrt.erase(0U, cpos + 1);
 				pos = 0;
 			}
-			else if (pos == std::wstring::npos)
+			if (pos == std::wstring::npos)
 			{
 				str += insrt;
-				str += L'\n';
+				if (newline) str += L'\n';
 				break;
 			}
 		}
 	}
+	tekst.setString(str);
+	return tekst;
+}
+
+void ScenarioParser::SplitText(const bool w, std::wstring &insrt)
+{
+	if (insrt.empty() || Debug) return;
+	size_t d;
+	while ((d = insrt.find(L'\n', 1U)) != std::wstring::npos)
+	{
+		if (d == insr.size() - 2U) break;
+		if (!std::move(insrt.substr(0U, d)).empty()) SplitText(w, insrt.substr(0U, d));
+		insrt.erase(0U, d+1);
+	}
+	sf::Text tekst = w ? choice.back().text : text;
+	tekst.setString(insrt);
+	std::wstring str = Split(tekst).getString().toWideString();
 	if (w)
 	{
 		str.pop_back();
@@ -529,32 +595,26 @@ void ScenarioParser::SplitText(const bool w, std::wstring &insrt)
 	insrt.clear();
 }	
 
-const int ScenarioParser::stoiCheck(std::string &checked, const int def)
+const int ScenarioParser::stoiCheck(const std::string &checked, const int def)
 {
 	if (checked.empty())
 	{
 		//if (Debug && StrictDebug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
 		return def;
 	}
-	for (char c : checked){
+	unsigned int ec = 0U;
+	for (const char c : checked){
 		if (!isdigit(c, utf8_locale))
 		{
-			if (checked[0] == 0xFEFF)
-			{
-				checked.erase(0U);
-				continue;
-			}
-			else if (checked[0] == 0xef && checked[1] == 0xbb && checked[2] == 0xbf)
-			{
-				checked.erase(0U, 3U);
-				continue;
-			}
-			std::wstring_convert<std::codecvt_utf8<wchar_t>> converter; //http://stackoverflow.com/questions/17103925/how-well-is-unicode-supported-in-c11/17106065#17106065
+			if (checked[0] == 0xFEFF) ec += 1U; //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (checked[0] == 0xef && checked[1U] == 0xbb && checked[2U] == 0xbf) ec += 3U;
+			//std::wstring_convert<std::codecvt_utf8<wchar_t>> converter; //http://stackoverflow.com/questions/17103925/how-well-is-unicode-supported-in-c11/17106065#17106065
 			//if (Debug && StrictDebug) warn(L"[Stoicheck failure] stoicheck performed on \"" + converter.from_bytes(checked) + L"\" failed on char \"" + static_cast<wchar_t>(c) + L"\" [" + std::to_wstring(sgoto) + L']');
-			return def;
+			else return def;
 		}
 	}
-	return stoi(checked);
+	if (ec) return stoi(std::move(checked.substr(ec))); //performance
+	else return stoi(checked);
 }
 
 const bool ScenarioParser::stoiCheck(const std::wstring& checked, int &number, int def)
@@ -602,7 +662,7 @@ const bool ScenarioParser::stoiCheck(const std::wstring& checked, int &number, i
 			return false;
 		}
 	}
-	if (ec != 0) def = stoi(checked.substr(ec)); //performance
+	if (ec) def = stoi(std::move(checked.substr(ec))); //performance
 	else def = stoi(checked);
 	if (minus) def = -def;
 	switch (type)
@@ -629,7 +689,7 @@ const bool ScenarioParser::stoiCheck(const std::wstring& checked, int &number, i
 	return true;
 }
 
-const bool ScenarioParser::stoiCheck(std::wstring &checked, unsigned int &number, const int def)
+const bool ScenarioParser::stoiCheck(const std::wstring &checked, unsigned int &number, const int def)
 {
 	if (checked.empty())
 	{
@@ -637,25 +697,22 @@ const bool ScenarioParser::stoiCheck(std::wstring &checked, unsigned int &number
 		//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on an empty string [" + std::to_wstring(sgoto) + L']');
 		return false;
 	}
+	unsigned int ec = 0U;
 	for (wchar_t c : checked) {
 		if (!isdigit(c, utf8_locale))
 		{
-			if (checked[0] == 0xFEFF)
+			if (checked[0] == 0xFEFF) ec += 1U; //not sure if necessary, I think the second one recognizes BOM correctly
+			else if (checked[0] == 0xef && checked[1U] == 0xbb && checked[2U] == 0xbf) ec += 3U;
+			else
 			{
-				checked.erase(0U);
-				continue;
-			}
-			else if (checked[0] == 0xef && checked[1] == 0xbb && checked[2] == 0xbf) //in linux it isn't necessary
-			{
-				checked.erase(0U, 3U);
-				continue;
-			}
-			number = def;
 			//if (Debug) warn(L"[Stoicheck failure] stoicheck performed on \"" + checked + L"\" failed on char \"" + c + L"\" [" + std::to_wstring(sgoto) + L']');
-			return false;
+				number = def;
+				return false;
+			}
 		}
 	}
-	number = stoi(checked);
+	if (ec) number = stoi(checked.substr(ec));
+	else number = stoi(checked);
 	return true;
 }
 
@@ -704,10 +761,10 @@ void ScenarioParser::Thingy(const int state, std::wstring &insert)
 				names[1] = insert.substr(0U, s_position);
 				++namelist;
 			}
-			else if (!stoiCheck(insert.substr(0U, s_position), arguments[0])) throw w_err(L"[LoadingSave, Stat]Error: An/a " + name + L"\" failed its stoicheck on argument 1 [" + std::to_wstring(sgoto) + L']');
+			else if (!stoiCheck(std::move(insert.substr(0U, s_position)), arguments[0])) throw w_err(L"[LoadingSave, Stat]Error: An/a " + name + L"\" failed its stoicheck on argument 1 [" + std::to_wstring(sgoto) + L']');
 			break;
 		default:
-			if (!stoiCheck(insert.substr(0U, s_position), arguments[arglist - 1])) throw w_err(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist) + L" [" + std::to_wstring(sgoto) + L']');
+			if (!stoiCheck(std::move(insert.substr(0U, s_position)), arguments[arglist - 1])) throw w_err(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist) + L" [" + std::to_wstring(sgoto) + L']');
 			break;
 		}
 		insert.erase(0U, s_position + 1U);
@@ -798,20 +855,40 @@ const bool ScenarioParser::CommentCheck(std::wstring &insr)
 	return false;
 }
 
+void ScenarioParser::FindRange(int start)
+{
+	for (int ssgoto = start;;) {
+		getline(insr);
+		std::wstring::size_type pos = 0, pos2 = 0;
+		while ((pos = insr.find(L'}', pos)) != std::wstring::npos)
+		{
+			pos2 = pos;
+			while ((pos2 = insr.rfind(L'{', pos2)) != std::wstring::npos && pos2 > insr.rfind(L'}', pos)) ++ssgoto;
+			if (!--ssgoto)
+				return;
+			++pos;
+		}
+		if (pos == std::wstring::npos) pos = 0;
+		while ((pos = insr.find(L'{', pos + ((pos == 0) ? 0 : 1))) != std::wstring::npos) { ++ssgoto; ++pos; }
+	}
+}
+
 void ScenarioParser::CreateChoice()
 {
 	choice.emplace_back();
+	choice.back().ttignore = ttignore;
 	std::wstring value;
 	for (;;)
 	{
 		getline(insr);
+		IgnoreTabs(insr);
 		if (insr[0] == '#')
 		{
 			sf::Uint8 to3;
 			int bt, val;
 			if ((bt = insr.rfind(L"hidden ")) != std::wstring::npos)
 				choice.back().hidden = (insr[8] == 'y');
-			else if (insr.substr(0U, 4U) == L"#if(") {
+			else if (std::move(insr.substr(0U, 4U)) == L"#if(") {
 				insr.erase(0U, 4U); insr.pop_back();
 				if ((bt = insr.rfind(L"==")) != std::wstring::npos) to3 = 2;
 				else if ((bt = insr.rfind(L"<=")) != std::wstring::npos) to3 = 3;
@@ -865,7 +942,6 @@ void ScenarioParser::CreateChoice()
 			{
 				if (!CommentCheck(insr) && !IfCheck(insr))
 				{
-					IgnoreTabs(insr);
 					if (insr == empty || NewlineCheck(insr))
 						SplitText(false, insrt);
 					else if (insr.empty())
@@ -883,29 +959,17 @@ void ScenarioParser::CreateChoice()
 						choice.back().text.setCharacterSize(text.getCharacterSize());
 						choice.back().text.setFillColor(text.getFillColor());
 						choice.back().text.setPosition(w2, static_cast<float>(dmargin));
-						//choice.back().text.setFillColor(choice.back().avaible ? choice.back().text.getFillColor() : *textchoiceunavaiblecolor); //change the color 
+						//choice.back().text.setFillColor(choice.back().avaible ? choice.back().text.getFillColor() : *textchoiceunavailablecolor); //change the color 
 						SplitText(true, insrt);
 						RoundRect();
 						choiceneed = true;
 						choice.back().gto = sgoto;
 						//if (debug) warn(L"[Choice]Searching for \"}\". If infinite loop occurs (program is stuck and yields no repsonse) you probably forgot to write \"}\" at the end of choice[" + sgoto + L']');
-						for (int ssgoto = 1; ssgoto != 0;) {
-							getline(insr);
-							while (insr.find(L'{') != std::wstring::npos)
-							{
-								insr.erase(insr.find(L'{'), 1U);
-								++ssgoto;
-							}
-							while (insr.find(L'}') != std::wstring::npos)
-							{
-								insr.erase(insr.find(L'}'), 1U);
-								--ssgoto;
-							}
-						}
+						FindRange();
 						choice.back().dgto = sgoto;
 						insr.clear();
 						if (!choice.back().avaible) {
-							choice.back().text.setFillColor(*textchoiceunavaiblecolor); choice.back().c.setOutlineColor(*textchoiceunavaiblecolor); choice.back().cs.setOutlineColor(*textchoiceunavaiblecolor);
+							choice.back().text.setFillColor(*textchoiceunavailablecolor); choice.back().c.setOutlineColor(*textchoiceunavailablecolor); choice.back().cs.setOutlineColor(*textchoiceunavailablecolor);
 						}
 						return;
 					}
@@ -916,27 +980,13 @@ void ScenarioParser::CreateChoice()
 					}
 					//http://stackoverflow.com/questions/41353227/does-stdstring-char-expression-create-another-stdstring
 				}
-				getline(insr);
+				getline(insr); IgnoreTabs(insr);
 			}
-			insr.clear();
 		}
 		else {
 			choice.pop_back();
 			bool first = true;
-			for (int ssgoto = 1; ssgoto != 0;) {
-				getline(insr);
-				while (insr.find(L'{') != std::wstring::npos)
-				{
-					insr.erase(insr.find(L'{'), 1U);
-					if (!first) ++ssgoto;
-					else first = false;
-				}
-				while (insr.find(L'}') != std::wstring::npos)
-				{
-					insr.erase(insr.find(L'}'), 1U);
-					--ssgoto;
-				}
-			}
+			FindRange(0);
 			insr.clear(); return;
 		}
 	}
@@ -1007,12 +1057,17 @@ void ScenarioParser::MergeText()
 	tinsr.pop_back();
 	text.setString(tinsr);
 	dmargin += static_cast<int>(floor(text.getLocalBounds().top + text.getGlobalBounds().height + text.getCharacterSize()));
+	for (auto &ft : gaintext)
+	{
+		ft.setPosition(*w / 24.f, static_cast<float>(dmargin));
+		dmargin += static_cast<int>(ft.getLocalBounds().top + ft.getGlobalBounds().height);
+	}
 	tinsr.clear();
 }
 
 void ScenarioParser::Show_stats()
 {
-	int th = 8.f * (*w+*h)/1400.f;
+	int th = static_cast<int>(8.f * (*w+*h)/1400.f);
 	sdmargin = static_cast<int>(text.getCharacterSize() * 1.3f);
 	auto txt = text;
 	const sf::Color &c = text.getFillColor();
@@ -1027,7 +1082,11 @@ void ScenarioParser::Show_stats()
 			{
 				s.t = txt;
 				s.t.setString(s.name + L": ");
-				if (!s.vhidden) s.t.setString(s.t.getString() + s.value);
+				std::wstring word;
+				word.reserve(s.value.size());
+				std::copy_if(s.value.cbegin(), s.value.cend(), std::back_inserter(word), [](wchar_t c) {return c != L'\n'; });
+				if (!s.vhidden) s.t.setString(s.t.getString() + word);
+				Split(s.t, false);
 				s.t.setOrigin(0, round(s.t.getLocalBounds().top));
 				s.t.setPosition(round(*w / 12.f), static_cast<float>(sdmargin));
 				s.pos = static_cast<sf::Vector2i>(s.t.getPosition());
@@ -1044,7 +1103,7 @@ void ScenarioParser::Show_stats()
 				for (auto &t : i.t)
 					t = txt;
 				i.t[0].setString(i.name);
-				i.t[0].setOrigin(0, static_cast<int>(round(i.t[0].getLocalBounds().top + i.t[0].getGlobalBounds().height / 2.f)));
+				i.t[0].setOrigin(0.f, round(i.t[0].getLocalBounds().top + i.t[0].getGlobalBounds().height / 2.f));
 				int h = static_cast<int>(round(i.t[0].getLocalBounds().top + i.t[0].getGlobalBounds().height));
 
 				i.t[1].setString(i.opposite);
@@ -1186,6 +1245,7 @@ const sf::Image ScenarioParser::IntSpecial(const int w, const int h, int value, 
 
 bool ScenarioParser::IfCheck(std::wstring &insr)
 {
+	ValueCheck(insr);
 		auto beg = insr.find(L"#if(");
 		if (beg == std::wstring::npos) return false;
 		auto end = insr.find(L')', beg);
@@ -1240,22 +1300,28 @@ bool ScenarioParser::IfCheck(std::wstring &insr)
 	end = 0U;
 	while ((beg = insr.find(L'{')) == std::wstring::npos) getline(insr);
 	insr.erase(0U, beg + 1U);
-	for (int ssgoto = 1;; getline(insr)) {
+	for (int ssgoto = 1; ssgoto; getline(insr)) {
 		CommentCheck(insr);
-		while ((end = insr.find(L'{', end + 1U)) != std::wstring::npos) ++ssgoto;
 		end = 0U;
-		while ((end = insr.find(L'}', end + 1U)) != std::wstring::npos) 
-			if (!--ssgoto) 
-			{ insr.erase(end, 1U); 
-				if (IFb){
-					if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr); 
-					}
-				else insr.erase(0U, end);
-				elsecheck(IFb); 
-				return true; };
-		if (IFb)
-			if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr);
+		while ((end = insr.find(L'}', end)) != std::wstring::npos)
+		{
+			auto end2 = end;
+			while ((end2 = insr.rfind(L'{', end2)) != std::wstring::npos && end2 > insr.rfind(L'}', end)) ++ssgoto;
+			if (!--ssgoto) {
+				insr.erase(end2, 1U);
+				if (IFb) {
+					if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr);
+				}
+				else insr.erase(0U, end2);
+				elsecheck(IFb);
+			}
+			++end;
+		}
+		if (end == std::wstring::npos) end = 0;
+		while ((end = insr.find(L'{', end)) != std::wstring::npos) { ++ssgoto; ++end; }
 	}
+	if (IFb)
+		if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr);
 }
 
 void ScenarioParser::elsecheck(const bool IFb)
@@ -1268,27 +1334,29 @@ void ScenarioParser::elsecheck(const bool IFb)
 	};
 	if (insr.empty() || IsEmpty(insr)) getline(insr);
 	auto pos = insr.find(L"#e");
-	if (pos != std::wstring::npos && !IsEmpty(insr.substr(0, pos)))
+	if (pos != std::wstring::npos && !IsEmpty(std::move(insr.substr(0, pos))))
 	{	
 		while ((pos = insr.find(L'{')) == std::wstring::npos) getline(insr);
 		insr.erase(0U, pos + 1U);
-		for (int ssgoto = 1;; getline(insr)) {
+		for (int ssgoto = 1; ssgoto ;getline(insr)) {
 			CommentCheck(insr);
 			pos = 0U;
-			while ((pos = insr.find(L'{', pos + 1U)) != std::wstring::npos) ++ssgoto;
-			pos = 0U;
-			while ((pos = insr.find(L'}', pos + 1U)) != std::wstring::npos)
+			while ((pos = insr.find(L'}', pos)) != std::wstring::npos)
+			{
+				std::wstring::size_type pos2 = pos;
 				if (!--ssgoto)
 				{
-					insr.erase(pos, 1U); 
-					if (!IFb){	
-						if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr); 
+					insr.erase(pos, 1U);
+					while ((pos2 = insr.rfind(L'{', pos2)) != std::wstring::npos && pos2 > insr.rfind(L'}', pos)) ++ssgoto;
+					if (!IFb) {
+						if (!IfCheck(insr)) TextProcess(insr, insr);
 					}
-					else insr.erase(0U, pos);
-					return;
-				};
-			if (!IFb)
-				if (!IfCheck(insr)) TextProcess(insr, ScenarioParser::insr);
+					else insr.erase(0U, pos2);
+				}
+				++pos;
+			}		//I thought about using pointer to a function and calling it inside FindRange(), but in this case it wouldn't work, so I won't change its code for one function that left (this is not the only one left ofc)
+			if (pos == std::wstring::npos) pos = 0;
+			while ((pos = insr.find(L'{', pos + ((pos == 0) ? 0 : 1))) != std::wstring::npos) { insr.erase(pos, 1U); ++ssgoto; ++pos; }
 		}
 	}
 }
@@ -1365,7 +1433,7 @@ inline IntStatOpposite* ScenarioParser::FindIStatO(const std::wstring &name)
 	for (auto &x : io_stats)
 	{
 		auto &i = x.second;
-		if (name == i.name)
+		if (name == i.name || name == i.opposite)
 			return &i;
 	}
 	return nullptr;
@@ -1376,7 +1444,7 @@ inline bool ScenarioParser::FindIStatO(const std::wstring &name, const IntStatOp
 	for (auto &x : io_stats)
 	{
 		const auto &i = x.second;
-		if (name == i.name) {
+		if (name == i.name || name == i.opposite) {
 			rt = &i;
 			return true;
 		}
@@ -1536,20 +1604,37 @@ void ScenarioParser::CreateTypeBox()
 	tb.t.setFont(*text.getFont());
 	tb.t.setFillColor(sf::Color(0, 0, 0, text.getFillColor().a));
 	tb.t.setCharacterSize(static_cast<unsigned int>(text.getCharacterSize() * 0.9f));
+	tb.t.setString(*tb.s);
 
-	sf::Text t;
-	t.setFont(*text.getFont());
-	t.setCharacterSize(static_cast<unsigned int>(text.getCharacterSize() * 0.9f));
-	t.setString("yW");
-
-	tb.rt.setSize(sf::Vector2f(*w - 2*w2 + 8.f, t.getGlobalBounds().height + 8.f));
-	tb.rt.setOutlineThickness(static_cast<unsigned int>(4.f * (*w+*h)/(1400.f)));
+	auto width = *w - 2 * w2 + 8.f, left = tb.rt.getPosition().x;
+	tb.rt.setOutlineThickness(round(4.f * (*w+*h)/(1400.f)));
 	tb.rt.setOutlineColor(typeboxcolor);
 	tb.rt.setFillColor(sf::Color(0, 0, 0, 0));
+
+	if (!tb.t.getString().isEmpty())
+	{
+		sf::FloatRect box = tb.t.getGlobalBounds();
+		while ((tb.t.getLocalBounds().left + box.left + box.width) > (left + width))
+		{
+			for (std::wstring::size_type x = tb.t.getString().getSize()-1;; --x)
+			{
+				tb.t.setString(tb.t.getString().substring(0, tb.t.getString().getSize()-1));
+				box = tb.t.getGlobalBounds();
+				if ((tb.t.getLocalBounds().left + box.left + box.width) < (left + width))
+				{
+					tb.s->insert(tb.s->begin() + x, L'\n');
+					tb.t.setString(*tb.s);
+					break;
+				};
+			}
+		} //it hurts performance. Maybe in future I will try to make it better.
+	}
+	else tb.t.setString("yW");
+	tb.rt.setSize(sf::Vector2f(width, tb.t.getGlobalBounds().height + 8.f));
 	tb.t.setPosition(sf::Vector2f(round(w2 - tb.t.getLocalBounds().left), static_cast<float>(dmargin - tb.t.getLocalBounds().top)));
 	tb.rt.setPosition(sf::Vector2f(round(w2 - 4.f), static_cast<float>(dmargin - 4)));
-	dmargin += typeboxes.back().rt.getSize().y * 1.05f;
-	tb.t.setString(*tb.s); //it is fixed size for now
+	dmargin += static_cast<int>(round(typeboxes.back().rt.getSize().y * 1.05f));
+	if (tb.t.getString() == "yW") tb.t.setString(sf::String());
 }
 
 void ScenarioParser::TextProcess(std::wstring &preinsr, std::wstring &insr)
@@ -1632,14 +1717,6 @@ void ScenarioParser::IgnoreTabs(std::wstring &insr)
 	insr.erase(0U, x);
 }
 
-inline void ScenarioParser::CreateGainText()//add args
-{
-	sf::Text t = text;
-	t.setFillColor(gaintextcolor);
-	t.setPosition(text.getPosition().x,dmargin);
-	gaintext.push_back(t);
-}
-
 void ScenarioParser::ScanForWaypoints()
 {
 	std::wstring insr;
@@ -1708,8 +1785,7 @@ void ScenarioParser::ScanForErrors()
 	Debug = false;
 	in.close();
 	in.clear(); //removing badbit, redundant?
-	ttignore = 0;
-	sgoto = 0; //redu?
+	ttignore = sgoto = 0; //redu?
 	sgoto = cgoto; //redu?
 	allowdebugging = false;
 	dstc_i.clear();
@@ -1768,6 +1844,9 @@ void ScenarioParser::LoadSave()
 					in.close();
 					in.open(path = insert);
 					break;
+				case 3:
+					stoiCheck(insert, ttignore);
+					break;
 				}
 				++t;
 				continue;
@@ -1811,10 +1890,10 @@ void ScenarioParser::LoadSave()
 						names[1] = insert.substr(0U, s_position);
 						++namelist;
 					}
-					else if (!stoiCheck(insert.substr(0U, s_position), arguments[0])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" failed its stoicheck on argument 1");
+					else if (!stoiCheck(std::move(insert.substr(0U, s_position)), arguments[0])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" failed its stoicheck on argument 1");
 					break;
 				default:
-					if (!stoiCheck(insert.substr(0U, s_position), arguments[arglist - 1])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist));
+					if (!stoiCheck(std::move(insert.substr(0U, s_position)), arguments[arglist - 1])) warn(L"[LoadingSave, Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist));
 					break;
 				}
 				insert.erase(0U, s_position + 1U);
@@ -1824,7 +1903,7 @@ void ScenarioParser::LoadSave()
 				if (!insert.empty())
 				{
 					if (state == 1) names[namelist] = insert.substr(0U, insert.size());
-					else if (!stoiCheck(insert.substr(0U, insert.size()), arguments[arglist - namelist])) warn(L"[Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist - namelist));
+					else if (!stoiCheck(std::move(insert.substr(0U, insert.size())), arguments[arglist - namelist])) warn(L"[Stat]Error: An/a " + name + L" with name \"" + names[0] + L"\" failed its stoicheck on argument " + std::to_wstring(arglist - namelist));
 					insert.clear();
 					if (state == 1) io_stats.emplace(arguments[5], IntStatOpposite(names[0], arguments[0], arguments[1], arguments[2], arguments[3], arguments[4], names[1]));
 					else if (state == 2) i_stats.emplace(arguments[4], IntStat(names[0], arguments[0], arguments[1], arguments[2], arguments[3]));
@@ -1868,7 +1947,7 @@ void ScenarioParser::LoadStatics()
 			std::wstring name = insert.substr(0U, insert.find(L','));
 			if (checkName(name)) { std::getline(save, insert); continue; } //I don't remeber the point of this one, perhaps it's redundant
 			int value;
-			if (stoiCheck(insert.substr(insert.find(L',') + 1U), value))
+			if (stoiCheck(std::move(insert.substr(insert.find(L',') + 1U)), value))
 				stc_i.emplace_back(name, value);
 			else throw w_err(L"Error loading Stc.txt, this should not happend unless you were editing files. Delete Stc.txt");
 			std::getline(save, insert);
@@ -1881,5 +1960,30 @@ void ScenarioParser::LoadStatics()
 			stc_s.emplace_back(name, value);
 			if (insert.empty()) break;
 		}
+	}
+}
+
+void ScenarioParser::ValueCheck(std::wstring& insr)
+{
+	std::wstring::size_type pos, pos2 = 0;
+	while ((pos = insr.find(L"#v(")) != std::wstring::npos) {
+		int count = 1;
+		while ((pos = insr.find(L')', pos)) != std::wstring::npos)
+		{
+			pos2 = pos;
+			while ((pos2 = insr.rfind(L'(', pos2)) != std::wstring::npos && pos2 > insr.rfind(L')', pos)) ++count;
+			if (!--count)
+				break;
+			++pos;
+		}
+		pos2 = insr.find(L"#v(");
+		std::wstring name = std::move(insr.substr(pos2 + 3, pos - pos2 - 3));
+		insr.erase(pos2, pos - pos2 +1);
+		int r;
+		std::wstring wr;
+		if (FindInt(name,r)) insr.insert(pos2, std::to_wstring(r));
+		else if (FindString(name, wr)) insr.insert(pos2, wr);
+		else throw w_err(L"Error in ValueCheck(\"#v()\"): could not find a Stat with name \"" + name +  L"\" [" + std::to_wstring(sgoto) + L']');
+		pos = 0;
 	}
 }
