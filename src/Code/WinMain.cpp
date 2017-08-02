@@ -10,13 +10,21 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #include "Cmain.h"
-
-int main()
-{
-	Cmain cmain;
-	cmain.Intro();
-	if (cmain.profiles.empty()) cmain.scenario.pempty = true;
-	else if (cmain.stories.empty()) cmain.scenario.sempty = true;
-	cmain.GameLoop();
+int main(){
+		Cmain cmain;
+	if (cmain.quit) return -1;
+	try{
+		cmain.GameLoop();
+	}
+	catch (w_err err)
+	{
+		MessageBox(NULL, err.msg.c_str(), NULL, MB_ICONERROR);
+		return -1;
+	}
+	catch (...)
+	{
+		MessageBox(NULL, L"Unknown critical error", NULL, MB_ICONERROR);
+		return -1;
+	}
 	return 0;
 }

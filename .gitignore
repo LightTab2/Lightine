@@ -21,7 +21,6 @@
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.out
@@ -40,3 +39,7 @@
 *.log
 *.idb
 *.ilk
+*.enc
+*.lastcodeanalysissucceeded
+*.TMP
+*.user

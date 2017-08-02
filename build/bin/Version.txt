@@ -1,0 +1,97 @@
+#StringStat(Tytu³,"nieznany",0,0,0)
+#Int(Kasa,90,0,0)
+#IntStat(Respekt Ulicy,0,100,-100,0,0)
+#IntStatOpposite(Lewoœæ,10,30,-10,10,0,0,Prawoœæ)
+#Int(1,0,1,0)
+	Budzisz siê w lesie, a w g³owie Ci wiruje, jakby lata³o w niej rumuñskie tornado.
+W tym lesie znajduje siê stacja kolejowa!
+Myœlisz sobie:
+
+-Kto buduje stacje kolejowe w lesie!?
+
+	Okazujê siê, ¿e nikt jej nie zbudowa³.
+
+//#if(1==0) {Spotykasz tam szamana.}
+//#if(1==1) {Szaman nadal czeka, jakby na zbawienie}//algorytm zostanie polepszony
+`
+	Co robisz?
+#choice
+#if(1==0)
+#hidden yes
+PodejdŸ do stacji kolejowej
+{
+#goto(56)
+}
+#choice
+Nazwij szamana "burakiem"
+{
+#goto(63)
+}
+#choice
+Powitaj szamana
+{
+-Hej, sr...?
+
+-Yo, ty wiesz mam sprawê. Wró¿ê przysz³oœæ i wiem, ¿e za chwilê przylec¹ tutaj terroryœci, a mi braknie parê monet, by siê uratowaæ. Je¿eli zap³acisz mi 13 monet to wywró¿ê Twoj¹ przysz³oœæ. Tak w ogóle mam na imiê Andrzej. Andrzejowi siê ufa, hehe.
+#choice
+ZgódŸ siê
+{
+Szaman odpowiada:
+
+-Za chwilê zabraknie Ci parê monet by uratowaæ sobie ¿ycie, hehehieh!
+
+Set(Lewoœæ,+=5)
+i... znika
+#next
+Zosta³eœ sam.
+#goto(64)
+}
+#choice
+Odmów
+{
+#goto(63)
+}
+}
+#next
+W stacji znajduje siê parê monet
+`
+#Set(Kasa,+=10)
++10 Kasa//algorytm wyœwietlania statystyk zostanie polepszony
+#next
+Set(1,1)
+goto(6)
+Szaman siê oburzy³ i sobie poszed³.
+#choice
+#hidden yes
+#if(tytu³!="zagubiony")
+Przeszukaj okoliczny teren.
+{
+	Nie masz dostêpu do ¿ywnoœci i wody pitnej, na dodatek najbli¿sze miasto to ponad 400 km drogi.
+	Set(Tytu³,"zagubiony")
+}
+#choice
+ZadŸwoñ po Pomoc
+{
+	Okazujê siê, ¿e samolot, który mia³ Ciê ratowaæ (tak, jest tutaj l¹dowisko w pobli¿u) zosta³ porwany, a Ty znajduj¹c siê na jego pok³adzie za chwile zginiesz, rozbijaj¹c siê zapewne o jakiœ wysoki budynek.
+#choice
+Zaproponuj do³¹czenie do grupy terrorystycznej
+{
+	Twoja propozycja spotka³a siê z aprobat¹!
+	`
+	Otrzymujesz krótkie szkolenie i rozbijasz siê o (o dziwo) jakiœ wie¿owiec, ale jako terrorysta!
+	#end
+}
+#choice
+Spróbuj ich przekupiæ
+{
+	Terroryœci zgodzili siê Ciê uwolniæ, ale jeœli chcesz spadochron to musisz zap³aciæ 100 monet.
+#if(Kasa>=100)
+{
+#Set(Kasa,-=100)
+Udaje Ci siê wyl¹dowaæ
+}
+	#end
+}
+}
+#next
+#end

@@ -10,96 +10,113 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 #pragma once
-#include <string>
-extern unsigned int priorlimit;														//Prior mechanizm is used to order all Stats
+#include "Exceptions.h"
+#include <SFML/Graphics.hpp>
 
-class Stat																	//Stats that changes hero over game, you can see not-hidden ones in gamestate -1
+extern unsigned int priorlimit;												//Prior mechanizm is used to order all Stats
+
+struct Stat																	//Stats that changes hero over game, you can see not-hidden ones in gamestate -1
 {
-public:
-																			//Changes hidden option
-	void SetHidden(bool sethidden)
-	{
-		hidden = sethidden;
-	}
 	std::wstring name;														//Name; identificator
 	bool hidden;															//If true - it won't show in gamestate -1
-	bool read = false;														//When acquiring all object of this type and processing them it might save a lot of time
-	unsigned int prior;														//Prior mechanizm is used to order all Stats
-	unsigned int address;													//Indicates which index is needed to change this stat in s_pos or v_pos
+	//unsigned int prior;														//Prior mechanizm is used to order all Stats
+	bool operator<(const Stat &cmp) const{
+		return this->name < cmp.name;
+	};
+protected:
+	Stat(std::wstring &name, const bool hidden/*, const unsigned int prior*/)
+		: name(name), hidden(hidden)/*, prior(prior > priorlimit ? priorlimit : prior)*/ {}
 };
 
-class IntStat : public Stat													//Indicates in % how much you've gained something
+struct IStat
+{
+	int value;
+protected:
+	IStat(int value) : value(value) {}
+	IStat() : value(0) {}
+};
+
+struct SStat
+{
+	std::wstring value;
+protected:
+	SStat(std::wstring &value) : value(value) {}
+	SStat() {}
+};
+
+class IntStat : public Stat, public IStat									//Indicates in % how much you've gained something
 {
 public:
-	IntStat(std::wstring &setname, int setvalue, int setmax, int setminimum, bool sethidden, unsigned int setprior)
+	IntStat(std::wstring &name, const int value, const int max, const int min, const bool hidden)
+		: Stat(name, hidden), IStat(value), max(max), min(min)
 	{
-		name = setname;
-		value = setvalue;
-		max = setmax;
-		min = setminimum;
-		hidden = sethidden;
-		if (setprior > priorlimit) prior = priorlimit;
-		else prior = setprior;
-		if (setmax == setminimum) throw std::runtime_error("Maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
-		else if (setmax < setminimum) throw std::runtime_error("Maximum value lesser than minimum one. Unable to render such variable");
+		if (max == min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
+		else if (max < min) throw w_err(L"IntStat with name \"" + name + L"\" has maximum value lesser than minimum one.");
 	}
-	int value;																//Value
+	void setSprite(const sf::Image &img)
+	{
+		tx.loadFromImage(img);
+		s.setTexture(tx);
+	}
 	int max;																//Maximum value
 	int min;																//Minimum value
+	sf::Vector2i pos[2];
+	sf::Text t;																//These three below are displayed in show_stats
+	sf::Sprite s;
+private:
+	sf::Texture tx;
 };
 
-class IntStatOpposite : public Stat											//Indicates in % how much you've gained something and another thing (while one increases, another decreases)
+class IntStatOpposite : public Stat, public IStat								//Indicates in % how much you've gained something and another thing (while one increases, another decreases)
 {
 public:
-	IntStatOpposite(std::wstring &setname, int setvalue, int setmax, int setminimum, int setthreshold, bool sethidden, unsigned int setprior, std::wstring &setopposite) //konwersja jawna
+	IntStatOpposite(std::wstring &name, const int value, const int max, const int min, const int threshold, const bool hidden, std::wstring &opposite)
+		: Stat(name, hidden), IStat(value), max(max), min(min), threshold(threshold), opposite(opposite)
 	{
-		name = setname;
-		value = setvalue;
-		max = setmax;
-		min = setminimum;
-		threshold = setthreshold;
-		hidden = sethidden;
-		if (setprior > priorlimit) prior = priorlimit;
-		else prior = setprior;
-		opposite = setopposite;
-		if (setmax == setminimum) throw std::runtime_error("Maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
-		else if (setmax < setminimum) throw std::runtime_error("Maximum value lesser than minimum one. Unable to render such variable");
+		if (max == min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value equals minimum one, there's no purpose for this stat to exist. Use Int instead");
+		else if (max < min) throw w_err(L"IntStatOpposite with name \"" + name + L"\" has maximum value lesser than minimum one.");
 	}
-	int value;																//Value
+	void setSprite(const sf::Image &img)
+	{
+		tx.loadFromImage(img);
+		s.setTexture(tx);
+	}
 	int max;																//Maximum value
 	int min;																//Minimum value
 	int threshold;															//When you become more aligned to "name" or "opposite" (lower - name, higher - opposite)
-	std::wstring opposite;													//Eg. you can be Evil or Good, when threshold is -100 all numbers below are Evil and all above Good
+	std::wstring opposite;													//Eg. you can be Evil or Good, when threshold is -100 all numbers(higher or equal than min, lesser or equal than max) below are Evil and all above Good
+	sf::Vector2i pos[4];
+	sf::Text t[3];															//These three below are displayed in show_stats
+	sf::Sprite s;
+private:
+	sf::Texture tx;
 };
 
-class Int : public Stat
+struct Int : Stat, IStat
 {
-public:
-	Int(std::wstring &setname, int setvalue, bool sethidden, unsigned int setprior)
-	{
-		name = setname;
-		value = setvalue;
-		hidden = sethidden;
-		if (setprior > priorlimit) prior = priorlimit;
-		else prior = setprior;
-	}
-	std::wstring name;														//Name; identificator
-	int value;																//Value
+	Int(std::wstring &name, const int value, const bool hidden)
+		: Stat(name, hidden), IStat(value) {}
+	sf::Vector2i pos;
+	sf::Text t;																//This is displayed in show_stats
 };
 
-
-class StringStat : public Stat												//Stat that's value is a string, eg. pseudonim of the hero
+struct StringStat : Stat, SStat								//Stat that's value is a string, eg. pseudonim of the hero
 {
-public:
-	explicit StringStat(std::wstring &setname, std::wstring &setvalue, bool setnamehidden, bool setvaluehidden, unsigned int setprior)
-	{
-		name = setname;
-		value = setvalue;
-		hidden = setnamehidden;
-		vhidden = setvaluehidden;
-		if (setprior > priorlimit) prior = priorlimit;
-		else prior = setprior;
-	}
-	std::wstring value;														//Value
-	bool vhidden = false;													//Might be usefull sometimes... hides value leaving only name
+	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden)
+		: Stat(name, namehidden), SStat(value), vhidden(valuehidden) {}
+	bool vhidden;															//Might be usefull sometimes... hides value leaving only name
+	sf::Vector2i pos;
+	sf::Text t;
+};
+
+struct StcString : SStat
+{
+	StcString(std::wstring &name, std::wstring &value) : name(name), SStat(value) {}
+	std::wstring name;
+};
+
+struct StcInt : IStat
+{
+	StcInt(std::wstring &name, const int value) : name(name), IStat(value) {}
+	std::wstring name;
 };
