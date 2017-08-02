@@ -9,6 +9,7 @@
 	Budzisz się w lesie, a w głowie Ci wiruje, jakby latało w niej rumuńskie tornado.
 W tym miejscu znajduje się stacja kolejowa!
 `
+<<<<<<< HEAD
 Myślisz sobie: #v(Tytuł) : #v(Kasa) : #v(Lewość)
 //#ft(97,215,112){
 //Memlok
@@ -20,6 +21,14 @@ Myślisz sobie: #v(Tytuł) : #v(Kasa) : #v(Lewość)
 //#if(1==1) {Szaman nadal czeka, jakby na zbawienie}
 			Co robisz?
 #enter(Tytuł,0,2,6)
+=======
+Myślisz sobie:
+
+-Kto buduje stacje kolejowe w lesie!?//spacja tutaj
+//#if(1==1) {Szaman nadal czeka, jakby na zbawienie}
+			Co robisz?
+#enter(Tytuł,0,2)
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 #choice
 #if(1==0)
 #hidden yes
@@ -33,6 +42,7 @@ Podejdź do stacji kolejowej
 #set(1,1)
 #goto(początek)
 }
+<<<<<<< HEAD
 //#t(1)
 #choice
 Obraź szamana
@@ -75,6 +85,50 @@ Jeżeli zapłacisz mi 13 monet to wywróżę Twoją przyszłość. Tak w ogóle 
 Szaman się oburzył i sobie poszedł.
 #wp(Odmowa2)
 #choice
+=======
+#t(1)
+#choice
+Obraź szamana
+{
+#goto(Odmowa)
+}
+
+#choice
+Powitaj szamana
+{
+-Hej, sr...?
+
+-Yo, ty wiesz mam sprawę. Wróżę przyszłość i wiem, że za chwilę przylecą tutaj terroryści, a mi braknie parę monet, by się uratować.
+
+Jeżeli zapłacisz mi 13 monet to wywróżę Twoją przyszłość. Tak w ogóle mam na imię Andrzej. Andrzej nie kłamie, hehe.
+#choice
+Zgódź się
+	{
+	Szaman odpowiada:
+
+-Za chwilę zabraknie Ci parę monet by uratować sobie życie, hehehieh!
+
+#set(Lewość,+=5)
+#set(Kasa,-=13)
+I... znika!
+#next
+Teraz już w okolicy nie ma nikogo.
+#goto(Odmowa2)
+	}
+
+#choice
+Odmów
+	{
+#goto(Odmowa)
+	}
+#next
+}
+#next
+#wp(Odmowa)
+Szaman się oburzył i sobie poszedł.
+#wp(Odmowa2)
+#choice
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 #if(1!=2)
 #hidden no
 Przeszukaj okoliczny teren
@@ -88,6 +142,7 @@ Przeszukaj okoliczny teren
 Zadźwoń po pomoc
 {
 	Okazuję się, że samolot, który miał Cię ratować (tak, tutaj jest lądowisko w pobliżu) został porwany. Ty znajdując się na jego pokładzie za chwile zginiesz, rozbijając się zapewne o jakiś wysoki budynek.
+<<<<<<< HEAD
 #choice(1)
 	Zaproponuj dołączenie do grupy terrorystycznej
 	{
@@ -117,6 +172,37 @@ Zadźwoń po pomoc
 	`
 	Nie no, ale było blisko.
 	#end
+=======
+#choice
+Zaproponuj dołączenie do grupy terrorystycznej
+	{
+	Trzeba było trochę poczekać, bo terroryści byli zajęci wyrzucaniem jakiegoś hipisa z samolotu, jednak Twoja propozycja spotkała się z aprobatą!
+`
+	Otrzymujesz krótkie szkolenie i rozbijasz się (o dziwo) o jakiś wieżowiec, ale za to giniesz jako terrorysta!
+#end
+	}
+
+#choice
+#if(Kasa>=100)
+Spróbuj ich przekupić
+	{
+	Terroryści zgodzili się Cię uwolnić, ale jeśli chcesz spadochron to musisz im zapłacić 100 monet.
+
+#set(Kasa,-=100)
+`
+`
+`
+`
+`
+`
+`
+`
+`
+	Udaje Ci się wylądować, opowiedziałeś/aś swoją historię w "Rozmowach w toku", poczym zostałeś/aś sławnym specem od szamanów.
+`
+Nie no, ale było blisko.
+#end
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 	}
 #next
 }

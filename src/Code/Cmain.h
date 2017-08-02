@@ -11,9 +11,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 */
 #pragma once
 #include "txtReader.h"
+<<<<<<< HEAD
 #include <thread>
 #include <mutex>
 #include <chrono>
+=======
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 //Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
 {
@@ -79,7 +82,11 @@ class Cmain
 		int numbss = 0;																//The real view change done
 
 		float choicefactor = 0;														//Used in Fades to determine precise alpha of choicefillcolor
+<<<<<<< HEAD
 		float typeboxfactor = 0, typeboxunavailablefactor = 0, typeboxfactor2 = 0, typeboxunavailablefactor2 = 0;													//Used in Fades to determine precise alpha of scenario.typeboxfillcolor
+=======
+		float typeboxfactor = 0;													//Used in Fades to determine precise alpha of scenario.typeboxfillcolor
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 		float profilesmenufillfactor = 0;											//Used in Fades to determine precise alpha of menuprofilesmenufillcolor
 
 		std::string	fulltwo;														//String that holds height value
@@ -178,7 +185,11 @@ class Cmain
 			&menustoriesselectcolor = color[28],
 			&menuerrorcolor = color[29],
 			&textchoicecolor = color[30],
+<<<<<<< HEAD
 			&textchoiceunavailablecolor = color[31],
+=======
+			&textchoiceunavaiblecolor = color[31],
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 			&textchoicefillcolor = color[32],
 			&menuhelpcolor = color[33],
 			&menuinsertcolor = color[34];
@@ -230,15 +241,28 @@ class Cmain
 																					//Check if mousepos is contained in box	
 		const bool Contains(const sf::FloatRect &box);					
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+<<<<<<< HEAD
 		void Manage67();	
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Manage1();
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Manageminus1();
+=======
+		void Manage67(const bool add);	
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manage1(const bool add);
+																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
+		void Manageminus1(const bool add);
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Draw67();
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Draw1();
 																					//The code that doesn't look good, because was made for performance, splitted from PrepareMenu()
 		void Drawminus1();
+<<<<<<< HEAD
+=======
+
+		void resetSel();
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 };

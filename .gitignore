@@ -40,6 +40,10 @@
 *.idb
 *.ilk
 *.enc
+<<<<<<< HEAD
 *.lastcodeanalysissucceeded
 *.TMP
 *.user
+=======
+*.lastcodeanalysissucceeded
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185

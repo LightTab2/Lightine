@@ -33,10 +33,17 @@ void Cmain::MainEvent()
 			if (mainevent.key.code == sf::Keyboard::Escape) {
 				if (gamestate == 0 && !prov) { visible = false; prov = true; gamestate = 1; }
 				else if (gamestate == 1 && !prov) { visible = false; prov = true; gamestate = 0; stigger = false; }
+<<<<<<< HEAD
 				else if (gamestate == 2) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); }
 				else if (gamestate == 3) { if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); } }
 				else if (gamestate == 4) { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); }
 				else if (gamestate == 5) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); }
+=======
+				else if (gamestate == 2) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   }
+				else if (gamestate == 3) { if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); } }
+				else if (gamestate == 4) { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); }
+				else if (gamestate == 5) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   }
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 				else if (gamestate == 6 || gamestate == 7) {
 					if (enternew) {
 						if (enternewerror) {
@@ -49,6 +56,10 @@ void Cmain::MainEvent()
 					}
 					else { visible = false; gamestate = 5; errclock.restart(); LoadSave(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   gwhich ? scheck = true : pcheck = true; }
 				}
+<<<<<<< HEAD
+=======
+				else { visible = false; gamestate = 5; errclock.restart(); LoadSave(); button_1_text.setString("Change Profile"); button_2_text.setString("Change Story"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   gwhich ? scheck = true : pcheck = true; } }
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 				else if (gamestate == -1) {
 					if (resetsb) {
 						resetsb = false;
@@ -75,7 +86,11 @@ void Cmain::MainEvent()
 					auto t = newname.getString();
 					if (t.getSize() > 1)
 					{
+<<<<<<< HEAD
 						if (t[t.getSize() - 1U] == '\n')
+=======
+						if (t[t.getSize()-1U] == '\n')
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 						{
 							t.erase(t.getSize() - 2, 2);
 						}
@@ -87,11 +102,18 @@ void Cmain::MainEvent()
 				}
 				else if (gamestate == 1 && scenario.typesel != -1)
 				{
+<<<<<<< HEAD
 					auto &t = scenario.typeboxes[scenario.typesel];
 					if (t.DeleteChar())
 					{
 						auto box = t.rt.getSize();
 						t.rt.setSize(sf::Vector2f(box.x, box.y - scenario.Tsize));
+=======
+					if (scenario.typeboxes[scenario.typesel].DeleteChar())
+					{
+						auto box = scenario.typeboxes[scenario.typesel].rt.getSize();
+						scenario.typeboxes[scenario.typesel].rt.setSize(sf::Vector2f(box.x, box.y - scenario.Tsize));
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 						for (int x = scenario.typesel + 1; x != scenario.typeboxes.size(); ++x)
 						{
 							box = scenario.typeboxes[x].rt.getPosition();
@@ -110,6 +132,7 @@ void Cmain::MainEvent()
 						}
 						box = scenario.next.getPosition();
 						scenario.next.setPosition(box.x, box.y - scenario.Tsize);
+<<<<<<< HEAD
 						scenario.dmargin -= static_cast<int>(scenario.Tsize);
 						box = sliders.getPosition();
 						sliders.setPosition(box.x, round(box.y * ((scenario.dmargin + scenario.Tsize) / scenario.dmargin)));
@@ -120,6 +143,16 @@ void Cmain::MainEvent()
 					}
 					if (t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
 					else t.rt.setFillColor(scenario.typeboxunavailablefillselcolor);
+=======
+						scenario.dmargin -= scenario.Tsize;
+						box = sliders.getPosition();
+						sliders.setPosition(box.x, round(box.y * ((scenario.dmargin + scenario.Tsize) / scenario.dmargin)));
+						if (window.mapCoordsToPixel(sliders.getPosition()).y > smaxdown)
+						sliders.setPosition(window.mapPixelToCoords(sf::Vector2i(box.x, smaxdown - sliders.getGlobalBounds().height)));
+						slidersb = sliders.getGlobalBounds();
+					}
+					scenario.ssreload = true;
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 				}
 			}
 			else if (mainevent.key.code == sf::Keyboard::LAlt || mainevent.key.code == sf::Keyboard::RAlt) alt = true;
@@ -228,9 +261,15 @@ void Cmain::MainEvent()
 					}
 				}
 			}
+<<<<<<< HEAD
 			if (gamestate == 6) {
 				selectionp -= static_cast<int>(mainevent.mouseWheelScroll.delta);
 				arrowedp = selectionp - static_cast<int>(menucapacity) / 2;
+=======
+			if (gamestate == 6){
+				selectionp -= static_cast<int>(mainevent.mouseWheelScroll.delta);
+				arrowedp = selectionp - static_cast<int>(menucapacity)/2;
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 				if (arrowedp < 0) arrowedp = 0;
 				else if (arrowedp > arrowedp_margin) arrowedp = arrowedp_margin;
 				if (selectionp < 0) selectionp = 0;
@@ -240,7 +279,11 @@ void Cmain::MainEvent()
 			else if (gamestate == 7)
 			{
 				selections -= static_cast<int>(mainevent.mouseWheelScroll.delta);
+<<<<<<< HEAD
 				arroweds = selections - static_cast<int>(menucapacity) / 2;
+=======
+				arroweds = selections - static_cast<int>(menucapacity)/2;
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 				if (arroweds < 0) arroweds = 0;
 				else if (arroweds > arroweds_margin) arroweds = arroweds_margin;
 				if (selections < 0) selections = 0;
@@ -287,7 +330,11 @@ void Cmain::MainEvent()
 					achar != 92U && achar != 124U && achar != 127U) {
 					auto t = newname.getString() + achar;
 					newname.setString(t);
+<<<<<<< HEAD
 					if ((newname.getGlobalBounds().width) > (w - w / 12.f))
+=======
+					if ((newname.getGlobalBounds().width) >(w - w/12.f))
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 					{
 						t.insert(t.getSize() - 1U, L'\n');
 						newname.setString(t);
@@ -297,6 +344,7 @@ void Cmain::MainEvent()
 			}
 			else if (gamestate == 1 && scenario.typesel != -1)
 			{
+<<<<<<< HEAD
 				if (!iswprint(mainevent.text.unicode)) break;
 				auto &t = scenario.typeboxes[scenario.typesel];
 				if (!t.limits.first || t.s->size() < t.limits.first)
@@ -333,6 +381,37 @@ void Cmain::MainEvent()
 					scenario.ssreload = true;
 				}
 				else t.rt.setFillColor(scenario.typeboxunavailablefillselcolor);
+=======
+				if (scenario.typeboxes[scenario.typesel].InsertChar(mainevent.text.unicode))
+				{
+					auto box = scenario.typeboxes[scenario.typesel].rt.getSize();
+					scenario.typeboxes[scenario.typesel].rt.setSize(sf::Vector2f(box.x, box.y + scenario.Tsize));
+					for (int x = scenario.typesel + 1; x != scenario.typeboxes.size(); ++x)
+					{
+						box = scenario.typeboxes[x].rt.getPosition();
+						scenario.typeboxes[x].rt.setPosition(box.x, box.y + scenario.Tsize);
+						box = scenario.typeboxes[x].t.getPosition();
+						scenario.typeboxes[x].t.setPosition(box.x, box.y + scenario.Tsize);
+					}
+					for (auto &c : scenario.choice)
+					{
+						box = c.c.getPosition();
+						c.c.setPosition(box.x, box.y + scenario.Tsize);
+						box = c.cs.getPosition();
+						c.cs.setPosition(box.x, box.y + scenario.Tsize);
+						box = c.text.getPosition();
+						c.text.setPosition(box.x, box.y + scenario.Tsize);
+					}
+					box = scenario.next.getPosition();
+					scenario.next.setPosition(box.x, box.y + scenario.Tsize);
+					scenario.dmargin += scenario.Tsize;
+					box = sliders.getPosition();
+					sliders.setPosition(box.x, round(box.y * ((scenario.dmargin-scenario.Tsize)/scenario.dmargin)));
+					if (sliders.getPosition().y < smaxup) sliders.setPosition(box.x, smaxup);
+					slidersb = sliders.getGlobalBounds();
+				}
+				scenario.ssreload = true;
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 			}
 			break;
 		}
@@ -394,18 +473,35 @@ void Cmain::onRelease()
 		}
 		else if (scenario.DrawNext && Contains(scenario.Bnext))
 		{
+<<<<<<< HEAD
 			if (scenario.choiceneed == true && scenario.choicesel == -1) break;
 			for (auto &t : scenario.typeboxes)
 				if (std::move(t.rt.getFillColor()) == scenario.typeboxunavailablefillcolor || std::move(t.rt.getFillColor()) == scenario.typeboxunavailablefillselcolor) return; //std::move is redundant probably. Not sure tho
+=======
+			if (scenario.choiceneed == true && scenario.choicesel == -1) return;
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 			sviewchange(0);
 			if (scenario.choicesel > -1)
 			{
 				scenario.cgoto = scenario.sgoto = scenario.choice[scenario.choicesel].gto;
 				scenario.dgoto = scenario.choice[scenario.choicesel].dgto;
+<<<<<<< HEAD
 				scenario.ttignore = scenario.choice[scenario.choicesel].ttignore;
 			}
 			else { scenario.cgoto = scenario.sgoto; scenario.dgoto = 0; }
 			if (!scenario.Parse(false)) DeleteStory();
+=======
+			}
+			else { scenario.cgoto = scenario.sgoto; scenario.dgoto = 0; }
+			if (!scenario.Parse(false)) DeleteStory();
+		}
+		else
+		{
+			for (int x = 0; x != scenario.typeboxes.size(); ++x)
+			{
+				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds())) { scenario.typesel = x; return; }
+			}
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 		}
 		break;
 	case 2:
@@ -535,8 +631,10 @@ void Cmain::onClick()
 					for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color::Transparent);
 					scenario.choice[x].cs.setFillColor(textchoicefillcolor);
 					scenario.choicesel = x;
+					resetSel();
 					break;
 				}
+<<<<<<< HEAD
 			for (unsigned int x = 0; x < scenario.typeboxes.size(); ++x)
 				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds()))
 				{
@@ -557,6 +655,19 @@ void Cmain::onClick()
 					scenario.typesel = x;
 					break; //flow ends here
 				}
+=======
+			}
+			for (unsigned int x = 0; x < scenario.typeboxes.size(); ++x) {
+				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds()))
+				{
+					for (TypeBox &d : scenario.typeboxes) d.rt.setFillColor(sf::Color(static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0), static_cast<sf::Uint8>(0)));
+					scenario.typeboxes[x].rt.setFillColor(scenario.typeboxfillcolor);
+					scenario.typesel = x;
+					return; //flow ends here
+				}
+			}
+			resetSel();
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 		break;
 	case 3:
 		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }
@@ -647,5 +758,13 @@ void Cmain::onClick()
 			}
 		}
 		break;
+	}
+}
+
+inline void Cmain::resetSel()
+{
+	if (scenario.typesel != -1) {
+		scenario.typeboxes[scenario.typesel].rt.setFillColor(sf::Color::Transparent);
+		scenario.typesel = -1;
 	}
 }

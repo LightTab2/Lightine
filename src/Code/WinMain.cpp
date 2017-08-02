@@ -13,6 +13,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 int main(){
 		Cmain cmain;
 	if (cmain.quit) return -1;
+=======
+		cmain.Intro();
+>>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 	try{
 		cmain.GameLoop();
 	}
