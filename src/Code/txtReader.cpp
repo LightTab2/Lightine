@@ -207,6 +207,7 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 	else if (CCommand(L"#ft"))
 	{
 		if (Debug) return;
+				SplitText(false, insr);
 			sf::Text t = text;
 			std::wstring::size_type pos = insrtttt.find(L'(');
 			if (!pos) {
@@ -232,12 +233,29 @@ void ScenarioParser::ExecuteCommand(std::wstring &insrtttt)
 				}
 			}
 			std::wstring str;
-			
+
 			auto cchoiceneed = choiceneed; choiceneed = false;
-			FindRange();
-			insr.clear();
-			choiceneed = cchoiceneed;
-			gaintext.push_back(t);
+			for (int ssgoto = 1;;) {
+				getline(insr);
+				TextProcess(insr, str);
+				std::wstring::size_type pos = 0, pos2 = 0;
+				while ((pos = insr.find(L'}', pos)) != std::wstring::npos)
+				{
+					pos2 = pos;
+					while ((pos2 = insr.rfind(L'{', pos2)) != std::wstring::npos && pos2 > insr.rfind(L'}', pos)) ++ssgoto;
+					if (!--ssgoto)
+					{
+						insr.clear();
+						t.setString(str);
+						gaintext.push_back(t);
+						choiceneed = cchoiceneed;
+						return;
+					}
+					++pos;
+				}
+				if (pos == std::wstring::npos) pos = 0;
+				while ((pos = insr.find(L'{', pos + ((pos == 0) ? 0 : 1))) != std::wstring::npos) { ++ssgoto; ++pos; }
+			}
 	}
 	else if (CCommand(L"#file("))
 	{
@@ -1615,7 +1633,7 @@ void ScenarioParser::CreateTypeBox()
 	{
 		sf::FloatRect box = tb.t.getGlobalBounds();
 		while ((tb.t.getLocalBounds().left + box.left + box.width) > (left + width))
-		{
+		{ 
 			for (std::wstring::size_type x = tb.t.getString().getSize()-1;; --x)
 			{
 				tb.t.setString(tb.t.getString().substring(0, tb.t.getString().getSize()-1));
