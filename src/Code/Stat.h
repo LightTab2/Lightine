@@ -92,11 +92,7 @@ private:
 	sf::Texture tx;
 };
 
-<<<<<<< HEAD
 struct Int : Stat, IStat
-=======
-struct Int : public Stat, public IStat
->>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 {
 	Int(std::wstring &name, const int value, const bool hidden)
 		: Stat(name, hidden), IStat(value) {}
@@ -104,11 +100,7 @@ struct Int : public Stat, public IStat
 	sf::Text t;																//This is displayed in show_stats
 };
 
-<<<<<<< HEAD
 struct StringStat : Stat, SStat								//Stat that's value is a string, eg. pseudonim of the hero
-=======
-struct StringStat : public Stat, public SStat								//Stat that's value is a string, eg. pseudonim of the hero
->>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 {
 	StringStat(std::wstring &name, std::wstring &value, const bool namehidden, const bool valuehidden)
 		: Stat(name, namehidden), SStat(value), vhidden(valuehidden) {}
@@ -117,21 +109,13 @@ struct StringStat : public Stat, public SStat								//Stat that's value is a st
 	sf::Text t;
 };
 
-<<<<<<< HEAD
 struct StcString : SStat
-=======
-struct StcString : public SStat
->>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 {
 	StcString(std::wstring &name, std::wstring &value) : name(name), SStat(value) {}
 	std::wstring name;
 };
 
-<<<<<<< HEAD
 struct StcInt : IStat
-=======
-struct StcInt : public IStat
->>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
 {
 	StcInt(std::wstring &name, const int value) : name(name), IStat(value) {}
 	std::wstring name;

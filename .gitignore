@@ -11,7 +11,6 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
 
 # Fortran module files
 *.mod
@@ -29,7 +28,6 @@
 # Another
 *.VC.VC.opendb
 *.suo
-*.sln
 *.VC.db
 *.pdb
 *.ipdb
@@ -40,10 +38,10 @@
 *.idb
 *.ilk
 *.enc
-<<<<<<< HEAD
 *.lastcodeanalysissucceeded
 *.TMP
 *.user
-=======
-*.lastcodeanalysissucceeded
->>>>>>> 962c618769e951108e54dadcdc7dac935fcb7185
+build/x64/Debug/Lightine.lib
+build/x64/Release/Lightine.lib
+build/Win32/Debug/Lightine.lib
+build/Win32/Release/Lightine.lib
