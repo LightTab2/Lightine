@@ -213,12 +213,16 @@ void Cmain::GameMenu()
 void Cmain::DeleteStory()
 {
 	std::wofstream sfile(L"../../bin/Stories.txt");
-	sfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
+ 	sfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
 	for (size_t s = 0U; s != profiles.size(); ++s)
 	{
-		const std::wstring c = L"../../bin/Saves/" + profiles[s].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
-		_wremove(c.c_str());
+		std::wstring str = L"../../bin/Saves/" + profiles[s].getString().toWideString() + L'_' + stories[selections].getString().toWideString() + L".txt";
+		_wremove(str.c_str());
+		//str = scenario.apath + L"\\" + stories[selections].getString().toWideString() + L'_' + profiles[s].getString().toWideString() + L"_Stc.txt";
+		//_wremove(str.c_str());
 	}
+	//const std::wstring str = std::wstring(scenario.apath + L"\\" + stories[selections].getString().toWideString() + L"_Stc.txt");
+	//_wremove(str.c_str());
 	stories.erase(stories.begin() + selections);
 	arroweds -= 1;
 	if (arroweds < 0) arroweds = 0;
@@ -241,8 +245,10 @@ void Cmain::DeleteProfile()
 	pfile.imbue(std::locale(std::locale::empty(), new std::codecvt_utf8<wchar_t>));
 	for (size_t s = 0U; s != stories.size(); ++s)
 	{
-		const std::wstring str = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[s].getString().toWideString() + L".txt";
+		std::wstring str = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[s].getString().toWideString() + L".txt";
 		_wremove(str.c_str());
+		//str = scenario.apath + L"\\" + stories[s].getString().toWideString() + L'_' + profiles[selectionp].getString().toWideString() + L"_Stc.txt";
+		//_wremove(str.c_str());
 	}
 	profiles.erase(profiles.begin() + selectionp);
 	arrowedp -= 1;
@@ -263,12 +269,12 @@ void Cmain::DeleteProfile()
 void Cmain::LoadSave() //There's bunch of "scenario.savefile =", maybe it can be optimized even further, deleting pempty and sempty in process
 {
 	SaveToFile();
-	if (profiles.empty()) scenario.pempty = true;
-	else scenario.pempty = false;
-	if (stories.empty()) scenario.sempty = true;
-	else scenario.sempty = false;
-	if (!scenario.sempty) scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
-	if (!scenario.sempty && !scenario.pempty) {
+	//if (profiles.empty()) scenario.pempty = true;
+	//else scenario.pempty = false;
+	//if (stories.empty()) scenario.sempty = true;
+	//else scenario.sempty = false;
+	if (!stories.empty()) scenario.path = "../../bin/Scripts/" + stories[selections].getString() + ".txt";
+	if (!stories.empty() && !profiles.empty()) {
 		scenario.savefile = L"../../bin/Saves/" + profiles[selectionp].getString().toWideString() + L"_" + stories[selections].getString().toWideString() + L".txt";
 		if (!scenario.Parse(true)) DeleteStory();
 		sviewchange(lsetPos = static_cast<float>(smaxup));

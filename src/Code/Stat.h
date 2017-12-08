@@ -22,10 +22,16 @@ struct Stat																	//Stats that changes hero over game, you can see not
 	//unsigned int prior;														//Prior mechanizm is used to order all Stats
 	bool operator<(const Stat &cmp) const{
 		return this->name < cmp.name;
-	};
+	}
 protected:
 	Stat(std::wstring &name, const bool hidden/*, const unsigned int prior*/)
-		: name(name), hidden(hidden)/*, prior(prior > priorlimit ? priorlimit : prior)*/ {}
+		: name(name), hidden(hidden)/*, prior(prior > priorlimit ? priorlimit : prior)*/ {
+		size_t pos = 0;
+		for (; iswspace(name[pos]); ++pos);
+		name.erase(0, pos);
+		for (pos = name.size(); iswspace(name[pos]); --pos);
+		name.erase(pos);
+	}
 };
 
 struct IStat

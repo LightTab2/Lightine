@@ -45,3 +45,4 @@ build/x64/Debug/Lightine.lib
 build/x64/Release/Lightine.lib
 build/Win32/Debug/Lightine.lib
 build/Win32/Release/Lightine.lib
+build/bin/Scripts/debug.txt

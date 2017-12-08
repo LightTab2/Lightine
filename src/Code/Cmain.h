@@ -12,7 +12,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 #pragma once
 #include "txtReader.h"
 #include <thread>
-#include <mutex>
 #include <chrono>
 //Hello everyone, I want to say that my English isn't so good and any correction would be very kind from you =)
 class Cmain
@@ -53,8 +52,8 @@ class Cmain
 		bool arrowed_dn = false;													//Means selection is max down
 		bool arrowed_up = false;													//Means selection is max up
 		bool resetsb = false;														//Sub-gamestate in gamestate -1
-		bool disrandomnameLOL = true;												//Optimization for instructions based on clicked
-		bool disbutton = false;														//Optimization for instructions based on clicked
+		bool disrandomnameLOL = true;												//Optimization for instructions based on clicked, name is an easter egg
+		bool disbutton = false;														//Optimization for instructions based on clicked, name is an easter egg
 		int	fontsize1 = 0;															//Font's size for small resolution
 		int	fontsize2 = 0;															//Font's size for medium resolution
 		int	fontsize3 = 0;	 														//Font's size for big resolution
@@ -113,7 +112,6 @@ class Cmain
 			arrowup_t,
 			arrowdn_t,
 			shwstats_t,
-			nxt_t,
 			reset_t;
 
 		sf::Text button_t[3],														//Button used to navigate the game's menu

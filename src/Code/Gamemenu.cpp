@@ -32,9 +32,10 @@ void Cmain::MainEvent()
 		case sf::Event::KeyPressed:
 			if (mainevent.key.code == sf::Keyboard::Escape) {
 				if (gamestate == 0 && !prov) { visible = false; prov = true; gamestate = 1; }
-				else if (gamestate == 1 && !prov) { visible = false; prov = true; gamestate = 0; stigger = false; }
+				else if (gamestate == 1 && !prov) { visible = false; prov = true; gamestate = 0; stigger = false; if (scenario.typesel != -1) { if (scenario.typeboxes[scenario.typesel].rt.getFillColor() == scenario.typeboxunavailablefillselcolor) scenario.typeboxes[scenario.typesel].rt.setFillColor(scenario.typeboxunavailablefillcolor); else scenario.typeboxes[scenario.typesel].rt.setFillColor(scenario.typeboxfillcolor); scenario.typesel = -1;}
+				}
 				else if (gamestate == 2) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); }
-				else if (gamestate == 3) { if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); } }
+				else if (gamestate == 3) { if (fullone.empty()) fullone = "800"; if (fulltwo.empty()) fulltwo = "600"; if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) fullone = std::to_string(desktop.x); else if (stoi(fullone) < 800) fullone = "800"; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) fulltwo = std::to_string(desktop.y); else if (stoi(fulltwo) < 600) fulltwo = "600"; resbutton1_text.setString(fullone); resbutton2_text.setString(fulltwo); if (resbutton1_focus || resbutton2_focus) { resbutton1_focus = false; resbutton2_focus = false; } else { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); } }
 				else if (gamestate == 4) { gamestate = 2; button_1_text.setString("Graphics"); button_2_text.setString("Audio"); button_3_text.setString("Back"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f)))));   SaveOptions(); }
 				else if (gamestate == 5) { gamestate = 0; button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options"); button_1_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_1_text.getGlobalBounds().width) / 2, static_cast<int>(round(h / 600.f * 35.f))))); button_2_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_2_text.getGlobalBounds().width) / 2, h / 2 - static_cast<int>(round(h / 600.f * 40.f))))); button_3_text.setPosition(window.mapPixelToCoords(sf::Vector2i(w / 2 - static_cast<int>(button_3_text.getGlobalBounds().width) / 2, h - static_cast<int>(round(h / 600.f * 90.f))))); }
 				else if (gamestate == 6 || gamestate == 7) {
@@ -131,10 +132,14 @@ void Cmain::MainEvent()
 			else if (mainevent.key.code == sf::Keyboard::Return) {
 				if (gamestate == 3 && !fullscreen) {
 					resbutton1_focus = false; resbutton2_focus = false;
-					if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); }
-					else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); }
-					if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); }
-					else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); }
+					if (fullone.empty()) fullone = "800"; 
+					if (fulltwo.empty()) fulltwo = "600";
+					if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) fullone = std::to_string(desktop.x);
+					else if (stoi(fullone) < 800) fullone = "800";
+					if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) fulltwo = std::to_string(desktop.y);
+					else if (stoi(fulltwo) < 600) fulltwo = "600"; 
+					resbutton1_text.setString(fullone);
+					resbutton2_text.setString(fulltwo);
 				}
 				else if (gamestate > 5 && enternew)
 					CreateNew();
@@ -526,61 +531,50 @@ void Cmain::onClick()
 		if (!stigger && scenario.slideratv && Contains(slidersb)) {
 			smouseposy = static_cast<int>(mousepos.y - slidersb.top);
 			stigger = true;
+			return;
 		}
 			ssb();
 			for (unsigned int x = 0; x < scenario.choice.size(); ++x)
 				if (Contains(scenario.choice[x].c.getGlobalBounds()) || Contains(scenario.choice[x].cs.getGlobalBounds()))
 				{
-					if (!scenario.choice[x].avaible) break;
+					if (!scenario.choice[x].available) break;
 					for (Choice &d : scenario.choice) d.cs.setFillColor(sf::Color::Transparent);
 					scenario.choice[x].cs.setFillColor(textchoicefillcolor);
 					scenario.choicesel = x;
-					break;
+					return;
 				}
 			for (unsigned int x = 0; x < scenario.typeboxes.size(); ++x)
 				if (Contains(scenario.typeboxes[x].rt.getGlobalBounds()))
 				{
 					auto &t = scenario.typeboxes[x];
 					for (TypeBox &d : scenario.typeboxes) {
-						if ((!d.limits.first || d.s->size()) < d.limits.first || d.s->size() > d.minchars) d.rt.setFillColor(scenario.typeboxfillcolor);
+						if ((!d.limits.first || d.s->size() < d.limits.first) && d.s->size() > d.minchars) d.rt.setFillColor(scenario.typeboxfillcolor);
 						else d.rt.setFillColor(scenario.typeboxunavailablefillcolor);
 					}
-					if (x == scenario.typesel)
-					{
-						if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillcolor);
-						else t.rt.setFillColor(scenario.typeboxunavailablefillcolor);
-						scenario.typesel = -1;
-						break;
-					}
-					if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
+					if ((!t.limits.first || t.s->size() < t.limits.first) && t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
 					else t.rt.setFillColor(scenario.typeboxunavailablefillselcolor);
 					scenario.typesel = x;
-					break; //flow ends here
+					return; //flow ends here
 				}
+			if (scenario.typesel != -1) {
+				if (scenario.typeboxes[scenario.typesel].rt.getFillColor() == scenario.typeboxunavailablefillselcolor) scenario.typeboxes[scenario.typesel].rt.setFillColor(scenario.typeboxunavailablefillcolor);
+				else scenario.typeboxes[scenario.typesel].rt.setFillColor(scenario.typeboxfillcolor);
+				scenario.typesel = -1;
+			}
 		break;
 	case 3:
-		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) { fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo); } else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); } }
-		else if (Contains(resbutton2)) { resbutton1_focus = false; resbutton2_focus = true; if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) { fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone); } else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); } }
+		if (Contains(resbutton1)) { resbutton1_focus = true; resbutton2_focus = false; if (fullone.empty()) fullone = "800"; if (fulltwo.empty()) fulltwo = "600"; if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) fullone = std::to_string(desktop.x); else if (stoi(fullone) < 800) fullone = "800"; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) fulltwo = std::to_string(desktop.y); else if (stoi(fulltwo) < 600) fulltwo = "600"; resbutton1_text.setString(fullone); resbutton2_text.setString(fulltwo); }
+		else if (Contains(resbutton2)) { resbutton1_focus = false; resbutton2_focus = true; if (fullone.empty()) fullone = "800"; if (fulltwo.empty()) fulltwo = "600"; if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) fullone = std::to_string(desktop.x); else if (stoi(fullone) < 800) fullone = "800"; if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) fulltwo = std::to_string(desktop.y); else if (stoi(fulltwo) < 600) fulltwo = "600"; resbutton1_text.setString(fullone); resbutton2_text.setString(fulltwo); }	
 		else {
 			resbutton1_focus = false; resbutton2_focus = false;
-			if (fullone.length() != 0U) {
-				if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) {
-					fullone = std::to_string(desktop.x); resbutton1_text.setString(fullone);
-				}
-				else if (stoi(fullone) < 800) { fullone = "800"; resbutton1_text.setString(fullone); }
-			}
-			else {
-				fullone = "800"; resbutton1_text.setString(fullone);
-			}
-			if (fulltwo.length() != 0U){
-				if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) {
-					fulltwo = std::to_string(desktop.y); resbutton2_text.setString(fulltwo);
-				}
-				else if (stoi(fulltwo) < 600) { fulltwo = "600"; resbutton2_text.setString(fulltwo); }
-			}
-			else {
-				fulltwo = "600"; resbutton2_text.setString(fulltwo);
-			}
+			if (fullone.empty()) fullone = "800";
+			if (static_cast<unsigned int>(stoi(fullone)) > desktop.x) fullone = std::to_string(desktop.x); 
+			else if (stoi(fullone) < 800) fullone = "800"; 
+			if (fulltwo.empty()) fulltwo = "600";
+			if (static_cast<unsigned int>(stoi(fulltwo)) > desktop.y) fulltwo = std::to_string(desktop.y);
+			else if (stoi(fulltwo) < 600) fulltwo = "600"; 
+			resbutton1_text.setString(fullone);
+			resbutton2_text.setString(fulltwo);
 		}
 		break;
 	case 6:

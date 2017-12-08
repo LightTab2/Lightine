@@ -176,6 +176,7 @@
     <ClInclude Include="Code\Choice.h" />
     <ClInclude Include="Code\Cmain.h" />
     <ClInclude Include="Code\CustImg.h" />
+    <ClInclude Include="Code\CustomText.h" />
     <ClInclude Include="Code\Exceptions.h" />
     <ClInclude Include="Code\Stat.h" />
     <ClInclude Include="Code\TypeBox.h" />

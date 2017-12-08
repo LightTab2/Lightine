@@ -15,8 +15,9 @@ unsigned int priorlimit = 5U;
 std::wstring ScenarioParser::apath;
 Cmain::Cmain()
 {
+	scenario.Init(profiles, stories, selectionp, selections);
 	try {
-	if (!font.loadFromFile("../../bin/Fonts/Fontformenu.ttf")) throw w_err(L"Missing file from directory \"bin/Images/Fontformenu.ttf\"");
+	if (!font.loadFromFile("../../bin/Fonts/Fontformenu.ttf")) throw w_err(L"Missing file from directory \"bin/Fonts/Fontformenu.ttf\"");
 	button_1_text.setFont(font);
 	button_1_text.setString("Lightine");
 
@@ -105,7 +106,8 @@ Cmain::Cmain()
 	catch (...)
 	{
 		quit = true;
-		MessageBox(NULL, L"Unknown critical error", NULL, MB_ICONERROR);
+		auto msg = L"Unknown critical error, last parsed line: " + std::to_wstring(scenario.sgoto);
+		MessageBox(NULL, msg.c_str(), NULL, MB_ICONERROR);
 		return;
 	}
 }
@@ -122,11 +124,12 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	//control variables set
 	createWindow();
 
-	if (w < 1200) scenario.text.setCharacterSize(fontsize1);
-	else if (w < 1600) scenario.text.setCharacterSize(fontsize2);
-	else if (w < 2200) scenario.text.setCharacterSize(fontsize3);
-	else scenario.text.setCharacterSize(static_cast<unsigned int>(round(fontsize3 + fontsize1 * (w-2000)/ 800.f)));
-	int &&size = h / 10 + h / 120; float &&scale = (w + h) / 1400.f;
+	if ((w+h)/2 < 1100) scenario.text.setCharacterSize(fontsize1);
+	else if ((w + h) / 2 < 1400) scenario.text.setCharacterSize(fontsize2);
+	else if ((w + h) / 2 < 2000) scenario.text.setCharacterSize(fontsize3);
+	else scenario.text.setCharacterSize(static_cast<unsigned int>(round(fontsize3 + ((w+h)/2-2000)/ 220.f)));
+	int size = (w+h)/25.0f;
+	sf::Vector2f scale = { w / 800.f, h / 600.f };
 	ctext.setCharacterSize(size);
 	button_1_text.setCharacterSize(size);
 	button_2_text.setCharacterSize(size);
@@ -140,9 +143,9 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	help_text = f14_text;
 	help_text.setString("Press Delete to remove");
 	f14_text.setOrigin(0, f14_text.getLocalBounds().top);
-	f14_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * scale), h - round(f14_text.getGlobalBounds().height + 2.f * scale));
+	f14_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * scale.x), h - round(f14_text.getGlobalBounds().height + 2.f * scale.y));
 	help_text.setOrigin(0, help_text.getLocalBounds().top);
-	help_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * scale), h - round(f14_text.getGlobalBounds().height + 2.f * scale));
+	help_text.setPosition(w - round(help_text.getGlobalBounds().width + 6.f * scale.x), h - round(f14_text.getGlobalBounds().height + 2.f * scale.y));
 
 	newname = ntext = ctext;
 	newname.setFillColor(menuinsertcolor);
@@ -157,31 +160,31 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	std::string	sizer = "0000";	//Like resbuttons were already filled
 	resbutton1_text.setString(sizer);
 	resbutton2_text.setString(sizer);
-	resbutton1_shape.setSize(std::move(sf::Vector2f(round(resbutton1_text.getGlobalBounds().width + 4.f * scale), round(resbutton1_text.getGlobalBounds().height + 3.f * scale))));
-	resbutton2_shape.setSize(std::move(sf::Vector2f(round(resbutton2_text.getGlobalBounds().width + 4.f * scale), round(resbutton2_text.getGlobalBounds().height + 3.f * scale))));
+	resbutton1_shape.setSize(std::move(sf::Vector2f(round(resbutton1_text.getGlobalBounds().width + 4.f * scale.x), round(resbutton1_text.getGlobalBounds().height + 3.f * scale.y))));
+	resbutton2_shape.setSize(std::move(sf::Vector2f(round(resbutton2_text.getGlobalBounds().width + 4.f * scale.x), round(resbutton2_text.getGlobalBounds().height + 3.f * scale.y))));
 
 	Background.setScale(1, 1);
 	Background.setScale(w / Background.getGlobalBounds().width, h / Background.getGlobalBounds().height);
 	bars.setScale(w / 800.f, h / 600.f);
 	sliders.setScale(bars.getScale().x, bars.getScale().x);
-	michaupase³ke³.setScale(w / 800.f, scale);
-	arrowup.setScale(scale/8.f, scale/7.f);
+	michaupase³ke³.setScale(w / 800.f, scale.y);
+	arrowup.setScale((scale.x+ scale.y)/16.f, (scale.x + scale.y)/14.f);
 	arrowdn.setScale(arrowup.getScale());
-	scenario.next.setScale(arrowup.getScale().x*2.f, arrowup.getScale().y*2.f);
+	scenario.next.setScale(arrowup.getScale().x, arrowup.getScale().y);
 	scenario.Bnext = scenario.next.getGlobalBounds();
-	resets.setScale(scale/4.f, michaupase³ke³.getScale().y/4.f);
+	resets.setScale(scale.x/4.f, michaupase³ke³.getScale().y/4.f);
 	showstats.setScale(resets.getScale());
 	Background.setPosition(0, 0);
 	michaupase³ke³.setPosition(0, 0);
 	ctext.setPosition(w / 2 - ctext.getGlobalBounds().width / 2, h / 2 - ctext.getGlobalBounds().height*2);
 	button_1_text.setString("Resume"); button_2_text.setString("Options"); button_3_text.setString("Save Options");
-	button_1_text.setPosition(w / 2 - button_1_text.getGlobalBounds().width / 2, round(scale * 35.f));
-	button_2_text.setPosition(w / 2 - button_2_text.getGlobalBounds().width / 2, h / 2 - round(scale * 40.f));
-	button_3_text.setPosition(w / 2 - button_3_text.getGlobalBounds().width / 2, h - round(scale * 90.f));
-	resbutton1_text.setPosition(w / 2 - round(scale * 120.f + resbutton1_shape.getGlobalBounds().width), round(scale * 25.f));
-	resbutton1_shape.setPosition(round(resbutton1_text.getGlobalBounds().left - 4.f * scale), round(resbutton1_text.getGlobalBounds().top - 2.f * scale));
-	resbutton2_text.setPosition(w / 2 + round(scale * 120.f), round(scale * 25.f));
-	resbutton2_shape.setPosition(round(resbutton2_text.getGlobalBounds().left - 4.f * scale), round(resbutton2_text.getGlobalBounds().top - 2.f * h / 600.f));
+	button_1_text.setPosition(w / 2 - button_1_text.getGlobalBounds().width / 2, round(scale.y * 35.f));
+	button_2_text.setPosition(w / 2 - button_2_text.getGlobalBounds().width / 2, h / 2 - round(scale.y * 40.f));
+	button_3_text.setPosition(w / 2 - button_3_text.getGlobalBounds().width / 2, h - round(scale.y * 90.f));
+	resbutton1_text.setPosition(w / 2 - round((w / 7.f) + resbutton1_shape.getGlobalBounds().width), round(scale.y * 25.f));
+	resbutton1_shape.setPosition(round(resbutton1_text.getGlobalBounds().left - 4.f * scale.x), round(resbutton1_text.getGlobalBounds().top - 2.f * scale.y));
+	resbutton2_text.setPosition(w / 2 + round((w/7.f)), round(scale.y * 25.f));
+	resbutton2_shape.setPosition(round(resbutton2_text.getGlobalBounds().left - 4.f * scale.x), round(resbutton2_text.getGlobalBounds().top - 2.f * h / 600.f));
 	resbutton1_text.setString(fullone);
 	resbutton2_text.setString(fulltwo);
 	profilesmenu.setSize(std::move(sf::Vector2f(round(0.75f * w), round(h * 0.95f - 2 * arrowup.getGlobalBounds().height))));
@@ -189,7 +192,7 @@ void Cmain::sSaveOptions()	//anyone who would like to analyze this code... it's 
 	arrowup.setPosition(profilesmenu.getPosition().x + round((profilesmenu.getGlobalBounds().width - arrowup.getGlobalBounds().width)/2.f), profilesmenu.getGlobalBounds().top - round(arrowup.getGlobalBounds().height + 4.f * h / 600.f));
 	arrowdn.setPosition(arrowup.getPosition().x, profilesmenu.getGlobalBounds().top + profilesmenu.getGlobalBounds().height + round(4.f * h / 600.f));
 	bars.setPosition(round(w - bars.getGlobalBounds().width), 0);
-	scenario.rmargin = static_cast<int>(floor(bars.getPosition().x - 15.f* scale));
+	scenario.rmargin = static_cast<int>(floor(bars.getPosition().x - 15.f* scale.y));
 	smaxdown = h - static_cast<int>(round(h / 600.f * 8.f));
 	sliders.setPosition(round(bars.getPosition().x + round(w / 800.f * 6.f)), round(h / 600.f * 11.f));
 	smaxup = static_cast<int>(round(h / 600.f * 11.f));
@@ -584,9 +587,9 @@ void Cmain::LoadOptions()
 	{
 		if(str.empty()) return "[empty]";
 		std::string::size_type b = 0U;
-		for (int x = 0; str[x] == ' '; ++x) ++b;
+		for (size_t x = 0; str[x] == ' '; ++x) ++b;
 		std::string::size_type e = str.size() - b;
-		for (int x = str.size()-1; str[x] == ' '; --x) --e;
+		for (size_t x = str.size()-1; str[x] == ' '; --x) --e;
 		return str.substr(b, e);
 	};
 	auto CheckName = [&reader, &buffer, &elblanks](std::string &s_buffer) -> bool
@@ -613,6 +616,7 @@ void Cmain::LoadOptions()
 		else if (buffer[0] == 'i')
 			return std::stoi(elblanks(std::move(buffer.substr(buffer.find('=') + 1))));
 		//else throw w_err(L);
+		return def;
 	};
 	auto findvar_c = [&reader, &elblanks, &CheckName, &buffer](std::string &&s_name, sf::Color &def, unsigned int alpha = 0U)->sf::Color
 	{
@@ -644,7 +648,7 @@ void Cmain::LoadOptions()
 				i[x] = std::stoi(elblanks(std::move(buffer.substr(pos1+1, pos2-pos1))));
 				pos1 = pos2;
 				pos2 = buffer.find(',', pos2+1);
-			};
+			}
 			return sf::Color(
 				i[0],
 				i[1],
@@ -652,9 +656,10 @@ void Cmain::LoadOptions()
 				i[3]
 			);
 		}
+		return def; //redundant, flow will never go there beacuse CheckName makes sure the prefix is valid
 		//else throw w_err(L);
 	};
-	fullscreen = findvar("bFullscreen");
+	fullscreen = static_cast<bool>(findvar("bFullscreen"));
 
 	w = findvar("iWidth", 800);
 	if (fullscreen) w = desktop.x;
@@ -671,15 +676,15 @@ void Cmain::LoadOptions()
 	fullone = std::to_string(w);
 	fulltwo = std::to_string(h);
 
-	music = findvar("bMusic", 1);
+	music = static_cast<bool>(findvar("bMusic", 1));
 
-	sound = findvar("bSound", 1);
+	sound = static_cast<bool>(findvar("bSound", 1));
 
-	fontsize1 = findvar("iFontsize1", 44);
+	fontsize1 = findvar("iFontsize1", 33);
 
-	fontsize2 = findvar("iFontsize2", 58);
+	fontsize2 = findvar("iFontsize2", 35);
 
-	fontsize3 = findvar("iFontsize3", 76);
+	fontsize3 = findvar("iFontsize3", 42);
 
 	selectionp = findvar("iCurrentProfile");
 
@@ -782,7 +787,7 @@ void Cmain::LoadOptions()
 	= findvar_c("cMenuerrorcolor", cl(221U, 21U, 125U, 0U));
 
 	menuhelpcolor
-	= findvar_c("cMenuhelpcolor", cl(120U, 101U, 238U, 0U));
+	= findvar_c("cMenuhelpcolor", cl(120U, 101U, 238U), 255U);
 
 	textchoicecolor
 	= findvar_c("cTextchoicecolor", cl(0U, 0U, 0U, 0U));
@@ -822,7 +827,7 @@ void Cmain::LoadOptions()
 	scenario.typeboxunavailablefillselcolor.a = 0;
 
 	scenario.gaintextcolor
-	= findvar_c("cTextgaintextcolor", cl(70U, 70U, 70U, 0U));
+	= findvar_c("CTextgaintextcolor", cl(120U, 120U, 120U, 255U));
 
 	scenario.statcolor
 		= findvar_c("cStatcolor", cl(235U, 239U, 240U, 0U));
@@ -893,12 +898,11 @@ void Cmain::SaveToFile()
 		<< "\nCTexttypeboxfillselcolor = " << static_cast<int>(scenario.typeboxfillselcolor.r) << ", " << static_cast<int>(scenario.typeboxfillselcolor.g) << ", " << static_cast<int>(scenario.typeboxfillselcolor.b) << ", " << static_cast<int>(round(typeboxunavailablefactor * 255.f))
 		<< "\nCTexttypeboxunavailablefillcolor = " << static_cast<int>(scenario.typeboxunavailablefillcolor.r) << ", " << static_cast<int>(scenario.typeboxunavailablefillcolor.g) << ", " << static_cast<int>(scenario.typeboxunavailablefillcolor.b) << ", " << static_cast<int>(round(typeboxfactor2 * 255.f))
 		<< "\nCTexttypeboxunavailablefillselcolor = " << static_cast<int>(scenario.typeboxunavailablefillselcolor.r) << ", " << static_cast<int>(scenario.typeboxunavailablefillselcolor.g) << ", " << static_cast<int>(scenario.typeboxunavailablefillselcolor.b) << ", " << static_cast<int>(round(typeboxunavailablefactor2 * 255.f))
-		<< "\ncTextgaintextcolor = " << static_cast<int>(scenario.gaintextcolor.r) << ", " << static_cast<int>(scenario.gaintextcolor.g) << ", " << static_cast<int>(scenario.gaintextcolor.b)
+		<< "\nCTextgaintextcolor = " << static_cast<int>(scenario.gaintextcolor.r) << ", " << static_cast<int>(scenario.gaintextcolor.g) << ", " << static_cast<int>(scenario.gaintextcolor.b) << ", " << static_cast<int>(scenario.gaintextcolor.a)
 		<< "\ncStatcolor = " << static_cast<int>(scenario.statcolor.r) << ", " << static_cast<int>(scenario.statcolor.g) << ", " << static_cast<int>(scenario.statcolor.b)
 		<< "\ncStatgaincolor = " << static_cast<int>(scenario.statgaincolor.r) << ", " << static_cast<int>(scenario.statgaincolor.g) << ", " << static_cast<int>(scenario.statgaincolor.b)
 		<< "\ncStatlosscolor = " << static_cast<int>(scenario.statlosscolor.r) << ", " << static_cast<int>(scenario.statlosscolor.g) << ", " << static_cast<int>(scenario.statlosscolor.b)
 		<< "\ncStatoppositecolor = " << static_cast<int>(scenario.statoppositecolor.r) << ", " << static_cast<int>(scenario.statoppositecolor.g) << ", " << static_cast<int>(scenario.statoppositecolor.b)
 		<< std::endl;
-		//todo colors in one line with prefix, cuz its so unreadable
 	myfile.close();
 }

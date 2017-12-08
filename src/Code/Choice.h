@@ -17,7 +17,7 @@ struct Choice																//Essential element of the game, by this player mak
 {
 	sf::Text text;															//Text, that should inform what character will do or what will happen
 	bool hidden = false;													//If true - entire choice won't render if conditions aren't met.
-	bool avaible = true;													//If true - player can active this choice
+	bool available = true;													//If true - player can active this choice
 	sf::CircleShape cs;														//The circle that is filled with *textchoicefillcolor* when conditions are met.
 	sf::ConvexShape c;														//The rounded rectangle
 	unsigned int gto = 0, dgto = 0;											//Moves file position indicator to value's line

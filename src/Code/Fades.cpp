@@ -34,6 +34,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	resets.setColor(colorminus1);
 	scenario.statcolor.a = colorminus1.a;
 	lsetPos = static_cast<float>(smaxup);
+	scenario.customtxt.clear();
 	scenario.ssreload = true;
 
 	/*for (auto &i : scenario.i_stats)
@@ -51,7 +52,7 @@ void Cmain::Reset() //this function is here, because it needs to change colormin
 	*/
 }
 
-void Cmain::Manage67() //this code could've been better in aspect of transparency, but performance is the prior here
+void Cmain::Manage67() //this code could've been done a lot better
 {
 	menuprofilesmenuoutlinecolor.a = color67.a;
 	menuprofilesmenufillcolor.a = static_cast<sf::Uint8>(color67.a * profilesmenufillfactor);
@@ -79,7 +80,7 @@ void Cmain::Manage67() //this code could've been better in aspect of transparenc
 
 void Cmain::Manage1()
 {
-	textcolor.a = textchoicecolor.a = textchoiceunavailablecolor.a = scenario.typeboxcolor.a = scenario.typeboxtextcolor.a = scenario.gaintextcolor.a = color1.a;
+	textcolor.a = textchoicecolor.a = textchoiceunavailablecolor.a = scenario.typeboxcolor.a = scenario.typeboxtextcolor.a = color1.a;
 	textchoicefillcolor.a = static_cast<sf::Uint8>(choicefactor * color1.a);
 	scenario.typeboxfillcolor.a = static_cast<sf::Uint8>(typeboxfactor * color1.a);
 	scenario.typeboxfillselcolor.a = static_cast<sf::Uint8>(typeboxfactor2 * color1.a);
@@ -91,8 +92,8 @@ void Cmain::Manage1()
 	for (size_t index = 0U; index != scenario.choice.size(); ++index)
 	{
 		Choice &c = scenario.choice[index];
-		if (!c.avaible && c.hidden) continue;
-		if (c.avaible)
+		if (c.hidden && !c.available) continue;
+		if (c.available)
 		{
 			if (index == scenario.choicesel) c.cs.setFillColor(textchoicefillcolor);
 			c.cs.setOutlineColor(textchoicecolor);
@@ -111,11 +112,11 @@ void Cmain::Manage1()
 		TypeBox &t = scenario.typeboxes[index];
 		if (index == scenario.typesel)
 		{
-			if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
+			if ((!t.limits.first || t.s->size() < t.limits.first) && t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillselcolor);
 			else t.rt.setFillColor(scenario.typeboxunavailablefillselcolor);
 		}
 		else {
-			if ((!t.limits.first || t.s->size()) < t.limits.first || t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillcolor);
+			if ((!t.limits.first || t.s->size() < t.limits.first) && t.s->size() > t.minchars) t.rt.setFillColor(scenario.typeboxfillcolor);
 			else t.rt.setFillColor(scenario.typeboxunavailablefillcolor);
 		}
 		t.t.setFillColor(scenario.typeboxtextcolor);
@@ -124,11 +125,11 @@ void Cmain::Manage1()
 	scenario.next.setColor(color1);
 	scenario.text.setFillColor(textcolor);
 	//gaintext
-	for (auto &ft : scenario.gaintext)
+	for (auto &ct : scenario.customtxt)
 	{
-		sf::Color color = ft.getFillColor();
-		color.a = scenario.gaintextcolor.a;
-		ft.setFillColor(color);
+		sf::Color color = ct.t.getFillColor();
+		color.a = color1.a * ct.afactor;
+		ct.t.setFillColor(color);
 	}
 }
 
@@ -185,7 +186,7 @@ inline void Cmain::Draw1()
 	window.draw(scenario.text);
 	for (const auto &c : scenario.choice)
 	{
-		if (!c.avaible && c.hidden) continue;
+		if (!c.available && c.hidden) continue;
 		window.draw(c.text);
 		window.draw(c.c);
 		window.draw(c.cs);
@@ -195,6 +196,7 @@ inline void Cmain::Draw1()
 		window.draw(t.rt);
 		window.draw(t.t);
 	}
+	for (const auto &ct : scenario.customtxt) window.draw(ct.t);
 	window.draw(michaupase³ke³);
 	if (scenario.DrawNext) window.draw(scenario.next);
 	window.draw(showstats);
@@ -202,7 +204,6 @@ inline void Cmain::Draw1()
 		window.draw(bars);
 		window.draw(sliders);
 	}
-	for (const auto &ft : scenario.gaintext) window.draw(ft);
 }
 
 inline void Cmain::Drawminus1()

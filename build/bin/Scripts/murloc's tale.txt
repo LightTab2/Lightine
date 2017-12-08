@@ -1,0 +1,148 @@
+#debug
+	Nadszedł zmierzch i wszystkie murloki, jak to miały w zwyczaju, poszły słuchać mądrości swojego szamana. 
+Zielonoskóry starzec z wyłupiastymi oczami opowiadał ciekawe historie przy małym, sztucznym wirze wodnym. 
+
+	Mimo, że cała wioska słuchała opowieści, żaden z nich nie rozumiał o co w nich chodzi. 
+Szaman niejednokrotnie musiał trochę urozmaicić historię, aby nikt nie pozasypiał.
+
+	-Rwlgszszkt trach bah! Szczelały pioruny wszędzie, a wtedy dzielny rycerz Mo'rluk wbiegł w sam środek zadymy...
+`
+	Mędrzec przerwał. I to nie dlatego że nie miał już co wymyślić. 
+Jego wzrok przykuła przepływająca nad nimi... bandera.
+
+	-To znak od Wielkiego Rekina! - krzyknął jakiś murlok z tłumu, gdy do podwodnej wioski nie docierało już żadne światło.
+`
+-Chce nas pożreć!
+
+	Okręty przeraziły całe plemię i zapanowała absolutna panika. 
+Piasek fruwał wszędzie, a wiele żabopodobnych zostało staranowanych i połączyło się z kruszywem.
+
+	-Panie kapitanie, tam na dnie coś się porusza! - powiedział czarnoskóry majtek bandery "Czarny Łańcuch", będącej na wezwaniu zbadania sprawy zaginieciq łodzi rybackich.
+Kapitan "Kiltzbrieg", jeden z dwóch osób o karnacji białej na tej łajbie, spojrzał zza burty. 
+
+-Murloki tutaj? Ostrzelać je moździerzem! ...ale tylko parę razy, na takie ścierwo szkoda kul - powiedział Kiltzbrieg swoim chrapliwym głosem, po czym zwrócił się do asystenta:
+`
+-Każ tym niedojdą, co próbowały dziś ucieć, wyłowić resztki z tych gadzin, wydłubać oczy i zebrać łuski. Jak się spiszą, to może obejdzie się bez egzekucji.
+
+-Jak sobie życzysz, kapitanie - odpowiedział niewysoki elf o brunatnych, krótkich włosach. Był on drugą osobą o białym kolorze skóry na tym okręcie. 
+
+-Rozgniotę te pokraki... - wyszeptał do siebie Kiltzbrieg, ściskając się za sztuczną szczękę.
+#next
+	Chaos. Trup za trupem.
+	Mgła umysłu zaczęła opuszczać zielonoskórego szamana.
+-Kto chce przetrwać niech idzie za mną! - wykrzyknął.
+	Stary murlok wiedział, że w prawdzie niewiele z nich przeżyje, a ci którym się udą, będą na skraju wyczerpania. Dlatego wybrał ścieżkę do najbliższego wybrzeża, a mimo to była ona niekrótka.
+-Idziemy tędy, każdy się trzyma szeregu.
+	Tępo maszu było powolne, a dookoła panowała rzeź. Miepokój rósł i liczba pytań także. Słysząc jedno z nich, szaman rzekł:
+-Gdybyście idioci raczyli posłuchać mnie, zamiast biegać we wszystkie strony, to by do tego wszystkiego nie doszło! Bądźcie cicho i nie marnujcie sił! Musimy poruszać się powoli, w przeciwnym razie sytuacja się powtórzy.
+	Czarownik obejrzał się za siebie. Około stu pobratymców podążało za nim. Wystrzały ucichły, tak, że wyraźnie było słychać lamęty pozbawionych rodzin murloków.
+-Dlaczego...? Dlaczego? Przecież jesteśmy tak daleko od nich! Nie byliśmy dla nich żadnych zagrożeniem! - wypłakiwał jeden z nich.
+Racja. Pomyślał szaman. Nietylko motyw jest niejasny. Po co użyli moździerzy? Patrząc z perspektywy ludzi, szkoda kul.
+
+	Wtem rozgrzmiał huk kolejnego strzału. Wszyscy zamarli w bezruchu. Szybko okazało się, że był on wymierzony właśnie na nich! Nie było chwili do stacenia. Starzec wymamrotał parę słów, a woda nad nimi zabarwiła się na pomarańczowo. W mgnieniu oka ryby z wystkich stron zebrały się i armotyzowały uderzenie kuli warstwą własnych ciał. Jednak to jedynie spowolniło pocisk. Krew była wszędzie. Szaman próbował zebrać się z ziemi.
+- Ożeż kurwa! - zaklnął, patrząc na jego okrwawioną nogę.
+Niewiele myśląc złapał pobliskiego badyla i zacząć kuśtykać. W momencie, gdy chciał uspokoić resztę odezwał się czyiś głos:
+`
+- Morgl!
+Starzec obejrzał się za siebie.
+`
+- Uratuj... - powiedziała konająca przed jego oczyma murloczyca. Wyciągnęła ręcę na których trzymała zawiniątko.
+Morgl podniósł dziecko i odwrócił się bez słowa. Widok był katastrofalny.
+
+Wystrzał powalił z pewnością połowę wędrujących. Ćwierć z ocalałych nie potrafiła się zebrać po wybuchu. Leżą pod tym samym piaskiem.
+#next
+Dotarli do brzegu. Morgl widział dwa murloki wijącę się na skałach wybrzeża. Niedługo potem umarły z wycięczenia.
+`
+-Ty! Tak, ty, chodź tu - odezwał się szaman do niebieskiego pobratymca - jako, że zostało ci nawięcej sił, proszę cię przewiń o to tego malucha.
+`
+-Rrwlg - warknął murlok
+`
+-Przemyj go z słonej wody, niedaleko powinno być źródło, skieruj się w tę stronę - wskazał palcem na wschód mędrzec; wiedzieć trzeba, że rany młodych murloków nie są tak odporne na działanie soli jak dorosłych, poczym dodał - jak masz na imię?
+`
+-Gurlgrl.
+#next
+	Po kwadransie Gurlgrl dotał do wskazanego przez Morgla miejsca, niewielkiej doliny. Okazało się, że źródło dawno wyschło. Niestety jego miejsce zajęło legowisko wilków. Jeden z nich wyczuł krew murloczątka i wraz z kompanem rzucił się w pościg. Gurlgrl, najlepszy atleta wioski starał się z całych sił uciec i gdy znalazł się przy rzecze, te dogoniły go. Jeden ugryzł go w nogę, lecz ten widział jego cień wcześniej i dotkliwie uderzył dłonią wraz z piaskiem oczy wilka. Bardzo wygłodniałego wilka, gdyby nie zanik mięśni u nóg, dawno by skończył jako jego przekąska. Dzięki sprawnej reakcji zyskał parę sekund, wystarczająco by podnieść zawiniątko i wbiec do rzeki. Drugi wilk wkoczył do wody za Gurlgrlem. Szybko przekonał się o swoim błędzie. Murlok zaczął okrążać przeciwnika tak jakby woda nie krępowała w żadnym stopniu jego ruchów, ten widząc, że nie ma szans uciekł. Murloczątko zaczęło kaszleć. Najwidoczniej rany zostały przeczyszczone za późno. Gurlgrl mógł wykończyć uciekające zwierze, lecz był wyczerpany i chciał jak najszybciej oddać murloczka w ręce szamana. 
+	`
+	-Uff... - westchnął zmęczony pościgiem i nagle stracił przytomność.
+	
+	Przyczyną był spory kamień. Pobliskie ogry podpatrzyły jak ludzie puszczają "kaczki" po wodzie i postanowiły same spróbować. Niestety nie bardzo im wychodziło, a jeden z głazów niefortunie trafił Gurlgrla.
+	//Gurlgrl budzi się, myli kierunki i idzie do Duskwood, gdzie maszeruje armia Malfuriona w celu zniszczenia Mrocznego Portalu.
+
+	Kiedy Gurlgrl kończył kopać mogiłę, nagle usłyszał wielki hałas. Wyjrzał zza skały i ujrzał mnóstwo człekopodobnych pędzących wprost na niego. Gurlgrl zostawił umierające dziecko i szybko schował się w krzakach nieopodal.
+
+	Tysiące ludzi, nocnych elfów, trollów i orków wędrowało na wschód do Strzaskanej Krainy. Przewodniczący wyprawy - elf z rogami jelenia zatrzymał rumaka o krok od murloczątka i rzekł:
+
+`
+-Przed nami Duskwood, przeklęta kraina...
+	Przerwał, gdy zauważył, że pod jego nogami znajduje się konające stworzenie.
+`
+-Zwęźmy szyki, wśród tych ciemności czają się worgeny i nieumarli. Naprzód! - dodał, a gdy reszta ruszała, zsiadł z wierzchowca i rozwinął murloka, który już był nieprzytomny z powodu utraty krwi.
+`
+Jego twarz przybrała wyraz zdziwienia:
+`
+-Daleko żeś zawędrował - poczym wykonał gest ręką, a rany niemowlaka zasklepiły się.
+`
+-Zaopiekuje się - powiedziała szamanka orczyca, podnosząc zawiniątko
+//Gurlgrl jest porwany przez Bractwo Defiasów
+#choice(1)
+Orczyca nienawidziła murloków i planowała mnie zabić
+{
+		Szamanka pod pretekstem odnalezienia grupki wędrujących błękitnoskrzelich oddala się do las
+	#next
+}
+#choice(1)
+Orczyca oddała mnie wędrującym błękitnoskrzelim
+{
+	#next
+}
+#choice(1)
+Orczyca oddała mnie w ręce Druidów do Etycznego i Humanitarnego Traktowania Zwierząt
+{
+	#next
+}
+#choice(1)
+Orczyca przygarnęła mnie na czas podróży
+{
+	#next
+}
+#next
+#Stcp(f,-1)
+#Stcp(za,łeś)
+#Stcp(za2,y)
+#if(f!=-1){
+#goto(forma)
+}
+[Za chwilę nastąpi opis bohatera - postaci, którą będzie kierował Gracz]
+
+[W języku polskim niezręcznie byłoby się zwracać do Gracza wyłącznie w formie bezosobowej, dlatego poniżej Gracz sam może wybrać jak chce by się do niego zwracać]
+
+[Wybór nie wpływa w żadnym stopni na fabułę, ani rozgrywkę w tym scenariuszu]
+
+[Wybór jest jednorazowy dla każdego profilu]
+#choice 
+[Chcę, aby zwracano się do mnie w formie żeńskiej]
+{
+	#set(f, 0)
+	#set(za,łaś)
+	#set(za2,a)
+	#goto(forma)
+}
+#choice 
+[Chcę, aby zwracano się do mnie w formie męskiej]
+{
+	#set(f, 0)
+	#set(za,łeś)
+	#set(za2,y)
+	#goto(forma)
+}
+#choice 
+[Forma zależna od płci bohatera]
+{
+	#set(f, 1)
+	#set(za,łeś/łaś)
+	#set(za2,y/a)
+	#goto(forma)
+}
+#next
+#wp(forma)
+#end

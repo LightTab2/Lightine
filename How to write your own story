@@ -9,7 +9,7 @@ This is the story about Wolf.
 It began in a long forgotten forest.
 `
 The wolf was hungry.
-
+-
 Woof!
 --------------------
 would look like:
@@ -21,25 +21,32 @@ Woof!
 Second formating mode checks only if a line is too long and eventually splits it. This means lines aren't merged (high resolution monitors will have less text to show and it might be annoying for someone thus it wasn't completly tested and implemented in all functions, besides unrecommended)
 
 Current commands:
-#choice or #choice(num) //second version calls #t
-parameters:	 //here you use one or more of these additonal parameters[order isn't important]
+#t(num) //'num' tab characters will be ingored at beginning of every line. Calling after another #t will override this numnber
 #if(name>value) 
 #if(name<value) 
 #if(name>=value) 
 #if(name<=value) 
 #if(name==value) 
-#if(name!=value) 
-		 //these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
-		 //choice is only avaible when all conditions in "#if" are met
-#hidden no/yes 	 //default:no; if yes - it will hide choice when unavaible
-name		 //can be on many lines, formated like the main text
-{
-story 		 //if you choose this choice you'll be directed inside this block, which can contain more choices
-}
-example:
+#if(name != value) 		//it is possible to use spaces between operators and names/values
+						//these operators ">", "<", ">=", "<=", "==" "!=" stands for "is higher", "is lower", "is higher or equal", "is lower or equal", "is equal", "isn't equal"
+						//there can be multiple "#if" commands, but you can always use logical operators: logical and ("&&", "&"), logical or ("||", "|")
+						//however its is impossible to use parentheses to nest conditions (for now :) )
+					 	//example:
+						//#if(name!=value&&name2<=value2)
+						//value can be a Stat, however you need to add '$' before the name if the Stat is a StringStat or its name contains only numbers
+						//it is safe to add '$' even if Stat's name isn't an integer value
+#choice or #choice(num) //second version calls #t(num), only within choice (after closing brace 'num' will be set as it was before)
+	parameters:				//here you use one or more of these additonal parameters[order isn't important]
+	#if(condition)			//choice is only avaible when all conditions in "#if" are met
+	#hidden no/yes 	 		//default:no; if yes - it will hide choice when unavaible
 
-	#choice
-	#if(Agility>=Rabbit'sAgility) //Using variables, rabbit isn't an object(maybe in an RPG game would be, but not in a text novel)
+	name					//can be on many lines, formated like the main text
+	{
+	story 					//if you choose this choice, you'll be directed inside this block, which can contain more choices, commands or whatever
+	}
+	example:
+	#choice(1)
+	#if(Agility>=Rabbit'sAgility) //Rabbit'sAgility is an Int
 	#hidden yes
 	Hunt a rabit
 	{
@@ -51,36 +58,79 @@ example:
 		...
 		}
 	}
-
-#next			//displays next button that allows to choose one of choices(if exist) and continue game
-#end			//end the story, statistics will be displayed (not currently developed)
-#goto(line)		//moves game to given line in textfile
-#debug 			//file is being scanned before usage. It searchs for bugs and unintended behaviour and if one of these exists - throws a warning or an error respectively
+#next			//displays next button that allows to choose one of choices(if exist) and continue the game
+#end			//ends the story, statistics will be displayed (not currently developed)
+#goto(line)		//moves the game's parser to the given line in the current file
+#wp(name)		//creates a waypoint with the given name
+#goto(waypoint) //moves the game's parser to the given waypoint
+#debug 			//file is being scanned before usage. It searchs for bugs and unintended behaviour and if one of these exists - throws a warning or an error respectively. Must be called at the beginning of the file. Doesn't protect from every possible mistake, it is inteded to find typos and hint where's mistake made if an exception is thrown. Isn't optimized so should be turned off(deleted) before story is published
 #t(number)		//given number of tabs will be ignored in every line of text
+#v(name)		//gets Stat with given name and prints its value where the command is called
+//Commands creating variables begin with a capital letter
+//There cannot be space characters at the beggining and the end of any Stat's name (they're automatically erased)
+#IntStatOpposite(name, value, maximumvalue, minimumvalue, threshold, hidden, prior, nameopposite)	//Holds 2 names, one on the left side and one on the right side. Between them a bar, which contains two colors, by default red and blue. Red is aligned to the left name and replaces blue when the value increases. Blue is aligned to the right name. Threshold is the value when both colors are at 1:1
+			//name of this Stat, must be unique across every other Stat (even static ones) and cannot have blank characters at the beggining or the end
+			//integer value, if it exceeds maximumvalue it will be set to it, analogously for minimumvalue
+			//maximumvalue is the maximum value that Stat can have, pretty obvious
+			//minimumvalue is the minimum value that Stat can have, pretty obvious
+			//threshold is a "balance" value, Stat's value lower than its threshold will move bar to the left side, higher - right side, equal - bar is centered
+			//hidden can be set either to 1 or 0. Invalid numbers will set this to 1. If true, Stat will not be shown in Show_Stats section
+			//prior stands for priority in rendering this Stat, more informations at the end of this file
+			//nameopposite is the second name, positioned on the right
 
-#IntStatOpposite()//info and params later
-#IntStat()		//info and params later
-#StringStat()	//info and params later
-#Int()			//info and params later
-#Stc()			//info and params later
-#set(name, value, changeMinvalue[optional, not avaible for string-based Stats], changemaxvalue[optional, not avaible for string-based Stats], threshold[optional, IntOppositeStat only]) //changes Stat with given name
-#hide(name)		//makes hidden Stat visible, visible becomes hidden
-#vide(name)		//makes StringStat's value visible or hidden
-#priorlimit(number)	//hardly connected with Stats, sets prior limit. More info at the end of the file
-#prior(Stat, number) //sets priority of the given non-static Stat, saving inside its memory
-#enter(string-based Stat, maxchars) //gives ability to change value of a Stat ingame. The text cannot be empty
-#erase(name) //deletes given Stat by its name
+#IntStat(name, value, maximumvalue, minimumvalue, hidden, prior)	//A single name with a bar. The bar has two colors: by default red and grey. It fills with red color, replacing grey when value increases.
+			//name of this Stat, must be unique across every other Stat (even static ones) and cannot have blank characters at the beggining or the end
+			//integer value, if it exceeds maximumvalue it will be set to it, analogously for minimumvalue
+			//maximumvalue is the maximum value that Stat can have, pretty obvious
+			//minimumvalue is the minimum value that Stat can have, pretty obvious
+			//hidden can be set either to 1 or 0. Invalid numbers will set this to 1. If true, Stat will not be shown in Show_Stats section
+			//prior stands for priority in rendering this Stat, more informations at the end of this file
 
-Planned commands (I'll add more later):
-#file(filename)		//switches to another file, was already done, but rewrite needs to design it again (very simple)
-#showstats		//displays all stats on the screen
-#end(showhidden?)	//displays all stats on the screen, can show hidden Stats, cannot continiue game afterwards
+#StringStat(name, value, hidden, valuehidden, prior)	//A single name followed by ':', a space and its character string value.
+			//name of this Stat, must be unique across every other Stat (even static ones) and cannot have blank characters at the beggining or the end
+			//character string value, splitted like the main text
+			//hidden can be set either to 1 or 0. Invalid numbers will set this to 1. If true, Stat will not be shown in Show_Stats section
+			//like hidden, but conceals only the value, meaning that Stat will suggest the player the value is empty
+			//prior stands for priority in rendering this Stat, more informations at the end of this file
+
+#Int(name, value, hidden, prior)	//A single name followed by ':', a space and its integer value.
+			//name of this Stat, must be unique across every other Stat (even static ones) and cannot have blank characters at the beggining or the end
+			//integer value, splitted like the main text
+			//hidden can be set either to 1 or 0. Invalid numbers will set this to 1. If true, Stat will not be shown in Show_Stats section
+			//prior stands for priority in rendering this Stat, more informations at the end of this file
+#Stc(name, value) and #Stcp(name, value)	//#Stc makes a "static" Stat, which is invisible for the player and its value is persistent through reseting games. #Stc saves Stats for a given story file (switching stories won't erase data), while #Stcp saves Stats for a given profile
+file and the current profile
+			//name of this Stat, must be unique across every other Stat and cannot have blank characters at the beggining or the end
+			//integer or character string value
+#set(name, value, changeMinvalue[optional, not avaible for string-based Stats], changemaxvalue[optional, not avaible for string-based Stats], threshold[optional, IntOppositeStat only]) //changes Stat with the given name. Adding '$' at the beggining of value will search for a Stat and replace the value with the found Stat's one
+#hide(name)			//makes a Stat hidden
+#vhide(name)		//makes StringStat's value hidden
+#unhide(name)		//makes a Stat visible
+#vunhide(name)		//makes StringStat's value visible
+#priorlimit(number)	//hardly connected with Stats, sets prior limit. More info at the end of this file
+#prior(Stat, number) //sets priority of the given non-static Stat
+#enter(string-based Stat, maxchars, maxlines, minchars) //gives ability to change the value of a StringStat in-game. The text cannot be empty. maxchars, maxlines and minchars are optional. Setting one of these to 0 means unlimited/none.
+#erase(name) 		//deletes a Stat
+#error(text)		//displays text as a Windows' message for the player
+#file(filename)		//switches to an another file
+#disablegt			//from this moment all #gt commands will be ingored
+#enablegt			//all next #gt commands will be called. Default state.
+#gt(r, g, b, a, charactersize, bold, italic)
+{
+	text
+} //gaintext - modifable by user, its origin purpose is to inform the player if they've gained/losed a Stat. Can be turned off/on. Color parameters and parentheses are optional, the default color is gaintextcolor defined in Options.ini, default charactersize is main text character size. By default not bold, nor italic.
+#ct(r, g, b, a, charactersize, bold, italic, font)
+{
+	text
+} //customtext - modifable by user, Color parameters and parentheses are optional, the default color is cTextcolors defined in Options.ini, default charactersize is main text character size. By default not bold, nor italic. Default font is main text's one. Font names cannot contain other characters than ASCII ones.
+Planned commands:
+#showstats			//displays all stats on the screen
+#end(showhidden?)	//displays all stats on the screen, can show hidden Stats, cannot continue game afterwards
 #music(path, loop?)
-#sound(path, timestorepeat)
-#achievement(name, description, condition, hidden) //not so soon...
-#gt //gaintext - modifable by user, main purpose to inform player if they gained/losed any Stat, but you can consider to use it to format even your entire story or specific dialogues.
+#sound(path, timestorepeat, interval)
+#achievement(name, description, conditions, hidden) //not so soon...
 
-You cannot use these characters in your story, unless it is part of the command: '#'(ab;ignoring tabs), '{', '}', '`'(ab).  
+You cannot use these characters in your story, unless it is part of the command: '#'(ab, cannot be placed after tabs), '{', '}', '`'(ab).  
 
 'ab' means you cannot use these only at the beginning of a line.
 You are free to use tabs inside text, but not inside commands, since it changes its structure. 
@@ -90,11 +140,11 @@ You can use tabs that won't show before text if you've set #t(NumberOfTabsToIgno
 
 Prior mechanism:
 Before Stats are being rendered, they're firstly ordered by their priority.
-You can think about priority as it it've been some kind of layers.
+You can think about priority as it've been some kind of layers.
 
 First rendered Stats are these with the highest priority in following order:
--StringStats(sorted alphabetically by the name),
--IntStatOpposite(sorted alphabetically by the name),
--IntStatStringStats(sorted alphabetically by the name),
--Ints(sorted alphabetically by the name).
-Then displayed are Stats with lower priority in the same order, until lowest priority is reached - priority 0.
+-StringStats(sorted alphabetically by their names),
+-IntStatOpposite(sorted alphabetically by their names),
+-IntStatStringStats(sorted alphabetically by their names),
+-Ints(sorted alphabetically by their names).
+Then displayed are Stats with lower priority in the same order, until the lowest priority is reached - priority 0.

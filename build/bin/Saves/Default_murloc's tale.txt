@@ -1,0 +1,9 @@
+0
+0
+../../bin/Scripts/murloc's tale.txt
+0
+}
+}
+}
+}
+}
